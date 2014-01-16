@@ -1,4 +1,4 @@
 Revision
 ========
 
-Realtime collaboation tool.
+Realtime collaboration tool.
