@@ -214,7 +214,7 @@ Kako reševati konflikte in zagotoviti konsistentnost med oddaljenimi uporabniki
 
 Operativna transformacija se je prvič omenjala v članku Concurrency Control in Groupware Systems. Pri Googlu so Operativno transformacijo vzeli za osnovno pri načrtovanju protokola Wave, kar nakazuje na njeno uporabnost.
 
-Zaradi razumljivosti bomo besedilo, ki ga urejajo uporabniki, poimenovali dokument. Dokument je shranjen kot serija kronoloških sprememb narejenih na dokumentu. Primer spremembe je {\tt \{ Vstavi ‘M’ @11 \}}, ki pomeni “v dokumentu na lokacijo 11 vstavi črko M” ali {\tt \{ Pobriši @3-7 \}}, ki pomeni “v dokumentu pobriši vse znake med lokacijo 3 in 7”. Obstajajo še druge vrste sprememb kot so oblikovanja besedila, zaklep odstavka, razveljevitev spremembe... Zaradi enostavnosti razlage se bomo osredotočili le na omenjena dva tipa sprememb. Ko uporabnik ureja besedilo, ne spreminja osnovnih znakov, ki bi skupaj predstavljali besedilo kot dokument. Namesto tega se njegove spremembe shranjujejo v revizijski dnevnik. Potrebe po obstoju dokumenta kot zaključene celote znakov ni. Potrebne so le spremembe, ki so bile narejene na tem dokumentu. Če se urejanju skupnega dokumenta pridruži nov uporabnik, mu iz revizijskega dnevnika ponovimo vse (od prve do zadnje) spremembe in že lahko sodeluje pri urejanju tako kot ostali uporabniki.
+Zaradi razumljivosti bomo besedilo, ki ga urejajo uporabniki, poimenovali dokument. Dokument je shranjen kot serija kronoloških sprememb narejenih na dokumentu. Primer spremembe je {\tt \{ Vstavi ‘M’ @11 \}}, ki pomeni “v dokumentu na lokacijo 11 vstavi črko M” ali {\tt \{ Pobriši @3-7 \}}, ki pomeni “v dokumentu pobriši vse znake med lokacijo 3 in 7”. Obstajajo še druge vrste sprememb kot so oblikovanja besedila, zaklep odstavka, razveljevitev spremembe... Zaradi enostavnosti razlage se bomo osredotočili le na omenjena dva tipa sprememb. Ko uporabnik ureja besedilo, ne spreminja osnovnih znakov, ki bi skupaj predstavljali besedilo kot dokument. Namesto tega se njegove spremembe shranjujejo v revizijski dnevnik. Seveda dokumenta kot zaključene celote znakov obstaja. Vendar pomembne so spremembe, ki so bile narejene na tem dokumentu. Če se urejanju skupnega dokumenta pridruži nov uporabnik, mu iz revizijskega dnevnika ponovimo vse (od prve do zadnje) spremembe in že lahko sodeluje pri urejanju tako kot ostali uporabniki.
 
 Glede na to, da poznamo revizijo vseh sprememb narejenih na dokumentu, lahko preverimo, kaj je uporabnik imel v svojem urejevalniku, preden je naredil novo spremembo. Na ta način njegovo spremembo pravilno umestimo v skupno besedilo skupaj z ostalimi spremembami, ki so bile narejene med tem. Algoritem, ki skrbi za umeščanje ali združevanje (ang. merging) sprememb, se imenuje Operativna transformacija (v nadaljevanju OT).
 
@@ -287,7 +287,32 @@ Tako Alja kot Bine v svojem lokalnem dokumentu na koncu vidita stavek “TAKO EN
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Protokol sodelovanja}
 
-Čeprav vemo kako s pomočjo OT pravilno združevati spremembe v dokumentu, moramo še vedno poskrbeti, da vsak oddaljeni uporabnik ve, da obstajajo spremembe, ki morajo biti združene. Za to skrbi Protokol sodelovanja (ang. Collaboartion protocol). Tehnologiji OT in Protokol sodelovanja skupaj, znak za znakom, skrbita za sodelovanja v realnem času.
+Z OT smo se naučili, kako večim uporabnikom dopustiti urejanje istega dokument brez konflikov. Še vedno pa obstaja težava, kako vsako spremembo pravilno združiti z drugimi spremembami, če se le te zgodijo istočano. Zagotoviti moramo, da vsak oddaljeni uporabnik ve, da obstajajo spremembe, ki morajo biti združene. Za to skrbi Protokol sodelovanja (ang. Collaboartion protocol). Tehnologiji OT in Protokol sodelovanja skupaj, znak za znakom, skrbita za sodelovanja v realnem času.
+
+Zavedati se moramo, da za urejanje dokumenta skrbijo tako strežnik kot odjemalec (običajno brskalniki uporabnikov). Pri urejanjeju dokumenta mora odjemalec sprocesirati vse sprembe, ki jih naredi uporabnik, in jih poslati na strežnik. Sprocesirati mora tudi vse spremebe drugih uporabnikov, ki mu jih pošlje strežnik.
+
+Vsak odjemalec si mora beležiti:
+\begin{list_type}
+	\item Številko zadnje revizije poslane iz strežnika.
+	\item Vse spremembe, ki so bile narejene lokalno in niso še bile poslane na strežnik.
+	\item Vse spremembe, ki so bile narejene lokalno, poslane na strežnik, vendar jih strežnik še ni potrdil.
+	\item Trenutno stanje dokumenta kot ga vidi sam uporabnik.
+\end{list_type}
+
+Na strežniku se shranjujejo tri stvari:
+\begin{list_type}
+	\item Seznam sprememb, ki jih je sprejel, a še ni sprocesiral.
+	\item Revizijski dnevnik v katerem je celotna zgodovina sprememb.
+	\item Trenutno stanje dokumenta.
+\end{list_type}
+
+S hranjenjem in uporabo teh informacij je mogoče zasnovati komunikacijo med strežnikom in odjemalci tako, da so oddaljeni urejevalniki drug od drugega sposobni naglo sprocesirati spremembe. Oglejmo si kako je v vzorčnem dokumentu poskrbljeno za komunikacijo med strežnikom in odjemalcem.
+
+Na Sliki \ref{collab1} zunanja stolpce predstavljata uporabnika Aljo in Bineta, ki urejata skupni dokument. Srednji stolpec je strežnik. Spremembe, ki jih naredita Alja in Bine in se pošljejo na strežnik, so označene v ovalni obliki. Transformacije bodo na naslednjih slikah označene s kara obliko.
+
+Recimo, da Alja začne tipkati “Pozdravljen ” na začetku dokumenta. Aljin urejevalnik si spremembo shrani med “čekajoče spremembe”. V naslednjem trenutku se sprememba pošlje na server ter jo prastavi na seznam “poslanih sprememb”.
+
+Alja nadaljuje s tipkanjem in doda “svet” v svoj urejevalnik. V istem času Bine vpiše znak “!” v svoj prazen dokument. Bine še vedno ni prejel Aljinih sprememb.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Diferenčna sinhronizacija}
