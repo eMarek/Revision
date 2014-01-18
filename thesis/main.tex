@@ -354,7 +354,21 @@ V naslednjem koraku bosta oba svoje “čakajoče spremembe” poslala na server
 \label{collab4}
 \end{figure}
 
+Server sprejeme Aljine sprejme pred Binetovim in jih zato tud sprocessira prej. Alji vrne potrditev spremembe, Binetu pa pošlje nove spremembe. Njegov urejevalnik jih transformira na podlagi njegove čakajoče spremembe {\tt \{ Vstavi ! @1 \}}.
 
+Server sprejeme Binetove čakajočo spremembo. Binete verjame, da njegova sprememba nosi zapredno številko revizije 2. Vendar strežnik je že obdelal Aljino spremembo, katero je v revizijski dnevnik zapisal kot drugo spremebo. V tem trenutku mora sever z uporabo OT transformirati Binetovo spremembo in jo shraniti kot revizijo 3.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=12cm]{collab5.png}
+\end{center}
+\caption{Strežnik uporabi OT pri odelovanju Binetove spremembe.}
+\label{collab5}
+\end{figure}
+
+Server je transformiral vse Binetove spremembe glede na spremembe, ki so bile storjene od kar je Bine zadnjič naredil sinhronizacijo s serverjem. V našem primeru primeru je zamaknil Binetovo spremembo za 4 lokacije, koliko jih je pred tem Alja naredila s sprememebo {\tt \{ Vstavi ‘svet’ @12 \}}. Na koncu še Bine dobi potrditev svoje spremembe in Alja prejme Binetovo spremembo.
+
+V tem tenutku imajo strežnik in oba urejevalnika isti dokument z vsebino “Pozdravljen svet!”.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Diferenčna sinhronizacija}
