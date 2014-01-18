@@ -293,7 +293,7 @@ Zavedati se moramo, da za urejanje dokumenta skrbijo tako strežnik kot odjemale
 
 Vsak odjemalec si mora beležiti:
 \begin{list_type}
-	\item Številko zadnje revizije poslane iz strežnika.
+	\item Številko zadnje sinhornizirane revizije iz strežnika.
 	\item Vse spremembe, ki so bile narejene lokalno in niso še bile poslane na strežnik.
 	\item Vse spremembe, ki so bile narejene lokalno, poslane na strežnik, vendar jih strežnik še ni potrdil.
 	\item Trenutno stanje dokumenta kot ga vidi sam uporabnik.
@@ -310,9 +310,51 @@ S hranjenjem in uporabo teh informacij je mogoče zasnovati komunikacijo med str
 
 Na Sliki \ref{collab1} zunanja stolpce predstavljata uporabnika Aljo in Bineta, ki urejata skupni dokument. Srednji stolpec je strežnik. Spremembe, ki jih naredita Alja in Bine in se pošljejo na strežnik, so označene v ovalni obliki. Transformacije bodo na naslednjih slikah označene s kara obliko.
 
-Recimo, da Alja začne tipkati “Pozdravljen ” na začetku dokumenta. Aljin urejevalnik si spremembo shrani med “čekajoče spremembe”. V naslednjem trenutku se sprememba pošlje na server ter jo prastavi na seznam “poslanih sprememb”.
+Recimo, da Alja začne tipkati “Pozdravljen” na začetku dokumenta.
 
-Alja nadaljuje s tipkanjem in doda “svet” v svoj urejevalnik. V istem času Bine vpiše znak “!” v svoj prazen dokument. Bine še vedno ni prejel Aljinih sprememb.
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=12cm]{collab1.png}
+\end{center}
+\caption{Alja začne tipkati “Pozdravljen”.}
+\label{collab1}
+\end{figure}
+
+Aljin urejevalnik si spremembo shrani med “čekajoče spremembe”. V naslednjem trenutku se sprememba pošlje na server ter jo prastavi na seznam “poslanih sprememb”.
+
+Alja nadaljuje s tipkanjem in doda “ svet” v svoj urejevalnik. V istem času Bine vpiše znak “!” v svoj prazen dokument. Bine še vedno ni prejel Aljinih sprememb.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=12cm]{collab2.png}
+\end{center}
+\caption{Alja nadaljuje s tipkanjem “ svet”. Bine na drugi strani vpiše “!”.}
+\label{collab2}
+\end{figure}
+
+Aljin {\tt \{ Vstavi ‘svet’ @12 \}} je bil dodan med čakajoče spremembe in še ni poslan na strežnik. Pravilo je, da nikoli na server ne pošiljamo več kot ene čakajoče spremembe na enkrat. Dokler Alja od strežnika ne dobi potrditve prve spremembe, bo njen urejevalnik vse nove spremembe hranil med čakajočimi spremembami. Na Sliki \ref{collab3} lahko opazimo, da si je server Aljino prvo spremembo že shranil v revizijski dnevnik. V naslednjem koraku bo strežnik Binetu poslal Aljino prvo spremembo ter Alji odgovoril s potrditvijo, da si je zabeležil njeno spremembo.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=12cm]{collab3.png}
+\end{center}
+\caption{Strežnik procesira Aljino prvo spremembo.}
+\label{collab3}
+\end{figure}
+
+Bine sprejme Aljino spremembo od strežnika, jo sprocesira v dokument ter posodobi številko zadnje sinhronizirane revizije na 1. Z uporabo OT mora transformirti svojo čakajoče spremembo {\tt \{ Vstavi ! @1 \}}. Ker je Alja na začetek dokumenta že vpisala “Pozdravljen”, Binetov urejevalnik njegovo spremembo zamakne za 11 mest. Alja je med tem sprejel potrditev iz strežnika. Tudi ona posodobi številko zadnje sinhronizirane revizije na 1, ter svojo spremembo odstrani iz seznama “poslanih sprememb”.
+
+V naslednjem koraku bosta oba svoje “čakajoče spremembe” poslala na server, tako kot je to prikazano na Sliki \ref{collab4}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=12cm]{collab4.png}
+\end{center}
+\caption{Sodelovanje Aljinega in Binetovega urejevalnika preko centralnega strežnika.}
+\label{collab4}
+\end{figure}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Diferenčna sinhronizacija}
