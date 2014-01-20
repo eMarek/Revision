@@ -212,7 +212,7 @@ Kako reševati konflikte in zagotoviti konsistentnost med oddaljenimi uporabniki
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Operativna transformacija}
 
-Operativna transformacija se je prvič omenjala v članku Concurrency Control in Groupware Systems. Pri Googlu so Operativno transformacijo vzeli za osnovno pri načrtovanju protokola Wave, kar nakazuje na njeno uporabnost.
+Operativna transformacija se je prvič omenjala v članku Concurrency Control in Groupware Systems. Pri Googlu so Operativno transformacijo vzeli za osnovno pri načrtovanju protokola Wave, ki se uporablja v Google Docsih, kar nakazuje na njeno uporabnost.
 
 Zaradi razumljivosti bomo besedilo, ki ga urejajo uporabniki, poimenovali dokument. Dokument je shranjen kot serija kronoloških sprememb narejenih na dokumentu. Primer spremembe je {\tt \{ Vstavi ‘M’ @11 \}}, ki pomeni “v dokumentu na lokacijo 11 vstavi črko M” ali {\tt \{ Pobriši @3-7 \}}, ki pomeni “v dokumentu pobriši vse znake med lokacijo 3 in 7”. Obstajajo še druge vrste sprememb kot so oblikovanja besedila, zaklep odstavka, razveljevitev spremembe... Zaradi enostavnosti razlage se bomo osredotočili le na omenjena dva tipa sprememb. Ko uporabnik ureja besedilo, ne spreminja osnovnih znakov, ki bi skupaj predstavljali besedilo kot dokument. Namesto tega se njegove spremembe shranjujejo v revizijski dnevnik. Seveda dokumenta kot zaključene celote znakov obstaja. Vendar pomembne so spremembe, ki so bile narejene na tem dokumentu. Če se urejanju skupnega dokumenta pridruži nov uporabnik, mu iz revizijskega dnevnika ponovimo vse (od prve do zadnje) spremembe in že lahko sodeluje pri urejanju tako kot ostali uporabniki.
 
@@ -374,7 +374,7 @@ OT se ne dogaja samo pri odjemalcih, ampak je nujna tudi na strežniku. Zakaj bo
 \begin{center}
 \includegraphics[width=14cm]{pc5.png}
 \end{center}
-\caption{Strežnik uporabi OT pri odelovanju Binetove spremembe.}
+\caption{Strežnik uporabi OT pri obdelovanju Binetove spremembe.}
 \label{pc5}
 \end{figure}
 
