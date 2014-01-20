@@ -287,88 +287,110 @@ Tako Alja kot Bine v svojem lokalnem dokumentu na koncu vidita stavek “TAKO EN
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Protokol sodelovanja}
 
-Z OT smo se naučili, kako večim uporabnikom dopustiti urejanje istega dokument brez konflikov. Še vedno pa obstaja težava, kako vsako spremembo pravilno združiti z drugimi spremembami, če se le te zgodijo istočano. Zagotoviti moramo, da vsak oddaljeni uporabnik ve, da obstajajo spremembe, ki morajo biti združene. Za to skrbi Protokol sodelovanja (ang. Collaboartion protocol). Tehnologiji OT in Protokol sodelovanja skupaj, znak za znakom, skrbita za sodelovanja v realnem času.
+Z uporabo OT smo se naučili, kako z zamikanjem lokacij sprememb večim uporabnikom dopustiti urejanje istega dokumenta brez konflikov. Še vedno pa obstaja težava, kako vsako spremembo pravilno združiti z drugimi spremembami, če se le te zgodijo istočano. Zagotoviti moramo, da vsak oddaljeni uporabnik ve, da obstajajo spremembe, ki morajo biti združene. Za to skrbi Protokol sodelovanja (ang. Collaboartion protocol). Tehnologiji OT in Protokol sodelovanja skupaj, znak za znakom, skrbita za sodelovanja v realnem času.
 
-Zavedati se moramo, da za urejanje dokumenta skrbijo tako strežnik kot odjemalec (običajno brskalniki uporabnikov). Pri urejanjeju dokumenta mora odjemalec sprocesirati vse sprembe, ki jih naredi uporabnik, in jih poslati na strežnik. Sprocesirati mora tudi vse spremebe drugih uporabnikov, ki mu jih pošlje strežnik.
+Zavedati se moramo, da za urejanje dokumenta v realnem času skrbijo tako strežnik kot odjemalci. Običajno so to spletni brskalniki uporabnikov. Pri urejanjeju dokumenta mora odjemalec sprocesirati vse spremembe, ki jih naredi uporabnik, in jih poslati na strežnik. Sprocesirati mora tudi vse spremembe drugih uporabnikov, ki mu jih pošlje strežnik. Seveda brez sodelovanja strežnika ne gre.
+
+Najprej si oglejmo, katere podatke si morajo beležiti odjemalci in katere strežnik.
 
 Vsak odjemalec si mora beležiti:
-\begin{list_type}
-	\item Številko zadnje sinhornizirane revizije iz strežnika.
-	\item Vse spremembe, ki so bile narejene lokalno in niso še bile poslane na strežnik.
-	\item Vse spremembe, ki so bile narejene lokalno, poslane na strežnik, vendar jih strežnik še ni potrdil.
-	\item Trenutno stanje dokumenta kot ga vidi sam uporabnik.
-\end{list_type}
+\begin{itemize}
+	\item Številko zadnje sinhronizirane revizije. Na Sliki \ref{pc1} so označene s sivim krogcem in številko.
+	\item Čakajoče spremembe. To so spremembe, ki so bile narejene v odjemalcu in niso še bile poslane na strežnik.
+	\item Poslane spremembe. To so spremembe, ki so bile poslane na strežnik, vendar jih strežnik še ni potrdil.
+	\item Trenutno stanje dokumenta kot ga vidi uporabnik.
+\end{itemize}
 
 Na strežniku se shranjujejo tri stvari:
-\begin{list_type}
-	\item Seznam sprememb, ki jih je sprejel, a še ni sprocesiral.
-	\item Revizijski dnevnik v katerem je celotna zgodovina sprememb.
-	\item Trenutno stanje dokumenta.
-\end{list_type}
+\begin{itemize}
+	\item Čakajoče spremembe. To so spremembe, ki jih je strežnik sprejel, a še ni sprocesiral.
+	\item Revizijski dnevnik. Dnevnik v katerem je celotna zgodovina sprememb.
+	\item Trenutno stanje dokumenta, kot bi ga morali v najkrajšem možnem času videti vsi uporabniki.
+\end{itemize}
 
-S hranjenjem in uporabo teh informacij je mogoče zasnovati komunikacijo med strežnikom in odjemalci tako, da so oddaljeni urejevalniki drug od drugega sposobni naglo sprocesirati spremembe. Oglejmo si kako je v vzorčnem dokumentu poskrbljeno za komunikacijo med strežnikom in odjemalcem.
+S hranjenjem in uporabo teh informacij je mogoče zasnovati komunikacijo med strežnikom in odjemalci tako, da so oddaljeni urejevalniki drug od drugega sposobni naglo sprocesirati spremembe.
 
-Na Sliki \ref{collab1} zunanja stolpce predstavljata uporabnika Aljo in Bineta, ki urejata skupni dokument. Srednji stolpec je strežnik. Spremembe, ki jih naredita Alja in Bine in se pošljejo na strežnik, so označene v ovalni obliki. Transformacije bodo na naslednjih slikah označene s kara obliko.
+Oglejmo si kako je v vzorčnem dokumentu poskrbljeno za komunikacijo med strežnikom in odjemalcem. Na Sliki \ref{pc1} zunanja stolpce predstavljata uporabnika Aljo in Bineta, ki urejata skupni dokument. Srednji stolpec je strežnik. Spremembe, ki jih naredita Alja in Bine in se pošljejo na strežnik, so označene v ovalni obliki. OT, ki smo jih spoznali v tem poglavju, bodo na naslednjih slikah označene s peterokotnikom.
 
-Recimo, da Alja začne tipkati “Pozdravljen” na začetku dokumenta.
+Alja začne tipkati “V” na začetku dokumenta.
 
 \begin{figure}[placement h]
 \begin{center}
-\includegraphics[width=12cm]{collab1.png}
+\includegraphics[width=14cm]{pc1.png}
 \end{center}
-\caption{Alja začne tipkati “Pozdravljen”.}
-\label{collab1}
+\caption{Alja začne tipkati. Bine je v mirovanju.}
+\label{pc1}
 \end{figure}
 
-Aljin urejevalnik si spremembo shrani med “čekajoče spremembe”. V naslednjem trenutku se sprememba pošlje na server ter jo prastavi na seznam “poslanih sprememb”.
+Aljin urejevalnik si spremembo {\tt \{ Vstavi ‘V’ @1 \}} shrani med čakajoče spremembe. V naslednjem trenutku se le ta pošlje na server ter se prestavi na seznam poslanih sprememb. Poleg same spremembe, se strežniku pošlje tudi številka revizije in avtorja spremembe (uporabnika). Informacija o uporabniku je pomemba iz vidika avtentikacije. O številki revizije, bom več povedal v naslednjih korakih. Glej Sliko \ref{pc1}, strežnik sprejme Aljino prvo spremembo in jo doda med čakajoče spremembe.
 
-Alja nadaljuje s tipkanjem in doda “ svet” v svoj urejevalnik. V istem času Bine vpiše znak “!” v svoj prazen dokument. Bine še vedno ni prejel Aljinih sprememb.
+Odjemalec lahko strežniku v enem pošiljanju pošlje tudi več črk za vstavljenje v dokument. Koliko črk se bo poslalo na enkrat je odvisno od implementacije urejevalnika in algoritma za zaznavanje sprememb. Več o tem v naslednjih poglavjih. Na Sliki \ref{pc2} vidimo, da Alja nadaljuje s tipkanjem in doda “ slogi ” v svoj urejevalnik. Alja v svojem trenutnem dokumentu vidi “V slogi ”. V istem času Bine vpiše “je moč!” v svoj prazen dokument. Ne pozabimo, da Bine še vedno ni prejel Aljinih sprememb.
 
 \begin{figure}[placement h]
 \begin{center}
-\includegraphics[width=12cm]{collab2.png}
+\includegraphics[width=14cm]{pc2.png}
 \end{center}
-\caption{Alja nadaljuje s tipkanjem “ svet”. Bine na drugi strani vpiše “!”.}
-\label{collab2}
+\caption{Alja nadaljuje s tipkanjem. Bine na drugi strani tudi začne pisati na začetek svojega dokumenta. Strežnik o tem še ni obveščen.}
+\label{pc2}
 \end{figure}
 
-Aljin {\tt \{ Vstavi ‘svet’ @12 \}} je bil dodan med čakajoče spremembe in še ni poslan na strežnik. Pravilo je, da nikoli na server ne pošiljamo več kot ene čakajoče spremembe na enkrat. Dokler Alja od strežnika ne dobi potrditve prve spremembe, bo njen urejevalnik vse nove spremembe hranil med čakajočimi spremembami. Na Sliki \ref{collab3} lahko opazimo, da si je server Aljino prvo spremembo že shranil v revizijski dnevnik. V naslednjem koraku bo strežnik Binetu poslal Aljino prvo spremembo ter Alji odgovoril s potrditvijo, da si je zabeležil njeno spremembo.
+Aljin {\tt \{ Vstavi ‘ slogi ’ @2 \}} je bil dodan med čakajoče spremembe in še ni poslan na strežnik. Pravilo je, da nikoli strežiku ne pošiljamo več kot ene čakajoče spremembe na enkrat. Dokler Alja od strežnika ne dobi potrditve prve spremembe, bo njen urejevalnik vse nove spremembe hranil med čakajočimi spremembami. Na Sliki \ref{pc2} lahko opazimo, da si je server Aljino prvo spremembo že shranil v revizijski dnevnik.
+
+\pagebreak
+
+V naslednjem koraku, kot je to prikazano na Sliki \ref{pc3}, strežnik Binetu pošlje Aljino prvo spremembo ter Alji odgovoril s potrditvijo, da si je zabeležil njeno spremembo v revizijski dnevnik.
 
 \begin{figure}[placement h]
 \begin{center}
-\includegraphics[width=12cm]{collab3.png}
+\includegraphics[width=14cm]{pc3.png}
 \end{center}
 \caption{Strežnik procesira Aljino prvo spremembo.}
-\label{collab3}
+\label{pc3}
 \end{figure}
 
-Bine sprejme Aljino spremembo od strežnika, jo sprocesira v dokument ter posodobi številko zadnje sinhronizirane revizije na 1. Z uporabo OT mora transformirti svojo čakajoče spremembo {\tt \{ Vstavi ! @1 \}}. Ker je Alja na začetek dokumenta že vpisala “Pozdravljen”, Binetov urejevalnik njegovo spremembo zamakne za 11 mest. Alja je med tem sprejel potrditev iz strežnika. Tudi ona posodobi številko zadnje sinhronizirane revizije na 1, ter svojo spremembo odstrani iz seznama “poslanih sprememb”.
+Bine sprejme Aljino spremembo od strežnika. Z uporabo OT mora transformirati svojo čakajočo spremembo {\tt \{ Vstavi ‘je moč!’ @1 \}}. Ker je Alja na začetek dokumenta že vpisala “V”, Binetov urejevalnik njegovo spremembo zamakne za eno lokacijo. Po tem procesu Binetov urejevalnik v trenutni dokument vstavi Aljino spremembo "V"\ in posodobi številko zadnje sinhronizirane revizije na 1. Alja je med tem sprejela potrditev iz strežnika. Tudi ona posodobi številko zadnje sinhronizirane revizije na 1. Svojo spremembo odstrani iz seznama poslanih sprememb.
 
-V naslednjem koraku bosta oba svoje “čakajoče spremembe” poslala na server, tako kot je to prikazano na Sliki \ref{collab4}.
+V Aljinem trenutnem dokumentu se nahaj "V slogi ". V Binetovem trenutnem dokumentu se nahaj "Vje moč!", kar nakazuje, da še ni prejel vseh sprememb. Sledi pošiljanje čakajočih sprememb.
+
+\pagebreak
+
+Na Sliki \ref{pc4} se vidi, da oba uporabnika hkrati pošljeta spremembo, vendar strežnik sprejeme Aljino sprejme pred Binetovo in jo zato tudi sprocessira prej. Njeno spremembo iz seznama čakajočih sprememb prestavi v revizijski dnevnik. Pri tem mora le popraviti številko revizije, ki enolično označuje spremembo. Pomnimo, da je Alja pri pošiljanju svoje spremembe poslala številko zadnje sinhornizirane revizije, številko 1. Strežnik na ta način ve, da je njena sprememba narejena na podlagi prve revizije. Ker se v revizijski dnevnik pričakuje sprememba, ki je naslednja po vrsti, lahko njeno spremembo brez težav umesti v trenutni dokument.
 
 \begin{figure}[placement h]
 \begin{center}
-\includegraphics[width=12cm]{collab4.png}
+\includegraphics[width=14cm]{pc4.png}
 \end{center}
-\caption{Sodelovanje Aljinega in Binetovega urejevalnika preko centralnega strežnika.}
-\label{collab4}
+\caption{Istočasno sodelovanje Aljinega in Binetovega urejevalnika preko strežnika.}
+\label{pc4}
 \end{figure}
 
-Server sprejeme Aljine sprejme pred Binetovim in jih zato tud sprocessira prej. Alji vrne potrditev spremembe, Binetu pa pošlje nove spremembe. Njegov urejevalnik jih transformira na podlagi njegove čakajoče spremembe {\tt \{ Vstavi ! @1 \}}.
+Sledi potrditev spremembe Alji s številko revizije 2. Binetu se pošlje novo spremembo. Kot na Sliki \ref{pc3} se tudi v primeru na Sliki \ref{pc5} začne izvajati OT v Binetovem urejevalniku. Ker nima nobene čakajoče spremembe, ni potrebe po uporabi OT. Aljina sprememba se vstavi v njegov dokument brez transformacije. Številka zadnje sinhronizirane revizije se Binetu poveča na 2. Ker strežnik Alji odgovori s potrditvijo, se tudi njej poveča številka zadnje sinhronizirane revizije na 2.
 
-Server sprejeme Binetove čakajočo spremembo. Binete verjame, da njegova sprememba nosi zapredno številko revizije 2. Vendar strežnik je že obdelal Aljino spremembo, katero je v revizijski dnevnik zapisal kot drugo spremebo. V tem trenutku mora sever z uporabo OT transformirati Binetovo spremembo in jo shraniti kot revizijo 3.
+\pagebreak
+
+OT se ne dogaja samo pri odjemalcih, ampak je nujna tudi na strežniku. Zakaj bomo ugotovi kmalu. Med tem ko se odjemalca ukvarjata z zahtevami strežnika (potrditev pri Alji in sprememba pri Binetu), je strežnik začel procesirati Binetovo čakajočo spremembo {\tt \{ Vstavi ‘je moč!’ @2, Revizija 1, Uporabnik Bine \}}. Bine je v času pošiljanja spremembe (Slika \ref{pc4}) verjel, da bo njegova sprememba nosila zapredno številko revizije 2. Vendar strežnik je že obdelal Aljino spremembo, katero je v revizijski dnevnik zapisal kot drugo spremembo. V tem trenutku mora strežnik z uporabo OT transformirati Binetovo spremembo, da jo bo lahko shranil kot revizijo 3.
 
 \begin{figure}[placement h]
 \begin{center}
-\includegraphics[width=12cm]{collab5.png}
+\includegraphics[width=14cm]{pc5.png}
 \end{center}
 \caption{Strežnik uporabi OT pri odelovanju Binetove spremembe.}
-\label{collab5}
+\label{pc5}
 \end{figure}
 
-Server je transformiral vse Binetove spremembe glede na spremembe, ki so bile storjene od kar je Bine zadnjič naredil sinhronizacijo s serverjem. V našem primeru primeru je zamaknil Binetovo spremembo za 4 lokacije, koliko jih je pred tem Alja naredila s sprememebo {\tt \{ Vstavi ‘svet’ @12 \}}. Na koncu še Bine dobi potrditev svoje spremembe in Alja prejme Binetovo spremembo.
+Binetovo spremembo transformira glede na spremembe, ki so bile storjene od kar je Bine zadnjič naredil sinhronizacijo s strežnikom. V našem primeru je bila narejena le Aljina sprememba {\tt \{ Vstavi ‘ slogi ’ @2 \}}, ki je povzročila zamik Binetove spremembe za 7 lokacij. Končna sprememba v revizijskem dnevniku izgleda kot {\tt \{ Vstavi ‘je moč!’ @9, Revizija 3, Uporabnik Bine \}}.
 
-V tem tenutku imajo strežnik in oba urejevalnika isti dokument z vsebino “Pozdravljen svet!”.
+\pagebreak
+
+Na koncu Bine dobi potrditev svoje spremembe in Alja prejme Binetovo spremembo. Številka zadnje sinhronizirane revizije se obema poveča na 3. V revizijskem dnevniku so 3 revizije. V tem tenutku imajo strežnik in oba urejevalnika isti dokument z vsebino “V slogi je moč!”. Glede na to, da uporabnika nimata več čakajočih sprememb je to tudi končna verzija dokumenta, ki sta ga skupaj uredila uporabnika Alja in Bine.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=14cm]{pc6.png}
+\end{center}
+\caption{Strežnik uporabi OT pri odelovanju Binetove spremembe.}
+\label{pc6}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Diferenčna sinhronizacija}
