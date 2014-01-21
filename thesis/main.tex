@@ -403,7 +403,19 @@ Konceptualno enostavni načini sinhronizacije so zaklepanje (ang. locking), pren
 	\item[Trosmerno združevanja] uporabljajo programerji pri delu na skupnem projektu. Je zelo robusten sistem. Sestavljen je iz treh korakov. Uporabnik najprej svojo vsebino pošlje na strežnik. Strežnik izvzame narejene spremembe in jih združi s spremembami drugih uporabnikov. Nova kopija dokumenta se sinhronizira vsem uporabnikom. Sistem trosmernega združevanja ima nekaj slabosti. Če uporabnik naredi spremembo na dokumentu medtem, ko je sinhronizacija v teku, mora zavreči vse na novo narejene spremembe. Slabost je, da uporabnik ne dobi nobene povratne informacije (ang. feedback) med tipkanjem. Način trosmernega združevanja bi pri urejanju v realnem času deloval le v dveh primerih. Če bi si lahko privoščili, da bi uporabnika blokirali in sinhronizirali z novo verzijo na strežniku ali pa v primeru, da bi uporabnika sinhronizirali, ko neha tipkati. Ampak nobena od teh dveh variant ni urejanje dokumenta v realnem času.
 \end{description}
 
-Ker sinhronizacija in ohranjenje konsistentnosti med uporabniki ni enostavna, si oglejmo kakšno rešitev imenovano Diferenčna sinhronizacija (v nadaljevanju DF).
+Ker sinhronizacija in ohranjanje konsistentnosti med uporabniki ni enostavna, si oglejmo rešitev imenovano Diferenčna sinhronizacija (v nadaljevanju DF). Najprej bomo preučili osnovno topologijo DS, nato pa bomo na primeru prikazali potrebo po izboljšanju topologije z metodo dveh senc in z metodo garantirane dostave.
+
+\subsection{Osnovna topologija}
+
+Phasellus felis diam, molestie in laoreet ac, vestibulum at nunc. Donec et venenatis leo. Nunc elementum molestie est in tincidunt. Integer suscipit, tortor a sodales fringilla, lacus turpis hendrerit elit, tempor pharetra metus sapien ac nisl.
+
+\subsection{Metoda dveh senc}
+
+Nam vitae neque ipsum. Cras porttitor enim tortor, ut ultricies mi fermentum vitae. Sed at pretium diam. Phasellus eros felis, lacinia et pellentesque sed, feugiat ac ante. Donec sed imperdiet leo. Pellentesque eu luctus lacus. Integer adipiscing lectus a gravida scelerisque.
+
+\subsection{Metoda garantirane dostave}
+
+Nam fermentum turpis et posuere semper. Maecenas sit amet sapien lorem. Aenean mattis auctor nibh, nec congue enim varius id. Quisque eget enim eu lectus accumsan vulputate vitae id urna. Donec non felis nec ipsum semper luctus vel eu nisi.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{WOOT}
