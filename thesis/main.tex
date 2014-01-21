@@ -403,19 +403,43 @@ Konceptualno enostavni načini sinhronizacije so zaklepanje (ang. locking), pren
 	\item[Trosmerno združevanja] uporabljajo programerji pri delu na skupnem projektu. Je zelo robusten sistem. Sestavljen je iz treh korakov. Uporabnik najprej svojo vsebino pošlje na strežnik. Strežnik izvzame narejene spremembe in jih združi s spremembami drugih uporabnikov. Nova kopija dokumenta se sinhronizira vsem uporabnikom. Sistem trosmernega združevanja ima nekaj slabosti. Če uporabnik naredi spremembo na dokumentu medtem, ko je sinhronizacija v teku, mora zavreči vse na novo narejene spremembe. Slabost je, da uporabnik ne dobi nobene povratne informacije (ang. feedback) med tipkanjem. Način trosmernega združevanja bi pri urejanju v realnem času deloval le v dveh primerih. Če bi si lahko privoščili, da bi uporabnika blokirali in sinhronizirali z novo verzijo na strežniku ali pa v primeru, da bi uporabnika sinhronizirali, ko neha tipkati. Ampak nobena od teh dveh variant ni urejanje dokumenta v realnem času.
 \end{description}
 
-Ker sinhronizacija in ohranjanje konsistentnosti med uporabniki ni enostavna, si oglejmo rešitev imenovano Diferenčna sinhronizacija (v nadaljevanju DF). Najprej bomo preučili osnovno topologijo DS, nato pa bomo na primeru prikazali potrebo po izboljšanju topologije z metodo dveh senc in z metodo garantirane dostave.
+Ker sinhronizacija in ohranjanje konsistentnosti med uporabniki ni enostavna, si oglejmo rešitev imenovano Diferenčna sinhronizacija (v nadaljevanju DF). DF je simetričen algoritem, ki uporablja neskončno ciklov razlik na dokumentih in z njimi popravlja ostale dokumente v ciklu. Najprej bomo preučili osnovno topologijo DS, ki teoretična podlaga za izboljšave z metodo dveh senc in z metodo garantirane dostave.
 
 \subsection{Osnovna topologija}
 
-Phasellus felis diam, molestie in laoreet ac, vestibulum at nunc. Donec et venenatis leo. Nunc elementum molestie est in tincidunt. Integer suscipit, tortor a sodales fringilla, lacus turpis hendrerit elit, tempor pharetra metus sapien ac nisl.
+Na Sliki \ref{ds1} je z diagramom prikazan DS. V osnovni topologiji obstajata dokument uporabnika in dokument računalnika. Oba sta locirana na istem sistemu brez internetne povezave. Med njima se nahaja dokument imenovan skupna senca (ang. common shadow). Cilj je, da so vsi trije dokumenti vseskozi čim bolj enaki. Ostale entitete so še razlika, sprememba in popravek. Razlika je signal, ki pove, da se dokument uporabnika razlikuje od skupne sence. Na ta način vemo, da je uporabnik naredil spremembo na svojem dokumentu. Ni nam potrebno spremljati vsake uporabnikove akcije. Sprememba se pošlje v smeri računalnika. Hkrati se dokument uporabnika prekopira v skupno seneco. Na dokumentu računalnika se naredi popravek. Proces se ponovi še v smeri računalnika proti uporabniku in vsi trije dokumenti so sinhronizirani. Sistem je zanesljiv. Težava je, da taka zasnova ne omogoča sodelovanja oddaljenih uporabnikov v realnem času saj vse skupaj poteka na enem sistemu.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=9.2cm]{ds1.png}
+\end{center}
+\caption{Osnovna topologija DS.}
+\label{ds1}
+\end{figure}
 
 \subsection{Metoda dveh senc}
 
 Nam vitae neque ipsum. Cras porttitor enim tortor, ut ultricies mi fermentum vitae. Sed at pretium diam. Phasellus eros felis, lacinia et pellentesque sed, feugiat ac ante. Donec sed imperdiet leo. Pellentesque eu luctus lacus. Integer adipiscing lectus a gravida scelerisque.
 
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=11.83cm]{ds2.png}
+\end{center}
+\caption{DS z metodo dveh senc.}
+\label{ds2}
+\end{figure}
+
 \subsection{Metoda garantirane dostave}
 
 Nam fermentum turpis et posuere semper. Maecenas sit amet sapien lorem. Aenean mattis auctor nibh, nec congue enim varius id. Quisque eget enim eu lectus accumsan vulputate vitae id urna. Donec non felis nec ipsum semper luctus vel eu nisi.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=16cm]{ds3.png}
+\end{center}
+\caption{DS z metodo garantirane dostave.}
+\label{ds3}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{WOOT}
