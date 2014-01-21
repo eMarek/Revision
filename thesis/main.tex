@@ -423,9 +423,9 @@ Sistem je zanesljiv. Težava je, da taka zasnova ne omogoča sodelovanja oddalje
 
 Konceptualno še vedno ostajamo pri istem algoritmu. Razlika je v topologiji. Namesto skupne sence uporabimo senco uporabnika in senco strežnika, ki se s popravki posodabljata ločeno. Taka zasnova DF omogoča sodelovanje oddaljenih uporabnikov. Vsak uporabnik je na svojem sistemu. Uporabnike povezuje centralni strežnik. Zaradi enostavnosti razlage je na Sliki \ref{ds2} prikazan le en uporabnik in strežnik, ki sta ločna s črtkano črto. Po vsakem ciklu morata biti dokument uporabnika in dokument strežnika identična.
 
-Predvidimo, da se na začetku vsi dokumenti v konsistentnem stanju. Uporabnik začne tipkati. Vključi se signal, da je med dokumentom in senco uporabnika razlika. Ko se ve, kakšne spremembe so bile narejene, se mora dokument prekopirati v senco. Sprememba se pošlje strežniku. Na strežniku se naredita dva popravka, na senci in na dokumentu. Pomembno je, da se popravek na senci izvede brez problemov. Na dokumentu pa se naredi nejasen (ang. fuzzy) popravek. Nejasen popravek izvira iz sodelovanja med uporabniki. Če eden izmed uporabnikov naredi korenito spremembo na dokumentu, povzroči, da se popravek prvega uporabnika ne umesti v dokument tako kot bi si on želel. Nepredvideno stanje se reši v naslednji polovici cikla. Senca in dokument strežnika sta v tem trenutku različna. Ko se ve, kakšne so spremembe med senco in nepredvidenim dokumentom strežnika, se mora dokument prekopirati v senco. Sprememba se pošlje uporabniku. Ker je bila sprememba dokumenta strežnika narejena na podlagi sence strežnika, ki je bila ista kot senca in dokument uporabnika, se brez težav naredi popravek na senci in na dokumentu uporabnika. Dokumenti so sinhronizirani.
+Predvidimo, da se na začetku vsi dokumenti v konsistentnem stanju. Uporabnik začne tipkati. Vključi se signal, da je med dokumentom in senco uporabnika razlika. Ko se ve, kakšne spremembe so bile narejene, se mora dokument prekopirati v senco. Sprememba se pošlje strežniku. Na strežniku se naredita dva popravka, na senci in na dokumentu. Pomembno je, da se popravek na senci izvede brez problemov. Na dokumentu se naredi nejasen (ang. fuzzy) popravek. Nejasen popravek izvira iz sodelovanja med uporabniki. Če eden izmed uporabnikov naredi korenito spremembo na dokumentu, povzroči, da se popravek prvega uporabnika ne umesti v dokument tako kot bi si on želel. Nepredvideno stanje se reši v naslednji polovici cikla. Senca in dokument strežnika sta v tem trenutku različna. Ko se ve, kakšne so spremembe med senco in nepredvidenim dokumentom strežnika, se mora dokument prekopirati v senco. Sprememba se pošlje uporabniku. Ker je bila sprememba dokumenta strežnika narejena na podlagi sence strežnika, ki je bila ista kot senca in dokument uporabnika, se brez težav naredi popravek na senci in na dokumentu uporabnika. Dokumenti so sinhronizirani.
 
-Sistem omogoča sodelovanje oddaljenih uporabnikov, vendar ni zanesljiv. Uporabnik na nezanesljivi povezavi pošilja strežniku spremembe, ki jih le ta nikoli ne dobi. Senca uporabnika in senca strežnika nista več sinhronizirani. Edina rešitev za povrnitev nastalega stanje je, da povozimo uporabnikove spremembe. Tega si nihče ne želi.
+Sistem omogoča sodelovanje oddaljenih uporabnikov, vendar ni zanesljiv. Lahko se zgodi, da uporabnik na nezanesljivi povezavi od strežnika ne dobi nobenega odgovora. Do izgube spremembe lahko pride v prvem ali v drugem delu cikla. Senca uporabnika in senca strežnika nista več sinhronizirani. Edina rešitev za povrnitev nastalega stanje je, da povozimo uporabnikove spremembe. Tega si nihče ne želi.
 
 \begin{figure}[placement h]
 \begin{center}
@@ -437,7 +437,7 @@ Sistem omogoča sodelovanje oddaljenih uporabnikov, vendar ni zanesljiv. Uporabn
 
 \subsection{Metoda garantirane dostave}
 
-Nam fermentum turpis et posuere semper. Maecenas sit amet sapien lorem. Aenean mattis auctor nibh, nec congue enim varius id. Quisque eget enim eu lectus accumsan vulputate vitae id urna. Donec non felis nec ipsum semper luctus vel eu nisi.
+DS z metodo garantirane dostave je nadgradnja metode dveh senc. Iz Slike \ref{ds3} lahko razberemo, da se je topologija razširila še z varnostnima kopijama sence uporabnika in sence strežnika. Tudi tokrat mora biti vseh šest dokumentov v konsistentnem stanju. Namesto ene same spremembe, se lahko pošlje več sprememb na enkrat. Nove v topologiji so tudi številke verzij. S črko {\tt n} je označena številka verzija uporabnika. S črko {\tt m} je označena številka verzija strežnika. Na začetku sta obe številki verziji enaki {\tt 0}.
 
 \begin{figure}[placement h]
 \begin{center}
@@ -446,6 +446,85 @@ Nam fermentum turpis et posuere semper. Maecenas sit amet sapien lorem. Aenean m
 \caption{Diferenčna sinhronizacija z metodo garantirane dostave.}
 \label{ds3}
 \end{figure}
+
+Delovanje DS z metodo garantirane dostave bomo razložili na primeru. Na začetku je v vseh dokumentih beseda {\tt avto}. Alja v svoj dokument dopiše {\tt mobil}. Posledica razlike dokumenta uporabnika od sence uporabnika je sprememba {\tt mobil}. K sami spremembi se shrani številke verzije uporabnika na podlagi katere je bila sprememba osnovana. V seznam sprememb se torej shrani {\tt \{ +mobil;n=0 \}}. V tem trenutku se dokument Alje prekopira v njeno senco ter poveča se številka verzije uporabnika na {\tt n=1}. Sprememba se pošlje strežniku. Poleg spremembe se strežniku pošlje tudi številka zadnje sinhronizirane verzije strežnika {\tt m=0}. Stanje je prikazano na Sliki \ref{ds4}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=16cm]{ds4.png}
+\end{center}
+\caption{Alja v svojem dokumentu vidi besedo avtomobil.}
+\label{ds4}
+\end{figure}
+
+Strežnik primerja številki verzije uporabnika in strežnika spremembe s številkami verzije uporabnika in strežnika v senci strežnika (glej Sliko \ref{ds4}). Številki {\tt n} in {\tt m} sta v obeh primerih {\tt 0}, kar dovoljuje, da se naredi popravek na senci strežnika. Številka verzije uporabnika v senci strežnika se poveča na {\tt n=1}. Senca strežnika in senca uporabnika imata enako besedilo in enaki številki {\tt n} in {\tt m}, kar pomeni, da sta sinhronizirani. To se vidi tudi na Sliki \ref{ds5}. Popravek se naredi tudi na dokumentu strežnika, kar povzroči, da se senca strežnika prekopira v varnostno kopijo sence strežnika. Zakaj je to potrebno, bomo videli v nadaljevanju.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=16cm]{ds5.png}
+\end{center}
+\caption{Polovica cikla je končanega. Senci sta konsistentni.}
+\label{ds5}
+\end{figure}
+
+Recimo, da uporabnik Bine na začetek dokumenta vpiše besedo {\tt Moj}. Na isti način kot Aljina sprememba se tudi njegova sprememba sinhronizira v dokument strežnika. Vsebina dokumenta strežnika je tako {\tt Moj avtomobil}. Sedaj lahko nadaljujemo z drugim delom cikla iz smeri strežnika proti Alji.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=16cm]{ds6.png}
+\end{center}
+\caption{Server prejme spremembo od Bineta, ki jo pošlje Alji.}
+\label{ds6}
+\end{figure}
+
+Razlika dokumenta strežnika od sence strežnika je sprememba {\tt Moj} osnovana na številki verzije strežnika {\tt 0}. Sprememba {\tt \{ +Moj;m=0 \}} se pošlje k Alji. Poleg nje se pošlje tudi {\tt n=1} s katerim strežnik potrjuje, da je sprejel zadnjo Aljino spremembo. Pred tem se dokument strežnika prekopira v senco strežnika. Številka verzije strežnika {\tt m} v senci strežnika se poveča na {\tt 1}, Slika \ref{ds6}.
+
+Zaradi slabe povezave Alja ne prejme sprememba {\tt \{ +Moj;m=0 \}} iz strežnika. Tega niti ne opazi, ampak tipka naprej. V svoj dokument doda klicaj. Ponovi se postopek podoben prvemu ciklu. K seznamu sprememb se doda {\tt \{ +!;n=1 \}}. Dokument Alje se prekopira v njeno senco, {\tt n} se poveča na {\tt 2}. Obe spremembi se pošljejo strežniku. Pomnimo, da za prvo spremembo Alja ni dobila nobenega odgovora. Številka zadnje sinhronizirane verzije strežnika je še vedno {\tt m=0}. Slika \ref{ds7} prikazuje nastalo situacijo.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=16cm]{ds7.png}
+\end{center}
+\caption{Alja ni sprejela strežnikovih sprememb. V svojem dokumentu je naredila novo spremembo.}
+\label{ds7}
+\end{figure}
+
+Strežnik sprejme Aljini spremembi. Najprej poskuša sprocesirati prvo spremembo {\tt \{ +mobil;n=0 \}}. Ker se številka zadnje sinhronizirane verzije strežnika {\tt m=0} ne ujema s številko verzije strežnika v senci strežnika, se sence strežnika povrne iz kopije sence strežnika (s številko {\tt m=0}) v katerem se nahaja {\tt avtomobil}. Strežnik poskusi ponovno sprocesirati prvo spremembo. Številki verzije strežnika {\tt m=0} se ujemajo. Številka verzije uporabnika je v prvi spremembi {\tt n=0}, v senci strežnika pa {\tt n=1}. To pomeni, da je strežnik v enem izmed prejšnjih ciklov že obdelal to spremembo, zato jo lahko ignorira. Strežnik nato poskusi sprocesirati drugo spremembo {\tt \{ +!;n=1 \}}. Številki {\tt n=1} in {\tt m=0} se tokrat ujemajo. Strežnik lahko naredi popravek na senci strežnika. Številka {\tt n} se poveča za {\tt 1} na {\tt n=2}. Popravek se nato naredi tudi na dokumentu strežnika, naredi pa se tudi kopija sence strežnika. Senca uporabnika in senca strežnika sta sinhronizirani.
+
+Opomba! Ko se je naredila povrnitev kopije sence strežnika, se je seznam strežniških sprememb pobrisal. Spremembe v dokumentih in številkah {\tt n} in {\tt m} si oglejmo na Sliki \ref{ds8}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=16cm]{ds8.png}
+\end{center}
+\caption{Alja je strežniku poslala že dve spremembi.}
+\label{ds8}
+\end{figure}
+
+Dokument strežnika in senca strežnika se na Sliki \ref{ds8} razlikujejta. Strežnik pogleda kakšne so spremembe na dokumentu. Tako kot v prvem ciklu najde spremembo \linebreak {\tt \{ +Moj;m=0 \}}. Sprememba se ponovno pošlje Alji. Tokrat je številka verzija uporabnika v senci dnevnika enaka {\tt 2}, zato se Alji poleg spremembe pošlje tudi {\tt n=2}. Še prej se dokument prekopira v senco in v senci strežnika se poveča številka verzije strežnika iz {\tt m=0} nazaj na {\tt m=1}.
+
+Če bi bil strežnik spet neuspešen pri pošiljanju svojih sprememb, bi se seznam Aljinih sprememb povečeval vse dokler ne bi dobila odgovora od strežnika. Recimo, da tokrat strežniku uspe in Alja prejme spremembo {\tt \{ +Moj;m=0 \}}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=16cm]{ds9.png}
+\end{center}
+\caption{Strežnik pošilja Alji potrditev njenih spremembe in spremembo Bineta.}
+\label{ds9}
+\end{figure}
+
+Tokrat Alja primerja številke verzij. Številka verzije uporabnika v spremembi in v senci uporabnika je {\tt n=2}. Številka verzija strežnika v spremembi in v senci je {\tt m=0}. Sprememba je primerna za popravek na senci uporabnika. Naredijo se naslednje akcije. Na senci uporabnika se naredi popravek. Številka verzije zadnje sinhronizacije s strežnikom se v senci uporabnika poveča na {\tt m=1}. Popravek se naredi na dokumentu strežnika. Naredi se kopija sence uporabnika. Številka verzije uporabnika v kopiji sence uporabnika se poveča na {\tt n=2}. Ker je Alja uspešno sprejela potrditev strežnika, da je sprejel vse Aljine spremembe do številke verzije uporabnika {\tt n=2}, se iz seznama Aljinih sprememb pobrišejo vse spremembe, ki imajo številko verzije uporabnika manjše od {\tt 2} ({\tt n<2}).
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=16cm]{ds10.png}
+\end{center}
+\caption{Konsistentno stanje dokumentov.}
+\label{ds10}
+\end{figure}
+
+Kjub temu, da je med sodelovanjem uporabnikov in strežnika prišlo do izpada v povezavi, so se dokumenti posinhronizirali. V dokumentu na koncu piše “{\tt Moj avtomobil!}”.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{WOOT}
