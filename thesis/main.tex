@@ -354,7 +354,7 @@ V Aljinem trenutnem dokumentu se nahaj "V slogi ". V Binetovem trenutnem dokumen
 
 \pagebreak
 
-Na Sliki \ref{pc4} se vidi, da oba uporabnika hkrati pošljeta spremembo, vendar strežnik sprejeme Aljino sprejme pred Binetovo in jo zato tudi sprocessira prej. Njeno spremembo iz seznama čakajočih sprememb prestavi v revizijski dnevnik. Pri tem mora le popraviti številko revizije, ki enolično označuje spremembo. Pomnimo, da je Alja pri pošiljanju svoje spremembe poslala številko zadnje sinhornizirane revizije, številko 1. Strežnik na ta način ve, da je njena sprememba narejena na podlagi prve revizije. Ker se v revizijski dnevnik pričakuje sprememba, ki je naslednja po vrsti, lahko njeno spremembo brez težav umesti v trenutni dokument.
+Na Sliki \ref{pc4} se vidi, da oba uporabnika hkrati pošljeta spremembo, vendar strežnik sprejeme Aljino sprejme pred Binetovo in jo zato tudi sprocessira prej. Njeno spremembo iz seznama čakajočih sprememb prestavi v revizijski dnevnik. Pri tem mora le popraviti številko revizije, ki enolično označuje spremembo. Pomnimo, da je Alja pri pošiljanju svoje spremembe poslala številko zadnje sinhronizirane revizije, številko 1. Strežnik na ta način ve, da je njena sprememba narejena na podlagi prve revizije. Ker se v revizijski dnevnik pričakuje sprememba, ki je naslednja po vrsti, lahko njeno spremembo brez težav umesti v trenutni dokument.
 
 \begin{figure}[placement h]
 \begin{center}
@@ -407,25 +407,31 @@ Ker sinhronizacija in ohranjanje konsistentnosti med uporabniki ni enostavna, si
 
 \subsection{Osnovna topologija}
 
-Na Sliki \ref{ds1} je z diagramom prikazan DS. V osnovni topologiji obstajata dokument uporabnika in dokument računalnika. Oba sta locirana na istem sistemu brez internetne povezave. Med njima se nahaja dokument imenovan skupna senca (ang. common shadow). Cilj je, da so vsi trije dokumenti vseskozi čim bolj enaki. Ostale entitete so še razlika, sprememba in popravek. Razlika je signal, ki pove, da se dokument uporabnika razlikuje od skupne sence. Na ta način vemo, da je uporabnik naredil spremembo na svojem dokumentu. Ni nam potrebno spremljati vsake uporabnikove akcije. Sprememba se pošlje v smeri računalnika. Hkrati se dokument uporabnika prekopira v skupno seneco. Na dokumentu računalnika se naredi popravek. Proces se ponovi še v smeri računalnika proti uporabniku in vsi trije dokumenti so sinhronizirani. Sistem je zanesljiv. Težava je, da taka zasnova ne omogoča sodelovanja oddaljenih uporabnikov v realnem času saj vse skupaj poteka na enem sistemu.
+Na Sliki \ref{ds1} je z diagramom prikazan DS. V osnovni topologiji obstajata dokument uporabnika in dokument računalnika. Oba sta locirana na istem sistemu brez internetne povezave. Med njima se nahaja dokument imenovan skupna senca (ang. common shadow). Predvidimo, da imajo na začetku vsi trije dokumenti isto vsebino. Cilj je, da so dokumenti vseskozi čim bolj enaki. Ostale entitete so še razlika, sprememba in popravek. Razlika je signal, ki pove, da se dokument uporabnika razlikuje od skupne sence. Na ta način vemo, da je uporabnik naredil spremembo na svojem dokumentu. Ni nam potrebno spremljati vsake uporabnikove akcije. Ko se ve, kakšne spremembe so bile narejene, se mora dokument prekopirati v senco. Sprememba se pošlje v smeri računalnika. Na dokumentu računalnika se naredi popravek. Proces se ponovi še v smeri računalnika proti uporabniku. Vsi trije dokumenti so sinhronizirani.
+
+Sistem je zanesljiv. Težava je, da taka zasnova ne omogoča sodelovanja oddaljenih uporabnikov v realnem času saj vse skupaj poteka na enem sistemu.
 
 \begin{figure}[placement h]
 \begin{center}
 \includegraphics[width=9.2cm]{ds1.png}
 \end{center}
-\caption{Osnovna topologija DS.}
+\caption{Osnovna topologija Diferenčne sinhornizacije.}
 \label{ds1}
 \end{figure}
 
 \subsection{Metoda dveh senc}
 
-Nam vitae neque ipsum. Cras porttitor enim tortor, ut ultricies mi fermentum vitae. Sed at pretium diam. Phasellus eros felis, lacinia et pellentesque sed, feugiat ac ante. Donec sed imperdiet leo. Pellentesque eu luctus lacus. Integer adipiscing lectus a gravida scelerisque.
+Konceptualno še vedno ostajamo pri istem algoritmu. Razlika je v topologiji. Namesto skupne sence uporabimo senco uporabnika in senco strežnika, ki se s popravki posodabljata ločeno. Taka zasnova DF omogoča sodelovanje oddaljenih uporabnikov. Vsak uporabnik je na svojem sistemu. Uporabnike povezuje centralni strežnik. Zaradi enostavnosti razlage je na Sliki \ref{ds2} prikazan le en uporabnik in strežnik, ki sta ločna s črtkano črto. Po vsakem ciklu morata biti dokument uporabnika in dokument strežnika identična.
+
+Predvidimo, da se na začetku vsi dokumenti v konsistentnem stanju. Uporabnik začne tipkati. Vključi se signal, da je med dokumentom in senco uporabnika razlika. Ko se ve, kakšne spremembe so bile narejene, se mora dokument prekopirati v senco. Sprememba se pošlje strežniku. Na strežniku se naredita dva popravka, na senci in na dokumentu. Pomembno je, da se popravek na senci izvede brez problemov. Na dokumentu pa se naredi nejasen (ang. fuzzy) popravek. Nejasen popravek izvira iz sodelovanja med uporabniki. Če eden izmed uporabnikov naredi korenito spremembo na dokumentu, povzroči, da se popravek prvega uporabnika ne umesti v dokument tako kot bi si on želel. Nepredvideno stanje se reši v naslednji polovici cikla. Senca in dokument strežnika sta v tem trenutku različna. Ko se ve, kakšne so spremembe med senco in nepredvidenim dokumentom strežnika, se mora dokument prekopirati v senco. Sprememba se pošlje uporabniku. Ker je bila sprememba dokumenta strežnika narejena na podlagi sence strežnika, ki je bila ista kot senca in dokument uporabnika, se brez težav naredi popravek na senci in na dokumentu uporabnika. Dokumenti so sinhronizirani.
+
+Sistem omogoča sodelovanje oddaljenih uporabnikov, vendar ni zanesljiv. Uporabnik na nezanesljivi povezavi pošilja strežniku spremembe, ki jih le ta nikoli ne dobi. Senca uporabnika in senca strežnika nista več sinhronizirani. Edina rešitev za povrnitev nastalega stanje je, da povozimo uporabnikove spremembe. Tega si nihče ne želi.
 
 \begin{figure}[placement h]
 \begin{center}
 \includegraphics[width=11.83cm]{ds2.png}
 \end{center}
-\caption{DS z metodo dveh senc.}
+\caption{Diferenčna sinhronizacija z metodo dveh senc.}
 \label{ds2}
 \end{figure}
 
@@ -437,7 +443,7 @@ Nam fermentum turpis et posuere semper. Maecenas sit amet sapien lorem. Aenean m
 \begin{center}
 \includegraphics[width=16cm]{ds3.png}
 \end{center}
-\caption{DS z metodo garantirane dostave.}
+\caption{Diferenčna sinhronizacija z metodo garantirane dostave.}
 \label{ds3}
 \end{figure}
 
