@@ -536,11 +536,11 @@ V tem poglavju bomo opisali protkol Brez operativne transformacije, bolj znan po
 
 Dokument pri WOOT-u je shranjen kot zaporedje znakov.
 
-Za vsak znak v dokumentu hranimo 5 informacij: identifikacijo številko, vidnost, vsebino znaka, prejšnji znak in naslednji znak. Identifikacijska številka je kazalec na znak, ki je sestavljena iz unikatne oznake dokumenta uporabnika in lokalne ure. Vidnost nam pove ali uporabnik določen znak vidi. Pri brisanju, se vidnost postavi na 0. Vsebina znaka je črka ali številka, ki jo znak predstavlja. Prejšnji znak je identifikacijaska številka levega soseda. Naslednji znak je identifikacijska številka desnega soseda.
+Za vsak znak v dokumentu hranimo 5 informacij: identifikacijo številko, vidnost, vsebino znaka, prejšnji znak in naslednji znak. Identifikacijska številka je kazalec na znak, ki je sestavljena iz unikatne oznake dokumenta uporabnika in lokalne ure ali števca. Vidnost nam pove ali uporabnik določen znak vidi. Pri brisanju, se vidnost postavi na 0. Vsebina znaka je črka ali številka, ki jo znak predstavlja. Prejšnji znak je identifikacijaska številka levega soseda. Naslednji znak je identifikacijska številka desnega soseda.
 
 Poznamo tudi dva posebna znaka, ki označujeta konec in začetek dokumenta.
 
-Predvidimo, da imamo skupni dokument Alje in Bineta v katerem se trenutno nahaja besedilo “{\tt Velik picopek.”}. Dokument bi bil pri pri Alji in Binetu shranjen kot zaporedje znakov, kot prikazuje Slika \ref{woot1}.
+Alja in Bine na Sliki \ref{woot1} urejata skupni dokument v katerem se trenutno nahaja besedilo “{\tt Velik picopek!”}. Dokument bi bil pri pri Alji in Binetu shranjen kot zaporedje znakov od {\tt V} do klicaja.
 
 \begin{figure}[placement h]
 \begin{center}
@@ -550,9 +550,9 @@ Predvidimo, da imamo skupni dokument Alje in Bineta v katerem se trenutno nahaja
 \label{woot1}
 \end{figure}
 
-Iz identifikacijskih številke vidimo, je prvo besedilo napisala ena osebo, drugo besedo pa druga oseba. Lahko bi si shranjevali kdo konkretno je napisal katero črko, vendar ni potrebno. Vse črke so vidne. Nobena črka ni bila pobrisana. Glede na oznake sosedov so črke pravilne razvrščene.
+Znaka {\tt (0000,0)} in {\tt (1111,1)} označujeta začetek oziroma konec dokumenta. Za vse ostale znake v stolpcih od leve proti desni hranimo identifikacijsko številko, vidnost, vsebino, prejšnjega ter naslednjega soseda. Iz identifikacijskih številke vidimo, da je prvo besedo skupaj s presledkom napisala oseba katere dokument je označen z unikatno številko {\tt 3518}. Drugo besedo skupaj s klicajem je napisala druga oseba. Njen dokument je označen z unikatno števliko {\tt 2874}. Lahko bi si shranjevali katerega uporabnika predstavlja katere unikatna številka, vendar ni potrebno. Vse črke so vidne. Nobena črka ni bila pobrisana. Glede na oznake sosedov so črke pravilne razvrščene.
 
-Recimo, da Alja in Bine na dokumentu naredita nekaj sprememb. Alja dopiše črko {\o}, Bine pobriše {\opek}, nastane besedilo “{\tt Veliko pic.}”. Na Sliki \ref{woot2} je prikazano kako je sedaj shranjen dokument.
+Recimo, da Alja in Bine na dokumentu naredita nekaj sprememb. Alja dopiše črko {\tt o}, Bine pobriše {\tt opek}, nastane besedilo “{\tt Veliko pic!}”. Na Sliki \ref{woot2} je prikazano, kako je sedaj shranjen dokument.
 
 \begin{figure}[placement h]
 \begin{center}
