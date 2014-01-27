@@ -525,63 +525,119 @@ Tokrat Alja primerja številke verzij. Številka verzije uporabnika v spremembi 
 
 Kjub temu, da je med sodelovanjem uporabnikov in strežnika prišlo do izpada v povezavi, so se dokumenti posinhronizirali. V dokumentu na koncu piše “{\tt Moj avtomobil!}”.
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{WOOT}
 
-V tem poglavju bomo opisali protkol Brez operativne transformacije, bolj znan pod kratico WOOT. Bil je narejen kot odgovor na kopleksnost OT. Rekli smo, da se pri OT med uporabnike pošiljajo spremembe in lokacija sprememb, primer \linebreak {\tt \{ Vstavi ‘M’ @11 \}}. OT skrbi za pravilno transformacijo lokacij sprememb. Pristop WOOT je drugačen in ga je lažje razumeti. WOOT skrbi za pravilno razvršanje sprememb. Glavna razlika je v podajanju informacij o spremembi. Lahko si predstavljamo, da na vsak znak v dokumentu kaže unikatni kazalec. Med oddaljene uporabnike, ki sodelujejo pri urejanju dokumenta, se pošiljajo informacije med katerima znakoma oziroma na kateremu znaku je bila narejena sprememba. Posebnost protokola WOOT je, da se znakov v dokumentu nikoli ne briše, le označi se jih kot nevidne.
+V tem poglavju bomo opisali protokol Brez operativne transformacije, bolj znan pod kratico WOOT. Bil je narejen kot odgovor na kopleksnost OT. Rekli smo, da se \linebreak pri OT med uporabnike pošiljajo spremembe in lokacija sprememb, primer \linebreak {\tt \{ Vstavi ‘M’ @11 \}}. OT skrbi za pravilno transformacijo lokacij sprememb. Pristop WOOT je drugačen in ga je lažje razumeti. WOOT skrbi za pravilno razvrščanje sprememb oziroma operacij, kot se jih običajno poimenuje. Glavna razlika je v podajanju informacij. Lahko si predstavljamo, da na vsak znak v dokumentu kaže unikatni kazalec, to je identifikacijska številka. Med oddaljene uporabnike, ki sodelujejo pri urejanju dokumenta, se pošiljajo informacije med katerima znakoma oziroma na kateremu znaku je bila narejena sprememba. Posebnost protokola WOOT je, da se znakov v dokumentu nikoli ne briše, le označi se jih kot nevidne.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Podatkovni model}
 
-Dokument pri WOOT-u je shranjen kot zaporedje znakov.
-
-Za vsak znak v dokumentu hranimo 5 informacij: identifikacijo številko, vidnost, vsebino znaka, prejšnji znak in naslednji znak. Identifikacijska številka je kazalec na znak, ki je sestavljena iz unikatne oznake dokumenta uporabnika in lokalne ure ali števca. Vidnost nam pove ali uporabnik določen znak vidi. Pri brisanju, se vidnost postavi na 0. Vsebina znaka je črka ali številka, ki jo znak predstavlja. Prejšnji znak je identifikacijaska številka levega soseda. Naslednji znak je identifikacijska številka desnega soseda.
-
-Poznamo tudi dva posebna znaka, ki označujeta konec in začetek dokumenta.
-
-Alja in Bine na Sliki \ref{woot1} urejata skupni dokument v katerem se trenutno nahaja besedilo “{\tt Velik picopek!”}. Dokument bi bil pri pri Alji in Binetu shranjen kot zaporedje znakov od {\tt V} do klicaja.
+Dokument pri WOOT-u je shranjen kot zaporedje znakov predstavljenih z identifikacijskimi številkami (ang. identifier order). Zaporedje znakov besedila “{\tt Ubogi mucek!}” se prikaže kot na Sliki \ref{woot1}.
 
 \begin{figure}[placement h]
 \begin{center}
-\includegraphics[width=16cm]{woot1.png}
+\includegraphics[width=9cm]{woot1.png}
 \end{center}
-\caption{Dokument shranjen po protokolu WOOT.}
+\caption{Prikaz zaporedja znakov v dokumentu.}
 \label{woot1}
 \end{figure}
 
-Znaka {\tt (0000,0)} in {\tt (1111,1)} označujeta začetek oziroma konec dokumenta. Za vse ostale znake v stolpcih od leve proti desni hranimo identifikacijsko številko, vidnost, vsebino, prejšnjega ter naslednjega soseda. Iz identifikacijskih številke vidimo, da je prvo besedo skupaj s presledkom napisala oseba katere dokument je označen z unikatno številko {\tt 3518}. Drugo besedo skupaj s klicajem je napisala druga oseba. Njen dokument je označen z unikatno števliko {\tt 2874}. Lahko bi si shranjevali katerega uporabnika predstavlja katere unikatna številka, vendar ni potrebno. Vse črke so vidne. Nobena črka ni bila pobrisana. Glede na oznake sosedov so črke pravilne razvrščene.
+Za vsak znak v dokumentu hranimo 5 informacij: identifikacijo številko (ang. ID), vidnost, vsebino znaka, prejšnji znak in naslednji znak. Identifikacijska številka je kazalec na znak, ki je sestavljena iz unikatne oznake dokumenta in lokalne ure oziroma števca. Primer identifikacijske številka je {\tt (558,3)}. Unikatna oznaka dokumenta je številka, ki predstavlja uporabnika. Ko uporabnik prvič začne urejati dokument, se mu ta številka dodeli ali si jo izbere sam na podlagi predhodnega preverjanja unikatnostni. Lokalna ura je števec, ki se uporabniku povečuje za vsak vpisan znak. Na ta način je vsak znak v dokumentu označen z unikatnim kazalcem. Vidnost nam pove ali uporabnik določen znak vidi. Pri brisanju, se vidnost postavi na 0, sicer pa je vidnost pozitivna. Vsebina znaka je črka ali številka, ki jo znak predstavlja. Prejšnji znak je identifikacijska številka levega soseda. Naslednji znak je identifikacijska številka desnega soseda.
 
-Recimo, da Alja in Bine na dokumentu naredita nekaj sprememb. Alja dopiše črko {\tt o}, Bine pobriše {\tt opek}, nastane besedilo “{\tt Veliko pic!}”. Na Sliki \ref{woot2} je prikazano, kako je sedaj shranjen dokument.
+Poznamo tudi dva posebna znaka, ki označujeta konec in začetek dokumenta. Uporabljata se zato, da lahko prvemu znaku nastavimo prejšnjega in zadnjemu znaku naslednjega soseda. Alja in Bine na Sliki \ref{woot2} urejata dokument v katerem se trenutno nahaja besedilo “{\tt Ubogi mucek!}”. Dokument bi bil pri pri Alji in Binetu shranjen kot zaporedje znakov od {\tt U} do klicaja.
 
 \begin{figure}[placement h]
 \begin{center}
-\includegraphics[width=16cm]{woot2.png}
+\includegraphics[width=13cm]{woot2.png}
 \end{center}
-\caption{Nekaj črk v dokumentu je skritih.}
+\caption{Dokument shranjen po protokolu WOOT.}
 \label{woot2}
 \end{figure}
 
-Čeprav so v dokumentu shranjene vse črke, ki sta jih napisala Alja in Bine, se njima v urejevalniku kažejo le črke, ki so označene kot vidne.
+Znaka {\tt (00000)} in {\tt (11111)} označujeta začetek oziroma konec dokumenta. Za vse ostale znake se v stolpcih od leve proti desni hranijo identifikacijska številka, vidnost, vsebina, prejšnji ter naslednji soseda. Iz identifikacijskih številke vidimo, da je prvo besedo skupaj s presledkom napisala Alja z unikatno številko {\tt 217}. Drugo besedo skupaj s klicajem je napisal Bine. Njegov dokument je označen z unikatno števliko {\tt 558}. Lahko bi si vsak uporabnik shranjeval katera unikatna številka predstavlja katerega uporabnika, vendar ni potrebno. Vse črke so vidne. Nobena črka do sedaj še ni bila pobrisana. Glede na oznake sosedov so črke pravilne razvrščene.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Operacije}
 
-Osredotočili se bomo na operaciji {\tt Vstavi} in {\tt Pobriši}. Ko uporabnik generira operacijo, se operacija najprej integrira lokalno. Nato se razpošlje vsem oddaljenim uporabnikom, ki sodelujejo pri urejanju. Ko jo sprejmejo, se še njim integrira v dokument. 
+Osredotočili se bomo na operaciji {\tt Vstavi} in {\tt Pobriši}. Ko uporabnik generira operacijo, se operacija najprej integrira lokalno. Nato se razpošlje vsem oddaljenim uporabnikom, ki sodelujejo pri urejanju. Ko jo sprejmejo, se še njim integrira v dokument.
 
-Potreba po vnaprejšnji lokalni integracija pride iz razvrščanja sprememb. Na primer, ko uporabnik generira spremembo {\tt \{ Vstavi ‘Č’ @4 \}}, se le ta v uporabniškem vmesniku prikaže kot črka Č na lokaciji 4. Sprememba se mora pretvoriti v \linebreak {\tt \{ Vstavi ‘O’$\prec$‘Č‘$\prec$‘I’ \}}, ki pomeni vstavi črko {\tt Č}, med črko {\tt O} in {\tt I}. Lokacija spremembe je tako definirana s svojima dvema sosedoma in ne s konkretno številko lokacije. Pretvorba je prikazana poenostavljeno. V dejanskem algoritmu bi sosednja dva znaka označlil z njunima identifikacijskama števikama. Podobno kot vstavljanje, se mora tudi brisanje pretvoriti WOOT protokolu primerno. Sprememba {\tt \{ Pobriši @7 \}} pobriše znak na lokaciji 7. V primeru, da je na lokaciji 7 črka {\tt R}, moramo spremembo pretvoriti v {\tt \{ Pobriši ‘R’ \}}. Seveda je tudi ta primer poenostavljen, saj je tudi operacija brisanja vezana na identifikacijsko številko in ne na konkretno črko ali številko. Pomembno je poudariti, da znakov pri protokolu WOOT nikoli ne brišemo, ampak jih le skrivamo. Dokument je shranjen kot zaporedje uporabniku vidnih in uporabniku nevidinih znakov. Na ta način je razvrščanje spremembe vedno pravilno, saj je odvisno tudi od nevidnih znakov.
+Potreba po vnaprejšnji lokalni integracija pride iz razvrščanja znakov. Na primer, ko uporabnik generira spremembo {\tt \{ Vstavi ‘a’ @10 \}}, se le ta v uporabniškem vmesniku prikaže kot črka {\tt a} na lokaciji 10. Sprememba se mora pretvoriti v \linebreak {\tt \{ Vstavi ‘c’$\prec$‘a’$\prec$‘e’ \}}, ki pomeni vstavi črko {\tt a}, med črko {\tt c} in {\tt e}. Lokacija spremembe je tako definirana s svojima dvema sosedoma in ne s konkretno številko lokacije. Pretvorba je prikazana poenostavljeno. V dejanskem algoritmu bi sosednja dva znaka označlil z njunima identifikacijskama števikama. Podobno kot vstavljanje, se mora tudi brisanje pretvoriti WOOT protokolu primerno. Sprememba \linebreak {\tt \{ Pobriši @5 \}} pobriše znak na lokaciji 5. V primeru Alje in Bineta imamo na lokaciji 5 črko {\tt i}, zato moramo spremembo pretvoriti v {\tt \{ Pobriši ‘i’ \}}. Seveda je tudi ta primer poenostavljen, saj je tudi operacija brisanja vezana na identifikacijsko številko in ne na konkretno črko ali številko. Pomembno je poudariti, da znakov pri protokolu WOOT nikoli ne brišemo, ampak jih le skrivamo. Dokument je shranjen kot zaporedje uporabniku vidnih in uporabniku nevidinih znakov. Na ta način je razvrščanje spremembe vedno pravilno, saj je odvisno tudi od nevidnih znakov.
 
-Ko uporabnik sprejme operacijo, mora le ta iti najprej preko preverjanje predpogojev za izvršitev. Če predpogoj ni izpolnjen, se itegracija operacije začasno prestavi nazaj med čakajoče operacije. Primer, da pogoj ni izpolnjen je, ko uporabnik sprejme operacijo {\tt \{ Pobriši ‘B’ \}}, črka {\tt B} pa v njegovem dokumentu še ne obstaja. Operacija brisanja črke {\tt B} je prehitela vstavljanje črke {\tt B}, zato operacija brisanja trenutno še ne more biti integrirana.
+Alja in Bine želita stavek “{\tt Ubogi mucek!}” urediti v “{\tt Uboga muca!}”. Alja začne urejati drugo besedo in vstavi črko {\tt a}. Bine začne urejati prvo besedo in pobriše črko {\\ i}. Operaciji sta prikazani na Sliki \ref{woot3} in \ref{woot4}.
 
-Integracija brisanja pri oddaljenih uporabnikih je enostavna operacija. Pri njej se le postavlja vidnost na 0 ali 1. Integracija vstavljanja pri oddaljenih uporabnikih se izvede tako, da se znak postavi direktno med dva sosednja znaka. Če so se na to mesto pred sprejemom operacije, vrinili tudi že drugi znaki, so potrebne primerjave z vrinjenimi znaki. Pomembno je, da se vedno izvede enaka strategija.
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=13cm]{woot3.png}
+\end{center}
+\caption{Generiranje in integracija vstavljanja črke. Zadnji znak (presledek), ki ga je Alja vstavila (na Sliki \ref{woot2}), ima identifikacijska številka {\tt (217,5)}. Črka {\tt a} zatorej dobi številko {\tt (217,6)}. Vstaviti jo želimo na mesto med črko {\tt c} in {\tt e}, ki imata identifikacijski številki {\tt (558,2)} in {\tt (558,3)}.}
+\label{woot3}
+\end{figure}
 
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=13cm]{woot4.png}
+\end{center}
+\caption{Generiranje in integracija brisanja črke. Na Sliki \ref{woot2} vidimo, da je identifikacijska številka črke {\tt a} enaka {\tt (217,4)}. Operacija se pošlje Alji.}
+\label{woot4}
+\end{figure}
 
+V naslednjem koraku Bine vstavi črko {\tt a} z identifikacijsko številko {\tt (558,6)} na podoben način kot je to naredila Alja na Sliki \ref{woot3}. Alja pa pobriše črki {\tt e (558,3)} in {\tt k (558,4)} v drugi besedi. Operacija je podobna kot na Sliki \ref{woot4}, ko to stori Bine. Končni stavek v dokumentu lahko vidimo na Sliki \ref{woot5}.
+
+Čeprav so v dokumentu shranjene vse črke, ki sta jih napisala Alja in Bine, se njima v urejevalniku kažejo le črke, ki so označene kot vidne. Na Sliki \ref{woot5} opazimo še eno zanimivost. Črka {\tt c (558,2)} ima kot naslednjega soseda shranjeno črko {\tt e (558,3)}. Pravi naslednji sosed pa je v bistvu črka {\tt a (217,6)}. Ta pojav je normalen, ni napaka, je le posledica integracije vstavljanja.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=13cm]{woot5.png}
+\end{center}
+\caption{Nekaj črk v dokumentu je skritih in jih Alja in Bine ne vidita.}
+\label{woot5}
+\end{figure}
+
+V našem enostvanem primeru nismo omenjali čakalne vrste. Ko uporabnik sprejme operacijo, mora le ta iti najprej preko preverjanje predpogojev za izvršitev. Če predpogoj ni izpolnjen, se itegracija operacije začasno prestavi nazaj med čakajoče operacije. Primer, da pogoj ni izpolnjen je, ko uporabnik sprejme operacijo {\tt \{ Pobriši ‘M’ \}}, črka {\tt M} pa v njegovem dokumentu še ne obstaja. Operacija brisanja črke {\tt M} je prehitela vstavljanje črke {\tt M}. Operacija brisanja bo integrirana v naslednji iteraciji.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Točka-točka sodelovanje}
 
-Prej omenjena protokola DS in OT temeljita na centralnih strežnikih in sta od njih sto odstotno odvisna. Za destribucijo vsebine so bolj učinkovita točka-točka (ang. peer-to-peer, kratica P2P) omrežja. Ta potencial želimo izkoristiti tudi pri sodelovanju urejanja vsebine. Protokol WOOT je popolnoma decentraliziran. Na primeru bomo videli, da ni odvisen od centralnih strežnikov.
+Protokola DS in OT omenjena v prejšnjih podpoglavjih temeljita na centralnih strežnikih in sta od njih odvisna. Za destribucijo vsebine so bolj učinkovita omrežja točka-točka (ang. peer-to-peer, kratica P2P). Ta potencial želimo izkoristiti tudi pri sodelovanju urejanja vsebine. Protokol WOOT je lahko implementiran popolnoma decentraliziran. Na primeru bomo videli, da ni odvisen od centralnih strežnikov.
 
-Predvidimo, da imamo dokument v katerem se trenutno nahaja besedilo {\\tt Velik picopek.}. Dokument na enkrat začnejo urejati Alja, Bine in Cene. 
+Integracija brisanja pri oddaljenih uporabnikih je enostavna operacija. Pri njej se le postavlja vidnost na 0 ali 1. Pri integraciji vstavljanja pri oddaljenih uporabnikih lahko pride do problemov. Znak, ki se ga integrira, se mora postavi direktno med dva sosednja znaka. Če so se na to mesto pred sprejemom operacije, vrinili tudi že znaki drugih uporabnikov, so potrebne primerjave z vrinjenimi znaki. Pomembno je, da se vedno izvede enaka strategija, ki zagotovi konsistentnost med uporabniki.
 
+Našima dvema uporabnika se je pridružil uporabnik Cene. Vsi trije imajo v svojem urejevalniku dokument v katerem piše “{\tt Uboga muca!}”. Vmes (za presledkom) bodo dopisali besedo “{\tt mala}”. Ker se želijo pri urejanju dokumenta tudi zabavati, se dogovorijo sledeče. Uporabnik Cene, ki se je urejanju pridružil zadnji, lahko vpiše dve črki, Alja in Bine pa vsak po eno črko. Vprašanje je, ali lahko na koncu dobimo pravilno oblikovan stavek “{\tt Uboga mala muca!}”?
+Vsi na enkrat začnejo urejati. Alja se odloči, da bo vpisala črko {\tt a}, ker je to začetnica njenega imena. Bine je skoraj prepričan, da bo Alja vpisala črko {\tt a}, zato sam raje vpiše črko {\tt l}. Cene zase ve, da bo vpisal črko {\tt a}, saj sta v besedi dve in je manj verjetnosti, da bo zamočil. Ko prejme Aljino črko {\tt a}, se odloči, da bo pred njo vpisal črko {\tt m} v upanju, da je ni vpisal že Bine. Na konec dopiše še črko {\tt a}, za katero je bil že prej odločen, da jo bo vpisal.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=13cm]{woot6.png}
+\end{center}
+\caption{Prikaz sodelovanje s protokolom WOOT preko omrežja točka-točka. Vsak od uporabnikov je vpisal svojo izbrano črko oziroma črki.}
+\label{woot6}
+\end{figure}
+
+Poglejmo na Sliko \ref{woot6} kaj se je zgodilo. Alja in Bine sta hkrati vpisala črki {\tt a} in {\tt l} pred začetek besede {\tt muca}. Nato se je aktiviral Cene in dodal še njegov prispevek s črkami {\tt m} in {\tt a}. Da je stavek brez pravopisanih napak, je na koncu Bine vpisal še presledek. Ker ta zadnja sprememba ni nič posebenga, jo odmislimo pri razmišljanju. Operacije označene v pravokotnikih so se integrirala najprej lokalno, nato pa so bile poslane naprej po omrežju. Puščice prikazujejo pošljanje operacije še drugim dvema uporabnikoma. Uporabniki so skupno naredili štiri vstavljanja črka {\tt m}, {\tt a}, {\tt l} in {\tt a}. Kljub temu, da se pri nobenem uporabniku niso črke vstavljale v tem zaporedju, vsi na koncu vidijo isti pravilen rezultat.
+
+Za študijo primera vzemimo Ceneta. Najprej je od Alje prejel, da mora med presledek in črko {\tt m} vpisati črko {\tt a}. Ker sam ni še nič urejal, je to operacijo integriral brez težav. Nato je naredil dve lokalni integraciji. Pred prej vpisani {\tt a} od Alje je vpisal črko {\tt m}, za njim pa črko {\tt a}. Ker je šlo za lokalno integracijo, jo je lahko izvedel brez težav. Cene je imel v tem trenutku v svojem dokumentu nesmiselen stavek “{\tt Uboga maamuca!}”. Nato je prejel Binetovo spremembo {\tt \{ Vstavi ‘ ’$\prec$‘l’$\prec$‘m’ \}}. Zmeden bralec bi lahko mislil, da je pravilna integracija črke {\tt l} na lokacijo 7. Nastal bi stavek “{\tt Uboga lmaamuca!}”. Res je, da Cene sprejme informacijo, da mora črko {\tt l} locirati med presledek in m, vendar je ta informacija podana z identifikaciskimi številkami in ne z alfanumeričnimi znaki kot smo to že omenil. Po tem premisleku nam je jasno, da mora biti črka {\tt l} integrirana med presledek in drugi {\tt m} v stavku. Potemtakem so kar štiri možnosti kam se lahko integrira {\tt l}. Nastanejo lahko variante:
+
+\begin{itemize}
+	\item {\tt Uboga lmaamuca!}
+	\item {\tt Uboga mlaamuca!}
+	\item {\tt Uboga malamuca!}
+	\item {\tt Uboga maalmuca!}
+\end{itemize}
+
+Kako urejevalnik ve, kam go mora postaviti? Da bomo lažje razrešili ta problem si poglejmo Sliko \ref{woot7}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=13cm]{woot7.png}
+\end{center}
+\caption{Del Cenetovega dokumenta pred integracijo črke {\tt l}.}
+\label{woot7}
+\end{figure}
+
+Prikazane so konfliktne črke v Cenetovem dokumentu tik pred integracijo črke {\tt l (558,7)}. Postopek je sledeč. Vzamemo seznam črk, ki so znotraj meje med katere bi se moral integrirati {\tt l}. Dobimo črke {\tt m (609,0)}, {\tt a (217,7)} in {\tt a (609,1)}. Iz tega seznama odstranimo črke, ki imajo prejšnjega ali naslednjega soseda znoraj meje med katere bi se moral integrirati {\tt l}. Ostane nam samo črka {\tt a (217,7)}. Primerjamo identifikacijsko številko črke {\tt a} in črke {\tt l}. Ker je 217 manjše od 558, se bo črka {\tt l (558,7)} postavila desno od črke {\tt a (217,7)}. Primerjavo moramo nadaljevati z vsemi črkami do meje. Naslednja po vrsti je črka {\tt a (609,1)}. Ker je 558 manjše od 609, se bo črka {\tt l (558,7)} postavila levo od črke {\tt a (609,1)}. Primerjanje zaključeno. Pravilna oblika stavka je “{\tt Uboga malamuca!}”.
+
+Ko se integrira še Binetov presledek, dobimo “{\tt Uboga mala muca!}”.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Modeli konsistence, struktura in pravilnost}
