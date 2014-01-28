@@ -10,7 +10,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% nastavitve
 \renewcommand{\baselinestretch}{1.3} % ustrezen razmik med vrsticami
-\setcounter{tocdepth}{1} % globina kazala
+% \setcounter{tocdepth}{1} % globina kazala
 \newcommand{\clearemptydoublepage}{\newpage{\pagestyle{empty}\cleardoublepage}} % prazne strani
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% izvorna koda
@@ -37,19 +37,19 @@
 \thispagestyle{empty}
 \begin{center}
 	{\large\sc Univerza v Ljubljani \par}
-    {\large\sc Fakulteta za računalništvo in informatiko \par}
-    \vskip 14em
+	{\large\sc Fakulteta za računalništvo in informatiko \par}
+	\vskip 14em
 	{\Large Marko Bregant \par}
-    \vskip 1em
+	\vskip 1em
 	{\huge\bf Operativna transformacija \par}
-    \vskip 2em
+	\vskip 2em
 	{\normalsize\sc DIPLOMSKO DELO \par }
-    \vskip 0.8em
+	\vskip 0.8em
 	{\normalsize\sc UNIVERZITETNI ŠTUDIJSKI PROGRAM PRVE STOPNJE \par }
 	{\normalsize\sc RAČUNALNIŠTVO IN INFORMATIKA \par }
-    \vfill
+	\vfill
 	{\large \textsc{Mentor}: doc. dr. Zoran Bosnić \par}
-    \vskip 2em
+	\vskip 2em
 	{\large Ljubljana 2014 \par}
 \end{center}
 
@@ -115,10 +115,10 @@
 \chapter*{Seznam uporabljenih kratic}
 \begin{description}                   
 	\item[OT] (Operational Transformation) - operativna transformacija
-    \item[AJAX] (Asynchronous JS and XML) - asinhroni JS in XML
-    \item[API] (Application Programming Interface) - vmesnik za programiranje aplikacij
+	\item[AJAX] (Asynchronous JS and XML) - asinhroni JS in XML
+	\item[API] (Application Programming Interface) - vmesnik za programiranje aplikacij
 	\item[JS] (JavaScript) - programski jezik, ki v zadnjem času pridobiva na popularnosti
-    \item[XML] (Extensible Markup Language) - razširljiv označelvani jezik
+	\item[XML] (Extensible Markup Language) - razširljiv označelvani jezik
 \end{description}
 
 \clearemptydoublepage
@@ -148,20 +148,20 @@ Phasellus volutpat orci elementum quam ultricies, et pellentesque enim bibendum.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% uvod
 \chapter{Uvod}
 
-Še ne dolgo nazaj se nam je internet zdel počasen. Vse skupaj je delovalo zelo statično. Lahko bi rekel, da smo dve desetletji nazaj splet uporabljali za brskanje, dobesedno le za brskanje. Nato so se počasi pojavile spletne strani, ki so omogočale nekaj malega interaktivnosti. To so bile funkcionalnosti kot so vpisovanje komentarjev, iskalniki, spletne galerije, forumi... Danes se nam zdijo te funkcionalnosti že skoraj integrirane v spletnih aplikacijah. Lahko se ozremo nazaj in rečemo, da so to bili prvi zametki, ki so uporabnikom omogočili, da ustvarjajo splet tak kot ga poznamo danes. Z izboljševanjem internetne infrastrukture so se izboljšale hitrosti prenosa podatkov. Z razvojem spletnih tehnologij se je izboljša celotna uporabniška izkušnja. V zadnjih dvajsetih letih smo bili priča razvoju napredka tako na programski kot tudi na strojni opremi. Na tem mestu se je smiseleno vprašati, kaj je bilo tisto bistveno, ki je celotno zadevo izboljšalo in kako se bo izboljševala v prihodnosti? Internet v osnovi še vedno deluje tako kot je dvajest let nazaj. Princip je isti. Imamo odjemalca (ang. client) na eni strani in imamo strežnik (ang. server) na drugi strani. Odjemalec vzpostavi komunikacijo s strežnikom. Od njega zahteva neko akcijo in le ta jo izvrši. Sliši se komično, a gledano poenostavljeno, splet še danes deluje tako. Če pa pogledamo podrobno, se razlike enormne. Najpomembnejša razlika je, da se je komunikacija med odjemalcem in strežnikom, ter obratno, začela dogajati v realnem času.
+Še ne dolgo nazaj se nam je internet zdel počasen. Vse skupaj je delovalo zelo statično. Lahko bi rekel, da smo dve desetletji nazaj splet uporabljali za brskanje, dobesedno le za brskanje. Nato so se počasi pojavile spletne strani, ki so omogočale nekaj malega interaktivnosti. To so bile funkcionalnosti kot so vpisovanje komentarjev, iskalniki, spletne galerije, forumi... Danes se nam zdijo te funkcionalnosti že skoraj integrirane v spletnih aplikacijah. Lahko se ozremo nazaj in rečemo, da so to bili prvi zametki, ki so uporabnikom omogočili, da ustvarjajo splet tak kot ga poznamo danes. Z izboljševanjem internetne infrastrukture so se izboljšale hitrosti prenosa podatkov. Z razvojem spletnih tehnologij se je izboljša celotna uporabniška izkušnja. V zadnjih dvajsetih letih smo bili priča razvoju napredka tako na programski kot tudi na strojni opremi. Na tem mestu se je smiselno vprašati, kaj je bilo tisto bistveno, ki je celotno zadevo izboljšalo in kako se bo izboljševala v prihodnosti? Internet v osnovi še vedno deluje tako kot je dvajest let nazaj. Princip je isti. Imamo odjemalca (ang. client) na eni strani in imamo strežnik (ang. server) na drugi strani. Odjemalec vzpostavi komunikacijo s strežnikom. Od njega zahteva neko akcijo in le ta jo izvrši. Sliši se komično, a gledano poenostavljeno, splet še danes deluje tako. Če pa pogledamo podrobno, se razlike enormne. Najpomembnejša razlika je, da se je komunikacija med odjemalcem in strežnikom, ter obratno, začela dogajati v realnem času.
 
-V okviru diplomske naloge bi radi preučili algoritme in raziskali celoten sistem, ki na spletu omogoča urejanje golega besedila v realnem času. Tega se bomo lotili tako, da bomo pregledali raziskave, ki so bile objavljene v akademski sferi. Prvi zapisi o algoritmih sodelovanja uporabnikov segajo že v leto 1989. Kasneje je pri raziskavah precej pripomogla tudi ustanovitev SIGCE (The Special Interest Group on Collaborative Computing), ki promovira raziskovalce na tem področju. Skratka preleteli bomo nekaj raziskav iz tega področja. Po pridobljenem teoretičnem znanju, bomo poiskali članke, ki so bili napisani s strani industrije. Radi bi izvedeli kaj od teorije se lahko uporabi v praksi. Največ uporabnih informacij bomo dobili od protokola Google Wave. Ne smemo pa pozabiti, da obstaja mnogo drugih uporabnih orodij (npr. Share.js), od katerih se lahko naučimo praktičnega dela. Cilj diplomske naloge je, da zasnujemo enega izmed algoritmov na plaformi Node.js.  Ker hočemo doseči, da je algoritem neodvisen od odjemalcev, mora delovati kot API. Kot smo omenili, je uporabnost take izvedbe ravno v tem, da je neodvisen od odjemalcev, ki se nanj povezujejo, naj si bo spletna aplikacija ali mobilna naprava. Poleg tega tak način izvedbe spodbuja nadaljni razvoj celotnega sistema na različnih odjemalcih.
+V okviru diplomske naloge bi radi preučili algoritme in raziskali celoten sistem, ki na spletu omogoča urejanje golega besedila v realnem času. Tega se bomo lotili tako, da bomo pregledali raziskave, ki so bile objavljene v akademski sferi. Prvi zapisi o algoritmih sodelovanja uporabnikov segajo že v leto 1989. Kasneje je pri raziskavah precej pripomogla tudi ustanovitev SIGCE (The Special Interest Group on Collaborative Computing), ki promovira raziskovalce na tem področju. Skratka preleteli bomo nekaj raziskav iz tega področja. Po pridobljenem teoretičnem znanju, bomo poiskali članke, ki so bili napisani s strani industrije. Radi bi izvedeli kaj od teorije se lahko uporabi v praksi. Največ uporabnih informacij bomo dobili od protokola Google Wave. Ne smemo pa pozabiti, da obstaja mnogo drugih uporabnih orodij (npr. Share.js), od katerih se lahko naučimo praktičnega dela. Cilj diplomske naloge je, da zasnujemo enega izmed algoritmov na plaformi Node.js.  Ker hočemo doseči, da je algoritem na strežniškem delu neodvisen od odjemalcev, mora delovati kot API. Kot smo omenili, je uporabnost take izvedbe ravno v tem, da je neodvisen od odjemalcev, ki se nanj povezujejo, naj si bo spletna aplikacija ali mobilna naprava. Poleg tega tak način izvedbe spodbuja nadaljni razvoj celotnega sistema na različnih odjemalcih.
 
-V nadaljevanju bomo v drugem poglavju najprej podrobno predstavili problem. V tretjem poglavju bomo preučili načine za sodelovanje v realnem času. Izbrali bomo našemu problemu najbolj primernega ter ga v četrem poglavju podrobneje opisali. Nato bomo v petem poglavju raziskali pristope in algoritme, ki stojijo za njimi. Algoritme bomo tudi primerjali. V šestem poglavje se bomo iz teoretičnega znanja preselil na praktično znanje. Nekateri algoritmi, ki so bili na akademskem področju uspešni, so se implementirali v končnih ali v pol produktih. Na kratko bomo predstavili nekaj teh produktov. V sedmem poglavju bomo poskusili tudi sami narediti zasnovo urejevalnika v realnem času. Na koncu v osmem poglavju sledijo še sklepne ugotovitve.
+V nadaljevanju bomo v drugem poglavju najprej podrobno predstavili problem. V tretjem poglavju bomo preučili načine za sodelovanje v realnem času. V četrem poglavju jih bomo primerjali po njihovih lastnostih. V petem poglavju bomo preučili algoritem za iskanje razlik v besedilu. V šestem poglavje se bomo iz teoretičnega dela preselil na praktičen del. Nekateri algoritmi, ki so bili na akademskem področju uspešni, so se implementirali v končnih ali v pol produktih. Na kratko bomo predstavili nekaj teh produktov. V sedmem poglavju bomo poskusili tudi sami narediti zasnovo urejevalnika v realnem času. Na koncu, v osmem poglavju, sledijo še sklepne ugotovitve.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Konflikti in konsistentnost}
 
-Leta 2004 oziroma 2005 se je začela uveljavljati tehnologija AJAX. Njen glavni namen je, da odjemalcu omogoča pošiljanje asinhronih zahtev na strežnik. V praksi je bila razlika videna v osveževanju spletnih strani. V preteklosti je brskalnik osvežil celotno spletno stran za vsako zahtevo, ki jo je naredil na strežnik. Uporaba AJAXa pa omogoča, da so zahteve na strežnik manjše, bolj dinamične in najpomembnejše asinhrone. Namesto celotne strani lahko osvežimo le nek manjši del.
+Leta 2004 oziroma 2005 se je začela uveljavljati tehnologija AJAX. Njen glavni namen je, da odjemalcu omogoča pošiljanje asinhronih zahtev na strežnik. V praksi je bila razlika videna v osveževanju spletnih strani. V preteklosti je brskalnik osvežil celotno spletno stran za vsako zahtevo, ki jo je naredil na strežnik. Uporaba AJAXa pa omogoča, da so zahteve na strežnik manjše, bolj dinamične in najpomembnejše, asinhrone. Namesto celotne strani lahko osvežimo le nek manjši del.
 
 Naslednja pomembna stvar na spletu je protokol WebSocket. Trenutno je še v povojih. Danes naj bi ga podpirali že vsi najnovejši brskalniki, vendar ga uporabljajo le redke spletne aplikacije. Sprememba, ki jo prinaša WebSocket je način komunikacije med odjemalcem in strežnikom. Omogoča dvosmerno komunikacijo. Po novem lahko tudi strežnik pošlje zahtevo odjemalcu.
 
-Ti dve tehnologiji omenjam zato, ker sta in bosta po mojem mnenju največ prispevali pri izboljšanju uporabniške izkušnje na spletu. Interakcija med odjemalcem in strežnikom je postala bolj tekoča kot je bila v preteklosti. Z njo nam je bila dana možnost za razvoj orodij za sodelovanje v realnem času (ang. real-time collaboration tools). Obstaja že mnogo orodij, ki preko sodelovanja (ang. collaboration) rešujejo nek specifičen problem. Na podoben problem smo naleteli tudi sami in sicer urejanje besedila v realnem času. Z urejanjem besedila nimamo v mislih označevanje besedila s krepko, ležečo, podčrtano pisavo in tako naprej, ampak za urejanje golega besedila kot takega. Sliši se enostavno. Uporabnik lahko doda črko, pobriše črko, se pravi operira z manjšimi enotami (črke, besede), ki se združujejo v večje enote (stavki, povedi, sporočilo, besedilo, dokument). Sistem mora skrbeti za izmenjevanje nastalega besedila med udeleženci. Na tak način delujejo spletna klepetalnica. Udeleženci v pogovoru si med sabo izmenjujo sporočila. To naj si bodo večja ali manjše enote teksta. Sistem mora le skrbeti, da se le te pravilno prenesejo med udeleženci pogovora. Vendar zadeva ni niti približno tako enostavna. Bistvena razlika urejevalnika v realnem času v primerjavi s spletno klepetalnico je v obliki hranjenja in operiranja nastalih podatkov. Običajno se pri spletnih klepetalnicah vsako posamezno sporočilo hrani na strežniku kot samostojna enota, ki se v celoti razpošilja med udeleženci. Pri urejevalnikih besedila v realnem času pa je besedilo, ki ga udeležencih urejajo, enotno za vse udeležence hkrati. Lahko bi rekel, da vsi udeleženci urejajo skupni dokument. Posamezne manjše enote besedila, ki se izmenjujejo med udeleženci, so le koščki celotnega dokumenta. Pred tako nastalim dokumentom mora delovati algoritem, ki zna te manjša enote besedila združevati v dokument.
+Ti dve tehnologiji omenjam zato, ker sta in bosta po mojem mnenju največ prispevali pri izboljšanju uporabniške izkušnje na spletu. Interakcija med odjemalcem in strežnikom je postala bolj tekoča kot je bila v preteklosti. Z njo nam je bila dana možnost za razvoj orodij za sodelovanje v realnem času (ang. real-time collaboration tools). Obstaja že mnogo orodij, ki preko sodelovanja (ang. collaboration) rešujejo nek specifičen problem. Na podoben problem smo naleteli tudi sami in sicer urejanje besedila v realnem času. Z urejanjem besedila nimamo v mislih označevanje besedila s krepko, ležečo, podčrtano pisavo in tako naprej, ampak za urejanje golega besedila kot takega. Sliši se enostavno. Uporabnik lahko doda črko, pobriše črko, se pravi operira z manjšimi enotami (črke, besede), ki se združujejo v večje enote (stavki, povedi, sporočilo, besedilo, dokument). Sistem mora skrbeti za izmenjevanje nastalega besedila med udeleženci. Na tak način delujejo spletna klepetalnica. Udeleženci v pogovoru si med sabo izmenjujo sporočila. To naj si bodo večja ali manjše enote teksta. Sistem mora le skrbeti, da se le te pravilno prenesejo med udeleženci pogovora. Vendar zadeva ni niti približno tako enostavna. Bistvena razlika urejevalnika v realnem času v primerjavi s spletno klepetalnico je v obliki hranjenja in operiranja nastalih podatkov. Pri spletnih klepetalnicah se vsako posamezno sporočilo na strežniku hrani kot samostojno enoto, ki se jo v celoti razpošlje med udeležence. Pri urejevalnikih besedila v realnem času pa je besedilo, ki ga udeležencih urejajo, enotno za vse udeležence hkrati. Lahko bi rekel, da vsi udeleženci urejajo skupni dokument. Posamezne manjše enote besedila, ki se izmenjujejo med udeleženci, so le koščki celotnega dokumenta. Pred tako nastalim dokumentom mora delovati algoritem, ki zna te manjša enote besedila združevati v dokument.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Predstavitev problema na konkretnem primeru}
@@ -696,8 +696,8 @@ function cache_add () {
 	@\label{lst:codeJavaScript_mark}@self.cache.add(self.user._id + '_testing', self.resource('sl', 'session_dafaq'));
 
 	self.json({
-		status: 'okay',
-		text: self.resource('sl', 'cache_has_been_successfully_set')
+			status: 'okay',
+			text: self.resource('sl', 'cache_has_been_successfully_set')
 	}); return;
 }
 \end{lstlisting}
@@ -712,14 +712,34 @@ Nam semper augue at rhoncus laoreet. Nunc non aliquet risus. Curabitur dictum, n
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% literatura
 \addcontentsline{toc}{chapter}{Literatura}
 \begin{thebibliography}{99}
-\bibitem{problem} The Dojo Fundation. Open Cooperative Web Framework. Dostopno na:\\ http://opencoweb.org/ocwdocs/intro/openg.html
-\bibitem{gdocs} J. Day-Richter. What’s different about the new Google Docs. Dostopno na:\\ http://googledocs.blogspot.com/2010/09/whats-different-about-new-google-docs\_22.html
-\bibitem{diffsync} Neil Fraser. Differential Synchronization. Dostopno na:\\ https://neil.fraser.name/writing/sync/
-\bibitem{woot} G. Oster, P. Urso, P. Molli, A. Imine. Real time group editors without Operational transformation. Dostopno na:\\ http://hal.inria.fr/docs/00/07/12/40/PDF/RR-5580.pdf
-\bibitem{faq} C. Sun. Operational Transformation Frequently Asked Questions and Answers. Dostopno na:\\ http://cooffice.ntu.edu.sg/otfaq/
-\bibitem{grove} C.A. Ellis, S.J. Gibbs. “Concurrency Control in Groupware Systems”. Dostopna na:\\ http://www-ihm.lri.fr/~mbl/ENS/CSCW/2012/papers/Ellis-SIGMOD89.pdf
-\bibitem{jupiter} D. A. Nichols, P. Curtis, M. Dixon, J. Lamping. “High-Latency, Low-Bandwidth Windowing in the Jupiter Collaboration System”. Dostopno na:\\ http://lively-kernel.org/repository/webwerkstatt/!svn/bc/15693/projects/Collaboration/paper/Jupiter.pdf
-\bibitem{wave} D. Wang, A. Mah, S. Lassen. Google Wave Operational Transformation. Dostopno na:\\ http://www.waveprotocol.org/whitepapers/operational-transform
+
+\bibitem{problem} The Dojo Fundation. Open Cooperative Web Framework.
+\\Dostopno na: http://opencoweb.org/ocwdocs/intro/openg.html
+
+\bibitem{diffsync} Neil Fraser. Differential Synchronization.
+\\Dostopno na: https://neil.fraser.name/writing/sync/
+
+\bibitem{gdocs22} J. Day-Richter. What’s different about the new Google Docs: Conflict resolution.
+\\Dostopno na: http://googledocs.blogspot.com/2010/09/whats-different-about-\\new-google-docs\_22.html
+
+\bibitem{gdocs23} J. Day-Richter. What’s different about the new Google Docs: Making collaboration fast.
+\\Dostopno na: http://googledocs.blogspot.com/2010/09/whats-different-about-\\new-google-docs\_23.html
+
+\bibitem{woot} G. Oster, P. Urso, P. Molli, A. Imine. Real time group editors without Operational transformation.
+\\Dostopno na: http://hal.inria.fr/docs/00/07/12/40/PDF/RR-5580.pdf
+
+\bibitem{faq} C. Sun. Operational Transformation Frequently Asked Questions and Answers.
+\\Dostopno na: http://cooffice.ntu.edu.sg/otfaq/
+
+\bibitem{grove} C.A. Ellis, S.J. Gibbs. “Concurrency Control in Groupware Systems”.
+\\Dostopna na: http://www-ihm.lri.fr/~mbl/ENS/CSCW/2012/papers/Ellis-\\SIGMOD89.pdf
+
+\bibitem{jupiter} D. A. Nichols, P. Curtis, M. Dixon, J. Lamping. “High-Latency, Low-Bandwidth Windowing in the Jupiter Collaboration System”.
+\\Dostopno na: http://lively-kernel.org/repository/webwerkstatt/!svn/bc/15693/\\projects/Collaboration/paper/Jupiter.pdf
+
+\bibitem{wave} D. Wang, A. Mah, S. Lassen. Google Wave Operational Transformation.
+\\Dostopno na: http://www.waveprotocol.org/whitepapers/operational-transform
+
 \end{thebibliography}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
