@@ -210,6 +210,139 @@ Problem nastane še večji pri sodelovanju večih uporabnikov in še z večjo za
 Kako reševati konflikte in zagotoviti konsistentnost med oddaljenimi uporabniki pri sočasnem urejanju, je eden izmed glavnih izivov moje diplomske naloge. V tem poglavju bomo raziskali protokole, ki omogočajo sodelovanje uporabnikov v realnem času in teoretično rešujejo omenjena problema. Najbolj razširjeni so Operativna transformacija (ang. Operational transformation), Diferenčna sinhronizacija (ang. Differential synchronization) in protokol Brez operativne transformacije (ang. Without operational transformation, bolj znan pod kratico WOOT).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Diferenčna sinhronizacija}
+
+Konceptualno enostavni načini sinhronizacije so zaklepanje (ang. locking), prenašanje dogodkov (ang. event passing) in trosmerno združevanje (ang. three way merge).
+
+\begin{description}
+	\item[Zaklepanje] je najenostavnejši način. Ko uporabnik odpre skupni dokument, se mu dodeli pravica lasnika (ang. ownership). Le on ga lahko ureja. Vsi ostali uporabniki lahko v tistem času dokument gledajo (ang. read-only access). Cilj je delno dosežen. Vsi uporabniki imajo sinhroniziran dokument, vendar urejanje dokumenta se ne izvaja v realnem času. Izboljšava zaklepanja je delno zaklepenje pri katerem se uporabniku dodeli pravica lastnika le za majhen del dokumenta. Ta način ni najboljši kadar imajo uporabniki slabo povezavo. Paket z informacijo o zaklepanju in odklepanju se lahko izgubi. V dokumentu lahko nastanejo deli nad katerimi ima lahko več uporabnikov pravico lastnika. Pojavijo se tudi druga anomalije.
+	\item[Prenašanje dogodkov] temelji na zaznavanju vseh interakacij, ki jih naredi uporabnik z urejevalnikom. V teoriji je to enostavno, saj vsak sistem omogoča zaznavanja tipkanja. V praksi je težko izvedljivo. Poleg tipkanja lahko uporabnik naredi tudi akcije kot so izreži besedilo, prilepi besedilo, povleci in spusti besedilo, zamenjava besedila... Akciji kot sta samodokončanje in pravpisni popravek lahko naredi tudi sam urejevalnik. Kaj narediti v teh primerih? Težava je tudi v tem, da lahko zaradi neke napake ali zamude v komunkaciji pride do dveh popolnom različnih dokumenetov, ki jih ne moremo poenotiti.
+	\item[Trosmerno združevanja] uporabljajo programerji pri delu na skupnem projektu. Je zelo robusten sistem. Sestavljen je iz treh korakov. Uporabnik najprej svojo vsebino pošlje na strežnik. Strežnik izvzame narejene spremembe in jih združi s spremembami drugih uporabnikov. Nova kopija dokumenta se sinhronizira vsem uporabnikom. Sistem trosmernega združevanja ima nekaj slabosti. Če uporabnik naredi spremembo na dokumentu medtem, ko je sinhronizacija v teku, mora zavreči vse na novo narejene spremembe. Slabost je, da uporabnik ne dobi nobene povratne informacije (ang. feedback) med tipkanjem. Način trosmernega združevanja bi pri urejanju v realnem času deloval le v dveh primerih. Če bi si lahko privoščili, da bi uporabnika blokirali in sinhronizirali z novo verzijo na strežniku ali pa v primeru, da bi uporabnika sinhronizirali, ko neha tipkati. Ampak nobena od teh dveh variant ni urejanje dokumenta v realnem času.
+\end{description}
+
+Ker sinhronizacija in ohranjanje konsistentnosti med uporabniki ni enostavna, si oglejmo rešitev imenovano Diferenčna sinhronizacija (v nadaljevanju DF). DF je simetričen algoritem, ki uporablja neskončno ciklov razlik na dokumentih in z njimi popravlja ostale dokumente v ciklu. Najprej bomo preučili osnovno topologijo DS, ki teoretična podlaga za izboljšave z metodo dveh senc in z metodo garantirane dostave.
+
+\subsection{Osnovna topologija}
+
+Na Sliki \ref{ds1} je z diagramom prikazan DS. V osnovni topologiji obstajata dokument uporabnika in dokument računalnika. Oba sta locirana na istem sistemu brez internetne povezave. Med njima se nahaja dokument imenovan skupna senca (ang. common shadow). Predvidimo, da imajo na začetku vsi trije dokumenti isto vsebino. Cilj je, da so dokumenti vseskozi čim bolj enaki. Ostale entitete so še razlika, sprememba in popravek. Razlika je signal, ki pove, da se dokument uporabnika razlikuje od skupne sence. Na ta način vemo, da je uporabnik naredil spremembo na svojem dokumentu. Ni nam potrebno spremljati vsake uporabnikove akcije. Ko se ve, kakšne spremembe so bile narejene, se mora dokument prekopirati v senco. Sprememba se pošlje v smeri računalnika. Na dokumentu računalnika se naredi popravek. Proces se ponovi še v smeri računalnika proti uporabniku. Vsi trije dokumenti so sinhronizirani.
+
+Sistem je zanesljiv. Težava je, da taka zasnova ne omogoča sodelovanja oddaljenih uporabnikov v realnem času saj vse skupaj poteka na enem sistemu.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=9.2cm]{ds1.png}
+\end{center}
+\caption{Osnovna topologija Diferenčne sinhornizacije.}
+\label{ds1}
+\end{figure}
+
+\subsection{Metoda dveh senc}
+
+Konceptualno še vedno ostajamo pri istem algoritmu. Razlika je v topologiji. Namesto skupne sence uporabimo senco uporabnika in senco strežnika, ki se s popravki posodabljata ločeno. Taka zasnova DF omogoča sodelovanje oddaljenih uporabnikov. Vsak uporabnik je na svojem sistemu. Uporabnike povezuje centralni strežnik. Zaradi enostavnosti razlage je na Sliki \ref{ds2} prikazan le en uporabnik in strežnik, ki sta ločna s črtkano črto. Po vsakem ciklu morata biti dokument uporabnika in dokument strežnika identična.
+
+Predvidimo, da se na začetku vsi dokumenti v konsistentnem stanju. Uporabnik začne tipkati. Vključi se signal, da je med dokumentom in senco uporabnika razlika. Ko se ve, kakšne spremembe so bile narejene, se mora dokument prekopirati v senco. Sprememba se pošlje strežniku. Na strežniku se naredita dva popravka, na senci in na dokumentu. Pomembno je, da se popravek na senci izvede brez problemov. Na dokumentu se naredi nejasen (ang. fuzzy) popravek. Nejasen popravek izvira iz sodelovanja med uporabniki. Če eden izmed uporabnikov naredi korenito spremembo na dokumentu, povzroči, da se popravek prvega uporabnika ne umesti v dokument tako kot bi si on želel. Nepredvideno stanje se reši v naslednji polovici cikla. Senca in dokument strežnika sta v tem trenutku različna. Ko se ve, kakšne so spremembe med senco in nepredvidenim dokumentom strežnika, se mora dokument prekopirati v senco. Sprememba se pošlje uporabniku. Ker je bila sprememba dokumenta strežnika narejena na podlagi sence strežnika, ki je bila ista kot senca in dokument uporabnika, se brez težav naredi popravek na senci in na dokumentu uporabnika. Dokumenti so sinhronizirani.
+
+Sistem omogoča sodelovanje oddaljenih uporabnikov, vendar ni zanesljiv. Lahko se zgodi, da uporabnik na nezanesljivi povezavi od strežnika ne dobi nobenega odgovora. Do izgube spremembe lahko pride v prvem ali v drugem delu cikla. Senca uporabnika in senca strežnika nista več sinhronizirani. Edina rešitev za povrnitev nastalega stanje je, da povozimo uporabnikove spremembe. Tega si nihče ne želi.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=11.83cm]{ds2.png}
+\end{center}
+\caption{Diferenčna sinhronizacija z metodo dveh senc.}
+\label{ds2}
+\end{figure}
+
+\subsection{Metoda garantirane dostave}
+
+DS z metodo garantirane dostave je nadgradnja metode dveh senc. Iz Slike \ref{ds3} lahko razberemo, da se je topologija razširila še z varnostnima kopijama sence uporabnika in sence strežnika. Tudi tokrat mora biti vseh šest dokumentov v konsistentnem stanju. Namesto ene same spremembe, se lahko pošlje več sprememb na enkrat. Nove v topologiji so tudi številke verzij. S črko {\tt n} je označena številka verzija uporabnika. S črko {\tt m} je označena številka verzija strežnika. Na začetku sta obe številki verziji enaki {\tt 0}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=16cm]{ds3.png}
+\end{center}
+\caption{Diferenčna sinhronizacija z metodo garantirane dostave.}
+\label{ds3}
+\end{figure}
+
+Delovanje DS z metodo garantirane dostave bomo razložili na primeru. Na začetku je v vseh dokumentih beseda {\tt avto}. Alja v svoj dokument dopiše {\tt mobil}. Posledica razlike dokumenta uporabnika od sence uporabnika je sprememba {\tt mobil}. K sami spremembi se shrani številke verzije uporabnika na podlagi katere je bila sprememba osnovana. V seznam sprememb se torej shrani {\tt \{ +mobil;n=0 \}}. V tem trenutku se dokument Alje prekopira v njeno senco ter poveča se številka verzije uporabnika na {\tt n=1}. Sprememba se pošlje strežniku. Poleg spremembe se strežniku pošlje tudi številka zadnje sinhronizirane verzije strežnika {\tt m=0}. Stanje je prikazano na Sliki \ref{ds4}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=16cm]{ds4.png}
+\end{center}
+\caption{Alja v svojem dokumentu vidi besedo avtomobil.}
+\label{ds4}
+\end{figure}
+
+Strežnik primerja številki verzije uporabnika in strežnika spremembe s številkami verzije uporabnika in strežnika v senci strežnika (glej Sliko \ref{ds4}). Številki {\tt n} in {\tt m} sta v obeh primerih {\tt 0}, kar dovoljuje, da se naredi popravek na senci strežnika. Številka verzije uporabnika v senci strežnika se poveča na {\tt n=1}. Senca strežnika in senca uporabnika imata enako besedilo in enaki številki {\tt n} in {\tt m}, kar pomeni, da sta sinhronizirani. To se vidi tudi na Sliki \ref{ds5}. Popravek se naredi tudi na dokumentu strežnika, kar povzroči, da se senca strežnika prekopira v varnostno kopijo sence strežnika. Zakaj je to potrebno, bomo videli v nadaljevanju.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=16cm]{ds5.png}
+\end{center}
+\caption{Polovica cikla je končanega. Senci sta konsistentni.}
+\label{ds5}
+\end{figure}
+
+Recimo, da uporabnik Bine na začetek dokumenta vpiše besedo {\tt Moj}. Na isti način kot Aljina sprememba se tudi njegova sprememba sinhronizira v dokument strežnika. Vsebina dokumenta strežnika je tako {\tt Moj avtomobil}. Sedaj lahko nadaljujemo z drugim delom cikla iz smeri strežnika proti Alji.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=16cm]{ds6.png}
+\end{center}
+\caption{Server prejme spremembo od Bineta, ki jo pošlje Alji.}
+\label{ds6}
+\end{figure}
+
+Razlika dokumenta strežnika od sence strežnika je sprememba {\tt Moj} osnovana na številki verzije strežnika {\tt 0}. Sprememba {\tt \{ +Moj;m=0 \}} se pošlje k Alji. Poleg nje se pošlje tudi {\tt n=1} s katerim strežnik potrjuje, da je sprejel zadnjo Aljino spremembo. Pred tem se dokument strežnika prekopira v senco strežnika. Številka verzije strežnika {\tt m} v senci strežnika se poveča na {\tt 1}, Slika \ref{ds6}.
+
+Zaradi slabe povezave Alja ne prejme sprememba {\tt \{ +Moj;m=0 \}} iz strežnika. Tega niti ne opazi, ampak tipka naprej. V svoj dokument doda klicaj. Ponovi se postopek podoben prvemu ciklu. K seznamu sprememb se doda {\tt \{ +!;n=1 \}}. Dokument Alje se prekopira v njeno senco, {\tt n} se poveča na {\tt 2}. Obe spremembi se pošljejo strežniku. Pomnimo, da za prvo spremembo Alja ni dobila nobenega odgovora. Številka zadnje sinhronizirane verzije strežnika je še vedno {\tt m=0}. Slika \ref{ds7} prikazuje nastalo situacijo.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=16cm]{ds7.png}
+\end{center}
+\caption{Alja ni sprejela strežnikovih sprememb. V svojem dokumentu je naredila novo spremembo.}
+\label{ds7}
+\end{figure}
+
+Strežnik sprejme Aljini spremembi. Najprej poskuša sprocesirati prvo spremembo {\tt \{ +mobil;n=0 \}}. Ker se številka zadnje sinhronizirane verzije strežnika {\tt m=0} ne ujema s številko verzije strežnika v senci strežnika, se sence strežnika povrne iz kopije sence strežnika (s številko {\tt m=0}) v katerem se nahaja {\tt avtomobil}. Strežnik poskusi ponovno sprocesirati prvo spremembo. Številki verzije strežnika {\tt m=0} se ujemajo. Številka verzije uporabnika je v prvi spremembi {\tt n=0}, v senci strežnika pa {\tt n=1}. To pomeni, da je strežnik v enem izmed prejšnjih ciklov že obdelal to spremembo, zato jo lahko ignorira. Strežnik nato poskusi sprocesirati drugo spremembo {\tt \{ +!;n=1 \}}. Številki {\tt n=1} in {\tt m=0} se tokrat ujemajo. Strežnik lahko naredi popravek na senci strežnika. Številka {\tt n} se poveča za {\tt 1} na {\tt n=2}. Popravek se nato naredi tudi na dokumentu strežnika, naredi pa se tudi kopija sence strežnika. Senca uporabnika in senca strežnika sta sinhronizirani.
+
+Opomba! Ko se je naredila povrnitev kopije sence strežnika, se je seznam strežniških sprememb pobrisal. Spremembe v dokumentih in številkah {\tt n} in {\tt m} si oglejmo na Sliki \ref{ds8}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=16cm]{ds8.png}
+\end{center}
+\caption{Alja je strežniku poslala že dve spremembi.}
+\label{ds8}
+\end{figure}
+
+Dokument strežnika in senca strežnika se na Sliki \ref{ds8} razlikujejta. Strežnik pogleda kakšne so spremembe na dokumentu. Tako kot v prvem ciklu najde spremembo \linebreak {\tt \{ +Moj;m=0 \}}. Sprememba se ponovno pošlje Alji. Tokrat je številka verzija uporabnika v senci dnevnika enaka {\tt 2}, zato se Alji poleg spremembe pošlje tudi {\tt n=2}. Še prej se dokument prekopira v senco in v senci strežnika se poveča številka verzije strežnika iz {\tt m=0} nazaj na {\tt m=1}.
+
+Če bi bil strežnik spet neuspešen pri pošiljanju svojih sprememb, bi se seznam Aljinih sprememb povečeval vse dokler ne bi dobila odgovora od strežnika. Recimo, da tokrat strežniku uspe in Alja prejme spremembo {\tt \{ +Moj;m=0 \}}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=16cm]{ds9.png}
+\end{center}
+\caption{Strežnik pošilja Alji potrditev njenih spremembe in spremembo Bineta.}
+\label{ds9}
+\end{figure}
+
+Tokrat Alja primerja številke verzij. Številka verzije uporabnika v spremembi in v senci uporabnika je {\tt n=2}. Številka verzija strežnika v spremembi in v senci je {\tt m=0}. Sprememba je primerna za popravek na senci uporabnika. Naredijo se naslednje akcije. Na senci uporabnika se naredi popravek. Številka verzije zadnje sinhronizacije s strežnikom se v senci uporabnika poveča na {\tt m=1}. Popravek se naredi na dokumentu strežnika. Naredi se kopija sence uporabnika. Številka verzije uporabnika v kopiji sence uporabnika se poveča na {\tt n=2}. Ker je Alja uspešno sprejela potrditev strežnika, da je sprejel vse Aljine spremembe do številke verzije uporabnika {\tt n=2}, se iz seznama Aljinih sprememb pobrišejo vse spremembe, ki imajo številko verzije uporabnika manjše od {\tt 2} ({\tt n<2}).
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=16cm]{ds10.png}
+\end{center}
+\caption{Konsistentno stanje dokumentov.}
+\label{ds10}
+\end{figure}
+
+Kjub temu, da je med sodelovanjem uporabnikov in strežnika prišlo do izpada v povezavi, so se dokumenti posinhronizirali. V dokumentu na koncu piše “{\tt Moj avtomobil!}”.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Operativna transformacija}
 
 Operativna transformacija se je prvič omenjala v članku Concurrency Control in Groupware Systems. Pri Googlu so Operativno transformacijo vzeli za osnovno pri načrtovanju protokola Wave, ki se uporablja v Google Docsih, kar nakazuje na njeno uporabnost.
@@ -393,140 +526,7 @@ Na koncu Bine dobi potrditev svoje spremembe in Alja prejme Binetovo spremembo. 
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Diferenčna sinhronizacija}
-
-Konceptualno enostavni načini sinhronizacije so zaklepanje (ang. locking), prenašanje dogodkov (ang. event passing) in trosmerno združevanje (ang. three way merge).
-
-\begin{description}
-	\item[Zaklepanje] je najenostavnejši način. Ko uporabnik odpre skupni dokument, se mu dodeli pravica lasnika (ang. ownership). Le on ga lahko ureja. Vsi ostali uporabniki lahko v tistem času dokument gledajo (ang. read-only access). Cilj je delno dosežen. Vsi uporabniki imajo sinhroniziran dokument, vendar urejanje dokumenta se ne izvaja v realnem času. Izboljšava zaklepanja je delno zaklepenje pri katerem se uporabniku dodeli pravica lastnika le za majhen del dokumenta. Ta način ni najboljši kadar imajo uporabniki slabo povezavo. Paket z informacijo o zaklepanju in odklepanju se lahko izgubi. V dokumentu lahko nastanejo deli nad katerimi ima lahko več uporabnikov pravico lastnika. Pojavijo se tudi druga anomalije.
-	\item[Prenašanje dogodkov] temelji na zaznavanju vseh interakacij, ki jih naredi uporabnik z urejevalnikom. V teoriji je to enostavno, saj vsak sistem omogoča zaznavanja tipkanja. V praksi je težko izvedljivo. Poleg tipkanja lahko uporabnik naredi tudi akcije kot so izreži besedilo, prilepi besedilo, povleci in spusti besedilo, zamenjava besedila... Akciji kot sta samodokončanje in pravpisni popravek lahko naredi tudi sam urejevalnik. Kaj narediti v teh primerih? Težava je tudi v tem, da lahko zaradi neke napake ali zamude v komunkaciji pride do dveh popolnom različnih dokumenetov, ki jih ne moremo poenotiti.
-	\item[Trosmerno združevanja] uporabljajo programerji pri delu na skupnem projektu. Je zelo robusten sistem. Sestavljen je iz treh korakov. Uporabnik najprej svojo vsebino pošlje na strežnik. Strežnik izvzame narejene spremembe in jih združi s spremembami drugih uporabnikov. Nova kopija dokumenta se sinhronizira vsem uporabnikom. Sistem trosmernega združevanja ima nekaj slabosti. Če uporabnik naredi spremembo na dokumentu medtem, ko je sinhronizacija v teku, mora zavreči vse na novo narejene spremembe. Slabost je, da uporabnik ne dobi nobene povratne informacije (ang. feedback) med tipkanjem. Način trosmernega združevanja bi pri urejanju v realnem času deloval le v dveh primerih. Če bi si lahko privoščili, da bi uporabnika blokirali in sinhronizirali z novo verzijo na strežniku ali pa v primeru, da bi uporabnika sinhronizirali, ko neha tipkati. Ampak nobena od teh dveh variant ni urejanje dokumenta v realnem času.
-\end{description}
-
-Ker sinhronizacija in ohranjanje konsistentnosti med uporabniki ni enostavna, si oglejmo rešitev imenovano Diferenčna sinhronizacija (v nadaljevanju DF). DF je simetričen algoritem, ki uporablja neskončno ciklov razlik na dokumentih in z njimi popravlja ostale dokumente v ciklu. Najprej bomo preučili osnovno topologijo DS, ki teoretična podlaga za izboljšave z metodo dveh senc in z metodo garantirane dostave.
-
-\subsection{Osnovna topologija}
-
-Na Sliki \ref{ds1} je z diagramom prikazan DS. V osnovni topologiji obstajata dokument uporabnika in dokument računalnika. Oba sta locirana na istem sistemu brez internetne povezave. Med njima se nahaja dokument imenovan skupna senca (ang. common shadow). Predvidimo, da imajo na začetku vsi trije dokumenti isto vsebino. Cilj je, da so dokumenti vseskozi čim bolj enaki. Ostale entitete so še razlika, sprememba in popravek. Razlika je signal, ki pove, da se dokument uporabnika razlikuje od skupne sence. Na ta način vemo, da je uporabnik naredil spremembo na svojem dokumentu. Ni nam potrebno spremljati vsake uporabnikove akcije. Ko se ve, kakšne spremembe so bile narejene, se mora dokument prekopirati v senco. Sprememba se pošlje v smeri računalnika. Na dokumentu računalnika se naredi popravek. Proces se ponovi še v smeri računalnika proti uporabniku. Vsi trije dokumenti so sinhronizirani.
-
-Sistem je zanesljiv. Težava je, da taka zasnova ne omogoča sodelovanja oddaljenih uporabnikov v realnem času saj vse skupaj poteka na enem sistemu.
-
-\begin{figure}[placement h]
-\begin{center}
-\includegraphics[width=9.2cm]{ds1.png}
-\end{center}
-\caption{Osnovna topologija Diferenčne sinhornizacije.}
-\label{ds1}
-\end{figure}
-
-\subsection{Metoda dveh senc}
-
-Konceptualno še vedno ostajamo pri istem algoritmu. Razlika je v topologiji. Namesto skupne sence uporabimo senco uporabnika in senco strežnika, ki se s popravki posodabljata ločeno. Taka zasnova DF omogoča sodelovanje oddaljenih uporabnikov. Vsak uporabnik je na svojem sistemu. Uporabnike povezuje centralni strežnik. Zaradi enostavnosti razlage je na Sliki \ref{ds2} prikazan le en uporabnik in strežnik, ki sta ločna s črtkano črto. Po vsakem ciklu morata biti dokument uporabnika in dokument strežnika identična.
-
-Predvidimo, da se na začetku vsi dokumenti v konsistentnem stanju. Uporabnik začne tipkati. Vključi se signal, da je med dokumentom in senco uporabnika razlika. Ko se ve, kakšne spremembe so bile narejene, se mora dokument prekopirati v senco. Sprememba se pošlje strežniku. Na strežniku se naredita dva popravka, na senci in na dokumentu. Pomembno je, da se popravek na senci izvede brez problemov. Na dokumentu se naredi nejasen (ang. fuzzy) popravek. Nejasen popravek izvira iz sodelovanja med uporabniki. Če eden izmed uporabnikov naredi korenito spremembo na dokumentu, povzroči, da se popravek prvega uporabnika ne umesti v dokument tako kot bi si on želel. Nepredvideno stanje se reši v naslednji polovici cikla. Senca in dokument strežnika sta v tem trenutku različna. Ko se ve, kakšne so spremembe med senco in nepredvidenim dokumentom strežnika, se mora dokument prekopirati v senco. Sprememba se pošlje uporabniku. Ker je bila sprememba dokumenta strežnika narejena na podlagi sence strežnika, ki je bila ista kot senca in dokument uporabnika, se brez težav naredi popravek na senci in na dokumentu uporabnika. Dokumenti so sinhronizirani.
-
-Sistem omogoča sodelovanje oddaljenih uporabnikov, vendar ni zanesljiv. Lahko se zgodi, da uporabnik na nezanesljivi povezavi od strežnika ne dobi nobenega odgovora. Do izgube spremembe lahko pride v prvem ali v drugem delu cikla. Senca uporabnika in senca strežnika nista več sinhronizirani. Edina rešitev za povrnitev nastalega stanje je, da povozimo uporabnikove spremembe. Tega si nihče ne želi.
-
-\begin{figure}[placement h]
-\begin{center}
-\includegraphics[width=11.83cm]{ds2.png}
-\end{center}
-\caption{Diferenčna sinhronizacija z metodo dveh senc.}
-\label{ds2}
-\end{figure}
-
-\subsection{Metoda garantirane dostave}
-
-DS z metodo garantirane dostave je nadgradnja metode dveh senc. Iz Slike \ref{ds3} lahko razberemo, da se je topologija razširila še z varnostnima kopijama sence uporabnika in sence strežnika. Tudi tokrat mora biti vseh šest dokumentov v konsistentnem stanju. Namesto ene same spremembe, se lahko pošlje več sprememb na enkrat. Nove v topologiji so tudi številke verzij. S črko {\tt n} je označena številka verzija uporabnika. S črko {\tt m} je označena številka verzija strežnika. Na začetku sta obe številki verziji enaki {\tt 0}.
-
-\begin{figure}[placement h]
-\begin{center}
-\includegraphics[width=16cm]{ds3.png}
-\end{center}
-\caption{Diferenčna sinhronizacija z metodo garantirane dostave.}
-\label{ds3}
-\end{figure}
-
-Delovanje DS z metodo garantirane dostave bomo razložili na primeru. Na začetku je v vseh dokumentih beseda {\tt avto}. Alja v svoj dokument dopiše {\tt mobil}. Posledica razlike dokumenta uporabnika od sence uporabnika je sprememba {\tt mobil}. K sami spremembi se shrani številke verzije uporabnika na podlagi katere je bila sprememba osnovana. V seznam sprememb se torej shrani {\tt \{ +mobil;n=0 \}}. V tem trenutku se dokument Alje prekopira v njeno senco ter poveča se številka verzije uporabnika na {\tt n=1}. Sprememba se pošlje strežniku. Poleg spremembe se strežniku pošlje tudi številka zadnje sinhronizirane verzije strežnika {\tt m=0}. Stanje je prikazano na Sliki \ref{ds4}.
-
-\begin{figure}[placement h]
-\begin{center}
-\includegraphics[width=16cm]{ds4.png}
-\end{center}
-\caption{Alja v svojem dokumentu vidi besedo avtomobil.}
-\label{ds4}
-\end{figure}
-
-Strežnik primerja številki verzije uporabnika in strežnika spremembe s številkami verzije uporabnika in strežnika v senci strežnika (glej Sliko \ref{ds4}). Številki {\tt n} in {\tt m} sta v obeh primerih {\tt 0}, kar dovoljuje, da se naredi popravek na senci strežnika. Številka verzije uporabnika v senci strežnika se poveča na {\tt n=1}. Senca strežnika in senca uporabnika imata enako besedilo in enaki številki {\tt n} in {\tt m}, kar pomeni, da sta sinhronizirani. To se vidi tudi na Sliki \ref{ds5}. Popravek se naredi tudi na dokumentu strežnika, kar povzroči, da se senca strežnika prekopira v varnostno kopijo sence strežnika. Zakaj je to potrebno, bomo videli v nadaljevanju.
-
-\begin{figure}[placement h]
-\begin{center}
-\includegraphics[width=16cm]{ds5.png}
-\end{center}
-\caption{Polovica cikla je končanega. Senci sta konsistentni.}
-\label{ds5}
-\end{figure}
-
-Recimo, da uporabnik Bine na začetek dokumenta vpiše besedo {\tt Moj}. Na isti način kot Aljina sprememba se tudi njegova sprememba sinhronizira v dokument strežnika. Vsebina dokumenta strežnika je tako {\tt Moj avtomobil}. Sedaj lahko nadaljujemo z drugim delom cikla iz smeri strežnika proti Alji.
-
-\begin{figure}[placement h]
-\begin{center}
-\includegraphics[width=16cm]{ds6.png}
-\end{center}
-\caption{Server prejme spremembo od Bineta, ki jo pošlje Alji.}
-\label{ds6}
-\end{figure}
-
-Razlika dokumenta strežnika od sence strežnika je sprememba {\tt Moj} osnovana na številki verzije strežnika {\tt 0}. Sprememba {\tt \{ +Moj;m=0 \}} se pošlje k Alji. Poleg nje se pošlje tudi {\tt n=1} s katerim strežnik potrjuje, da je sprejel zadnjo Aljino spremembo. Pred tem se dokument strežnika prekopira v senco strežnika. Številka verzije strežnika {\tt m} v senci strežnika se poveča na {\tt 1}, Slika \ref{ds6}.
-
-Zaradi slabe povezave Alja ne prejme sprememba {\tt \{ +Moj;m=0 \}} iz strežnika. Tega niti ne opazi, ampak tipka naprej. V svoj dokument doda klicaj. Ponovi se postopek podoben prvemu ciklu. K seznamu sprememb se doda {\tt \{ +!;n=1 \}}. Dokument Alje se prekopira v njeno senco, {\tt n} se poveča na {\tt 2}. Obe spremembi se pošljejo strežniku. Pomnimo, da za prvo spremembo Alja ni dobila nobenega odgovora. Številka zadnje sinhronizirane verzije strežnika je še vedno {\tt m=0}. Slika \ref{ds7} prikazuje nastalo situacijo.
-
-\begin{figure}[placement h]
-\begin{center}
-\includegraphics[width=16cm]{ds7.png}
-\end{center}
-\caption{Alja ni sprejela strežnikovih sprememb. V svojem dokumentu je naredila novo spremembo.}
-\label{ds7}
-\end{figure}
-
-Strežnik sprejme Aljini spremembi. Najprej poskuša sprocesirati prvo spremembo {\tt \{ +mobil;n=0 \}}. Ker se številka zadnje sinhronizirane verzije strežnika {\tt m=0} ne ujema s številko verzije strežnika v senci strežnika, se sence strežnika povrne iz kopije sence strežnika (s številko {\tt m=0}) v katerem se nahaja {\tt avtomobil}. Strežnik poskusi ponovno sprocesirati prvo spremembo. Številki verzije strežnika {\tt m=0} se ujemajo. Številka verzije uporabnika je v prvi spremembi {\tt n=0}, v senci strežnika pa {\tt n=1}. To pomeni, da je strežnik v enem izmed prejšnjih ciklov že obdelal to spremembo, zato jo lahko ignorira. Strežnik nato poskusi sprocesirati drugo spremembo {\tt \{ +!;n=1 \}}. Številki {\tt n=1} in {\tt m=0} se tokrat ujemajo. Strežnik lahko naredi popravek na senci strežnika. Številka {\tt n} se poveča za {\tt 1} na {\tt n=2}. Popravek se nato naredi tudi na dokumentu strežnika, naredi pa se tudi kopija sence strežnika. Senca uporabnika in senca strežnika sta sinhronizirani.
-
-Opomba! Ko se je naredila povrnitev kopije sence strežnika, se je seznam strežniških sprememb pobrisal. Spremembe v dokumentih in številkah {\tt n} in {\tt m} si oglejmo na Sliki \ref{ds8}.
-
-\begin{figure}[placement h]
-\begin{center}
-\includegraphics[width=16cm]{ds8.png}
-\end{center}
-\caption{Alja je strežniku poslala že dve spremembi.}
-\label{ds8}
-\end{figure}
-
-Dokument strežnika in senca strežnika se na Sliki \ref{ds8} razlikujejta. Strežnik pogleda kakšne so spremembe na dokumentu. Tako kot v prvem ciklu najde spremembo \linebreak {\tt \{ +Moj;m=0 \}}. Sprememba se ponovno pošlje Alji. Tokrat je številka verzija uporabnika v senci dnevnika enaka {\tt 2}, zato se Alji poleg spremembe pošlje tudi {\tt n=2}. Še prej se dokument prekopira v senco in v senci strežnika se poveča številka verzije strežnika iz {\tt m=0} nazaj na {\tt m=1}.
-
-Če bi bil strežnik spet neuspešen pri pošiljanju svojih sprememb, bi se seznam Aljinih sprememb povečeval vse dokler ne bi dobila odgovora od strežnika. Recimo, da tokrat strežniku uspe in Alja prejme spremembo {\tt \{ +Moj;m=0 \}}.
-
-\begin{figure}[placement h]
-\begin{center}
-\includegraphics[width=16cm]{ds9.png}
-\end{center}
-\caption{Strežnik pošilja Alji potrditev njenih spremembe in spremembo Bineta.}
-\label{ds9}
-\end{figure}
-
-Tokrat Alja primerja številke verzij. Številka verzije uporabnika v spremembi in v senci uporabnika je {\tt n=2}. Številka verzija strežnika v spremembi in v senci je {\tt m=0}. Sprememba je primerna za popravek na senci uporabnika. Naredijo se naslednje akcije. Na senci uporabnika se naredi popravek. Številka verzije zadnje sinhronizacije s strežnikom se v senci uporabnika poveča na {\tt m=1}. Popravek se naredi na dokumentu strežnika. Naredi se kopija sence uporabnika. Številka verzije uporabnika v kopiji sence uporabnika se poveča na {\tt n=2}. Ker je Alja uspešno sprejela potrditev strežnika, da je sprejel vse Aljine spremembe do številke verzije uporabnika {\tt n=2}, se iz seznama Aljinih sprememb pobrišejo vse spremembe, ki imajo številko verzije uporabnika manjše od {\tt 2} ({\tt n<2}).
-
-\begin{figure}[placement h]
-\begin{center}
-\includegraphics[width=16cm]{ds10.png}
-\end{center}
-\caption{Konsistentno stanje dokumentov.}
-\label{ds10}
-\end{figure}
-
-Kjub temu, da je med sodelovanjem uporabnikov in strežnika prišlo do izpada v povezavi, so se dokumenti posinhronizirali. V dokumentu na koncu piše “{\tt Moj avtomobil!}”.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{WOOT}
+\section{Brez operativne transformacije}
 
 V tem poglavju bomo opisali protokol Brez operativne transformacije, bolj znan pod kratico WOOT. Bil je narejen kot odgovor na kopleksnost OT. Rekli smo, da se \linebreak pri OT med uporabnike pošiljajo spremembe in lokacija sprememb, primer \linebreak {\tt \{ Vstavi ‘M’ @11 \}}. OT skrbi za pravilno transformacijo lokacij sprememb. Pristop WOOT je drugačen in ga je lažje razumeti. WOOT skrbi za pravilno razvrščanje sprememb oziroma operacij, kot se jih običajno poimenuje. Glavna razlika je v podajanju informacij. Lahko si predstavljamo, da na vsak znak v dokumentu kaže unikatni kazalec, to je identifikacijska številka. Med oddaljene uporabnike, ki sodelujejo pri urejanju dokumenta, se pošiljajo informacije med katerima znakoma oziroma na kateremu znaku je bila narejena sprememba. Posebnost protokola WOOT je, da se znakov v dokumentu nikoli ne briše, le označi se jih kot nevidne.
 
@@ -640,63 +640,49 @@ Prikazane so konfliktne črke v Cenetovem dokumentu tik pred integracijo črke {
 Ko se integrira še Binetov presledek, dobimo “{\tt Uboga mala muca!}”.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Modeli konsistence, struktura in pravilnost}
+\chapter{Primerjava algoritmov}
+
+Phasellus felis diam, molestie in laoreet ac, vestibulum at nunc.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Delovanje pri počasni povezavi}
+
+Cras dictum laoreet mi at lacinia. Sed nec volutpat leo. Nulla facilisi. Sed at orci ante. Integer id dui lectus. Maecenas sagittis, libero molestie varius lobortis, urna sapien congue magna, non commodo est turpis quis lacus. Vestibulum molestie tristique auctor.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Iskanje razlik ali poslušalci akcij}
+
+Donec sed eros venenatis, facilisis quam non, aliquam libero. Vivamus in vulputate leo. Integer tellus ipsum, venenatis ut sagittis eu, elementum eu nisi. Curabitur sit amet consectetur sem. Nulla in velit sed arcu ultrices fermentum. Fusce in est at sem interdum sagittis vel ac tellus.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Zahtevnost algoritma}
+
+Maecenas consequat adipiscing ligula, a imperdiet ligula tincidunt ut. Sed a tristique quam. Sed quis posuere lorem. In suscipit lacus eu velit pellentesque scelerisque. Etiam pretium in mi vel placerat. Nunc at ultrices lacus, id tincidunt magna.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Model odjemalec-strežnik ali decentralizacija}
+
+Proin adipiscing ac dui vel rutrum. Aenean sit amet placerat nibh. Nulla tempus tristique tortor in auctor. Fusce volutpat mattis fermentum. Maecenas accumsan nibh ut nisi consequat, eget blandit augue auctor. Aenean ac elementum mi. Aenean eu mattis ipsum. Vivamus dolor ipsum, aliquet id dapibus mattis, pretium vel enim.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Konsistentnost}
+
+Mauris imperdiet ut leo a tempus. Aliquam tempor condimentum massa, at varius diam egestas nec. Mauris eu sem at odio sagittis porta. Curabitur quis rhoncus magna, vitae dignissim enim.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Shranjevanje podatkov}
+
+Quisque ut velit bibendum, convallis urna vitae, tempor felis. Fusce cursus condimentum nisl, accumsan pharetra lorem iaculis sit amet. In ac lectus est. Nulla facilisi. Vivamus ornare justo id neque interdum, auctor ornare turpis cursus.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Algoritmi za iskanje razlik v besedilu}
 
 Nulla vel lorem erat. Nullam convallis molestie mauris non vulputate. Fusce sagittis purus non mi interdum, ac tempor nunc vulputate. Vivamus tempor diam a laoreet porta. Aliquam adipiscing elit vel risus accumsan, eget lacinia felis rutrum. Mauris ornare mattis vestibulum. Proin adipiscing semper turpis, eleifend sollicitudin tortor aliquam eget.
-
-Nam non odio at arcu tincidunt laoreet. Aenean iaculis magna nec risus semper, eu hendrerit nunc blandit. Vivamus in eros sit amet augue interdum fringilla. Nullam semper volutpat iaculis. Aliquam erat volutpat. Nullam magna magna, adipiscing non leo imperdiet, pharetra facilisis ante. Mauris quis felis sed turpis sagittis varius. Quisque laoreet elementum mauris, ac lacinia magna ultricies ac. Praesent a blandit nibh. Maecenas malesuada velit ac accumsan convallis. Quisque ultrices arcu lacus, vulputate cursus arcu faucibus id. Suspendisse blandit at enim eu condimentum. Praesent laoreet luctus enim, nec ultrices est varius eu. Vestibulum viverra ante eu est ultrices feugiat eget nec mauris. Vestibulum tempus nisl risus, non condimentum ipsum elementum a. Maecenas ligula enim, consectetur sit amet dignissim eu, blandit nec enim. In hac habitasse platea dictumst. Praesent auctor ligula ut justo congue mattis. In mollis porta tempor. Cras tincidunt egestas porta. Donec non tristique arcu. Vestibulum tempor ac nisl non tincidunt. Duis hendrerit risus mi, ut commodo orci eleifend a. Aenean hendrerit leo sed consectetur facilisis. Duis gravida blandit accumsan. Curabitur id volutpat lorem. Nunc ac vulputate massa. Morbi aliquam cursus ligula id malesuada. Nam ut felis orci. Vestibulum tincidunt cursus mi, hendrerit scelerisque orci aliquet sit amet. Quisque placerat nunc sit amet nibh congue tincidunt. Sed vitae hendrerit mauris, in egestas leo. Etiam blandit hendrerit felis a malesuada. Cras ultricies urna sed tincidunt blandit. Donec at gravida purus, eu gravida augue. Curabitur varius nibh nec erat hendrerit blandit. Etiam commodo elit ut luctus elementum.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\section{Model CC}
-
-In hac habitasse platea dictumst. Vestibulum lorem orci, suscipit eget fermentum nec, convallis in odio. Curabitur eu rhoncus eros, faucibus ullamcorper mi. Nam varius sapien tellus, et mollis nisl hendrerit venenatis. Vivamus facilisis lectus ac nisl porttitor, a placerat sem egestas. Aliquam ornare iaculis justo pellentesque venenatis. Donec euismod libero sed neque venenatis ullamcorper. Donec vestibulum quam lorem, id ornare sem sodales nec. Curabitur tristique nibh pellentesque, blandit leo at, hendrerit felis. Donec rhoncus massa non tortor condimentum semper. Nulla varius nulla vel elit vestibulum, nec malesuada nibh posuere. Vestibulum sagittis est nec laoreet lobortis. Proin eget varius quam. Vestibulum sit amet sodales libero, non commodo purus. Sed ullamcorper nulla a imperdiet dignissim. Aliquam sed turpis porta, rutrum erat nec, iaculis purus. Mauris gravida erat non tortor faucibus, vitae malesuada dolor vehicula. Morbi volutpat ipsum non mauris gravida luctus. Nunc venenatis molestie ligula, volutpat bibendum felis scelerisque eget. Phasellus eget lectus vitae nisi bibendum dignissim sit amet eget odio. Fusce sed ipsum in turpis feugiat dictum. Donec sed arcu orci. Nullam ac suscipit urna. Ut sollicitudin sagittis justo id volutpat.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\section{Model CSM}
-
-Etiam blandit diam in tincidunt facilisis. Donec mi est, malesuada et felis non, condimentum cursus nisl. Sed sit amet nisi ac massa eleifend commodo ut a enim. Fusce congue at dui at aliquet. Sed et nisi facilisis, dapibus elit nec, lobortis libero. Sed a orci et ante venenatis feugiat. Praesent quis sodales mauris, id tincidunt eros. Suspendisse potenti. Vestibulum leo neque, vulputate mattis mollis ac, ultricies eget mi. Proin tortor ligula, fringilla nec sapien et, rhoncus rutrum augue. Vestibulum ut tellus laoreet, congue elit eget, semper sapien. Cras diam mi, lobortis ut vehicula ut, hendrerit vel nisi. Quisque auctor dui id enim iaculis, ac varius nisl porttitor. Cras in lectus vulputate, rutrum risus ut, ornare nisl. Sed viverra ligula vel tristique sagittis. Donec non leo eu lorem ultricies congue nec nec lacus. Maecenas egestas sed augue nec sodales. Integer ac leo eu risus pharetra auctor vitae non nibh. Cras in purus eu eros imperdiet mattis in sed ligula. Pellentesque id varius sem. Ut et velit mattis lacus sagittis egestas non ac lectus. Proin eget neque mi. Maecenas molestie, sapien vitae tincidunt luctus, felis sapien semper diam, ac consectetur augue lacus vitae augue. Vivamus bibendum libero eu elit lobortis elementum. Integer mollis neque et sapien vestibulum cursus. In eget elit eu ligula aliquam sollicitudin. Curabitur iaculis vel lorem id fermentum. Curabitur ante massa, laoreet in semper eget, interdum ac magna. Vestibulum tincidunt dignissim volutpat. Phasellus urna velit, imperdiet quis semper quis, rhoncus nec est. Aliquam mauris nunc, tincidunt a placerat vitae, scelerisque quis lorem.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\section{Model CA}
-
-Interdum et malesuada fames ac ante ipsum primis in faucibus. Nam sagittis ipsum nisi, at ultricies nisl interdum sed. Nulla facilisi. Vestibulum tristique nunc ipsum, nec luctus tellus vulputate sit amet. Sed diam justo, imperdiet eu magna ut, convallis accumsan neque. Nulla non dolor volutpat, mollis justo vitae, auctor est. Nunc id mi nulla. Integer aliquet, tellus id dictum lobortis, arcu urna posuere lectus, in rutrum orci sapien in ante. Etiam aliquam turpis sapien, quis varius nisl pretium accumsan. Suspendisse ultrices nibh sed libero fermentum, et scelerisque turpis pretium. Sed lobortis nibh eu ante scelerisque auctor. Donec eu interdum metus, et dignissim nulla. Maecenas vestibulum rutrum lacus. Fusce fringilla metus hendrerit, ultricies velit at, blandit libero. Nulla nisl eros, adipiscing in mauris eu, ullamcorper pretium augue. Ut imperdiet odio vitae velit imperdiet, id consectetur lorem rutrum. Interdum et malesuada fames ac ante ipsum primis in faucibus. Quisque risus sapien, molestie ut tortor sed, sollicitudin pulvinar magna. Donec a quam quam. Proin hendrerit purus in sapien consequat tristique. Donec malesuada quis odio non varius. Mauris lobortis, eros eget euismod commodo, magna odio eleifend mi, sed ullamcorper leo massa vitae sem. Nullam eros enim, luctus nec ante quis, varius molestie lorem. Praesent ullamcorper, ante ac faucibus adipiscing, urna urna porttitor arcu, at luctus velit erat vitae elit. Fusce dui quam, vulputate vel cursus non, pulvinar sed ante. Nullam interdum turpis in libero tempor, non sodales leo consectetur. Donec quis eros non quam fermentum varius et ut neque. Nulla vel dolor velit. Aliquam erat volutpat. Sed fringilla quam a sem fringilla lacinia. In condimentum ante nisl, eget egestas urna pretium vitae. Vivamus facilisis feugiat mi, sit amet congue dui aliquam id. Maecenas luctus sed lorem vitae auctor. Maecenas eu magna sed nisl lobortis commodo.
-
-Sed condimentum nisi augue, vitae scelerisque dui congue at. Pellentesque ac sem sed velit faucibus rutrum. Proin fringilla nunc eu dui rutrum, vel luctus nunc dapibus. Nullam mi enim, convallis ac sapien et, suscipit pellentesque lorem. Duis ornare massa nec quam gravida laoreet. Nam ut semper sapien. Aenean quis massa nisi. Praesent quis ligula vel dolor ornare interdum tempus quis urna. Mauris quis justo id lorem porttitor egestas eget ornare arcu. Vestibulum et turpis arcu. Vivamus et placerat mauris. Proin eget eleifend diam, sit amet pharetra leo. Proin auctor vulputate nisl, at placerat massa. Sed tempor mi at varius facilisis.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Algoritmi integracije operativne transformacije}
-
-Phasellus felis diam, molestie in laoreet ac, vestibulum at nunc. Donec et venenatis leo. Nunc elementum molestie est in tincidunt. Integer suscipit, tortor a sodales fringilla, lacus turpis hendrerit elit, tempor pharetra metus sapien ac nisl. Nam vitae neque ipsum. Cras porttitor enim tortor, ut ultricies mi fermentum vitae. Sed at pretium diam. Phasellus eros felis, lacinia et pellentesque sed, feugiat ac ante. Donec sed imperdiet leo. Pellentesque eu luctus lacus. Integer adipiscing lectus a gravida scelerisque. Nam fermentum turpis et posuere semper. Maecenas sit amet sapien lorem. Aenean mattis auctor nibh, nec congue enim varius id. Quisque eget enim eu lectus accumsan vulputate vitae id urna. Donec non felis nec ipsum semper luctus vel eu nisi.
-
-Cras dapibus lacus metus, id tristique odio feugiat sit amet. Etiam erat odio, ornare et eros semper, lacinia ornare metus. Sed vestibulum dolor id leo faucibus, a egestas massa tincidunt. Morbi libero quam, lacinia ac dapibus vel, scelerisque eu libero. Aenean suscipit purus vel diam congue, eget fringilla orci fringilla. Donec purus augue, varius nec tortor vel, lacinia pulvinar libero. Vestibulum at adipiscing lacus. Phasellus at vestibulum lectus.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Pristop GROVE (decentraliziran)}
-
-Cras dictum laoreet mi at lacinia. Sed nec volutpat leo. Nulla facilisi. Sed at orci ante. Integer id dui lectus. Maecenas sagittis, libero molestie varius lobortis, urna sapien congue magna, non commodo est turpis quis lacus. Vestibulum molestie tristique auctor. Etiam eget interdum diam. Donec at velit adipiscing purus tincidunt placerat. Donec luctus nulla sit amet felis ullamcorper, vel suscipit velit hendrerit. Fusce tempus magna dictum, volutpat metus id, commodo nunc. Etiam eu velit sapien. Phasellus accumsan, nunc convallis suscipit viverra, diam leo sagittis dolor, ac porta nulla libero porta tellus. Donec volutpat, massa nec pulvinar consectetur, eros elit vehicula dui, ut vehicula libero leo ut massa. Sed eget tempor augue.
-
-Nullam sollicitudin nisi sed lacus tempus vehicula. Ut posuere tortor sem, aliquet tempor libero vestibulum vel. Nunc luctus, nibh semper bibendum lacinia, neque nisl dapibus purus, id consectetur lorem arcu a mi. Aenean vulputate non mi non auctor. Integer ultricies arcu scelerisque risus pharetra auctor. Nulla vulputate blandit dui, id euismod eros blandit congue. Curabitur porttitor dolor justo, ac gravida est rutrum tristique. Praesent in mattis diam, at aliquet tellus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Integer commodo purus non est feugiat tincidunt. Integer nisi dolor, porta eget nisi non, blandit feugiat tellus. Nam ac orci sed sapien cursus aliquet vitae in diam. Aliquam pulvinar libero id nibh scelerisque condimentum nec non elit. Nam tristique dui quis enim pretium fringilla.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Pristop Jupiter (odjemalec-strežnik)}
-
-Donec sed eros venenatis, facilisis quam non, aliquam libero. Vivamus in vulputate leo. Integer tellus ipsum, venenatis ut sagittis eu, elementum eu nisi. Curabitur sit amet consectetur sem. Nulla in velit sed arcu ultrices fermentum. Fusce in est at sem interdum sagittis vel ac tellus. Suspendisse eget facilisis eros. Nunc non massa nec nisl hendrerit vestibulum non nec leo. Duis sollicitudin dapibus ante eu euismod. Morbi egestas tempor cursus.
-
-Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Proin tempor, quam pulvinar sagittis scelerisque, libero erat hendrerit dolor, et lacinia ipsum justo sit amet leo. Vestibulum mauris lectus, vestibulum quis porttitor at, pretium et elit. In dictum purus erat, ut imperdiet velit blandit ut. Sed rutrum diam dictum magna blandit suscipit. Sed a ipsum sed risus gravida suscipit a at purus. Cras molestie enim sed auctor porta.
-
-Donec malesuada, tellus quis gravida malesuada, est nisl dapibus odio, non molestie elit velit non mi. Nulla facilisi. Nullam ut diam ac mi vestibulum tristique eget luctus nisi. In euismod diam quis convallis bibendum. Donec laoreet sem ac lectus porttitor, eu porttitor augue euismod. Ut vulputate condimentum orci, ut tincidunt sem rhoncus eu. Nulla consequat porta ligula, nec lobortis lectus vehicula in. Aenean ac bibendum justo, lacinia pellentesque nulla. Etiam nec cursus ante.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Pristop Google Wave (izboljšava)	}
-
-Maecenas consequat adipiscing ligula, a imperdiet ligula tincidunt ut. Sed a tristique quam. Sed quis posuere lorem. In suscipit lacus eu velit pellentesque scelerisque. Etiam pretium in mi vel placerat. Nunc at ultrices lacus, id tincidunt magna. Vivamus ac nibh ac quam vulputate luctus. Pellentesque id eros eu sem facilisis tincidunt. Donec varius odio ut elit porttitor, quis lobortis turpis porttitor. Nunc dui dolor, molestie ac odio quis, porta sollicitudin tellus. Donec commodo metus id sodales suscipit. Sed nec lectus adipiscing, feugiat ante id, sollicitudin neque. Aliquam blandit adipiscing neque, eget feugiat urna viverra sit amet.
-
-Aenean porta, ligula ut feugiat porta, metus felis \cite{gdocs} fermentum sem, quis aliquam lectus erat nec lectus. Maecenas vitae est felis. Nunc sit amet pharetra mauris, semper fermentum lorem. Nam lobortis egestas blandit. Donec mattis quis metus sed accumsan. Pellentesque in pulvinar massa. Donec at nisi nec turpis porta molestie. Vestibulum gravida ac lacus sit amet dignissim. Proin risus ligula, rhoncus ac sapien non, dignissim convallis lorem. Suspendisse vehicula et dolor eu ultrices.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Urejevalniki v realnem času}
 
-Quisque ut velit bibendum, convallis urna vitae, tempor felis. Fusce cursus condimentum nisl, accumsan pharetra lorem iaculis sit amet. In ac lectus est. Nulla facilisi. Vivamus ornare justo id neque interdum, auctor ornare turpis cursus. Vestibulum euismod nisl orci. Curabitur consectetur, nibh vel tristique pretium, enim magna hendrerit tortor, non rutrum risus nibh et urna. Vivamus a ornare libero. Integer vitae tortor tincidunt, placerat mauris ac, molestie risus. Pellentesque ipsum neque, molestie nec malesuada blandit, fringilla cursus sapien. Sed sed risus lacinia, tempus tortor at, cursus metus. In lacinia elit vel est varius, feugiat faucibus libero vulputate. Nam molestie enim ut interdum venenatis. Donec dolor arcu, blandit et tempor nec, cursus a leo. Phasellus id sollicitudin sapien. Aenean placerat adipiscing metus eget rutrum. Proin adipiscing ac dui vel rutrum. Aenean sit amet placerat nibh. Nulla tempus tristique tortor in auctor. Fusce volutpat mattis fermentum. Maecenas accumsan nibh ut nisi consequat, eget blandit augue auctor. Aenean ac elementum mi. Aenean eu mattis ipsum. Vivamus dolor ipsum, aliquet id dapibus mattis, pretium vel enim.
+Vestibulum euismod nisl orci. Curabitur consectetur, nibh vel tristique pretium, enim magna hendrerit tortor, non rutrum risus nibh et urna. Vivamus a ornare libero. Integer vitae tortor tincidunt, placerat mauris ac, molestie risus. Pellentesque ipsum neque, molestie nec malesuada blandit, fringilla cursus sapien. Sed sed risus lacinia, tempus tortor at, cursus metus. In lacinia elit vel est varius, feugiat faucibus libero vulputate. Nam molestie enim ut interdum venenatis. Donec dolor arcu, blandit et tempor nec, cursus a leo. Phasellus id sollicitudin sapien. Aenean placerat adipiscing metus eget rutrum.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Poskus implementacije OT}
@@ -721,7 +707,7 @@ Pellentesque egestas orci quis dui tincidunt \ref{lst:codeJavaScript} io linus \
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% sklpne ugotovitve
 \chapter{Sklepne ugotovitve}
 
-Nam semper augue at rhoncus laoreet. Nunc non aliquet risus. Curabitur dictum, nisl nec interdum pretium, dui quam vehicula urna, vel porta nunc est rutrum tellus. Aliquam condimentum pharetra sem, sed sodales massa viverra id. Nam aliquam faucibus egestas. Cras viverra non augue sed sagittis. Nam et elit a tortor aliquet laoreet. Pellentesque congue, risus ultricies rhoncus tincidunt, quam libero tempor tellus, sit amet bibendum velit augue eleifend lectus. Integer lorem nulla, placerat varius faucibus eu, cursus tempor purus. Cras at suscipit elit. Nam varius in ipsum eget tristique. Nulla ac nulla rutrum, vulputate lacus ac, dignissim ligula. Mauris imperdiet ut leo a tempus. Aliquam tempor condimentum massa, at varius diam egestas nec. Mauris eu sem at odio sagittis porta. Curabitur quis rhoncus magna, vitae dignissim enim.
+Nam semper augue at rhoncus laoreet. Nunc non aliquet risus. Curabitur dictum, nisl nec interdum pretium, dui quam vehicula urna, vel porta nunc est rutrum tellus. Aliquam condimentum pharetra sem, sed sodales massa viverra id. Nam aliquam faucibus egestas. Cras viverra non augue sed sagittis. Nam et elit a tortor aliquet laoreet. Pellentesque congue, risus ultricies rhoncus tincidunt, quam libero tempor tellus, sit amet bibendum velit augue eleifend lectus. Integer lorem nulla, placerat varius faucibus eu, cursus tempor purus. Cras at suscipit elit. Nam varius in ipsum eget tristique. Nulla ac nulla rutrum, vulputate lacus ac, dignissim ligula.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% literatura
 \addcontentsline{toc}{chapter}{Literatura}
