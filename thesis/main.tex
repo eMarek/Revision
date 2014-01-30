@@ -7,6 +7,7 @@
 \usepackage[tmargin=3cm,rmargin=2cm,bmargin=3cm,lmargin=3cm]{geometry} % nastavi pravilne odmike
 \usepackage{listings} % izvorna koda
 \usepackage{pxfonts} % omogoča krepko pisavo v izvorni kodi
+\usepackage[hyphens]{url} % url naslovi v virih
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% nastavitve
 \renewcommand{\baselinestretch}{1.3} % ustrezen razmik med vrsticami
@@ -113,12 +114,18 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% seznam uporabljenih kratic
 \addcontentsline{toc}{chapter}{Seznam uporabljenih kratic}
 \chapter*{Seznam uporabljenih kratic}
-\begin{description}                   
-	\item[OT] (Operational Transformation) - operativna transformacija
-	\item[AJAX] (Asynchronous JS and XML) - asinhroni JS in XML
-	\item[API] (Application Programming Interface) - vmesnik za programiranje aplikacij
-	\item[JS] (JavaScript) - programski jezik, ki v zadnjem času pridobiva na popularnosti
-	\item[XML] (Extensible Markup Language) - razširljiv označelvani jezik
+\begin{description}
+    \item[DS] (Differential Synchronization) \\Diferenčna sinhronizacija, več v Poglavju \ref{sec:ds}.
+	\item[OT] (Operational Transformation) \\Operativna transformacija, več v Poglavju \ref{sec:ot}.
+	\item[WOOT] (WithOut Operational Transformation) \\Brez operativne transformacije, več v Poglavju \ref{sec:woot}.
+	\item[AJAX] (Asynchronous JS and XML) \\Asinhroni JS in XML.
+	\item[API] (Application Programming Interface) \\Vmesnik za programiranje aplikacij.
+	\item[JS] (JavaScript) \\Programski jezik, ki omogoča izdelavo in prikaz dinamičnih spletnih strani. S pojavom platforme \textbf{node.js} se ga vedno več uporablja tudi na strežniškem delu.
+	\item[XML] (Extensible Markup Language) \\Razširljiv označevalni jezik. Njegovo popularnost izpodriva JSON.
+    \item[JSON] (JavaScript Object Notation) \\Oblika zapisa podatkov, ki se večinom uporablja za pošiljanje podatkov med odjemalcevm in strežnikom.
+	\item[SIGCE] (The Special Interest Group on Collaborative Computing) \\Skupina, ki promovira raziskovalce na področju CE.
+    \item[CE] (Collaborative Editing) \\Sodelovalno urejanje ali skupinsko urejanje.
+    \item[node.js] (Platform built on Chrome's JavaScript runtime.) \\Platforma za enostavno izdelavo hitrih in razširljivih spletnih aplikacij. Uporablja dogodkovno-gnan, ne-blokirajoč model, ki je perfekten za podatkovno intenzivne aplikacije v realnem času.
 \end{description}
 
 \clearemptydoublepage
@@ -148,11 +155,11 @@ Phasellus volutpat orci elementum quam ultricies, et pellentesque enim bibendum.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% uvod
 \chapter{Uvod}
 
-Še ne dolgo nazaj se nam je internet zdel počasen. Vse skupaj je delovalo zelo statično. Lahko bi rekel, da smo dve desetletji nazaj splet uporabljali za brskanje, dobesedno le za brskanje. Nato so se počasi pojavile spletne strani, ki so omogočale nekaj malega interaktivnosti. To so bile funkcionalnosti kot so vpisovanje komentarjev, iskalniki, spletne galerije, forumi... Danes se nam zdijo te funkcionalnosti že skoraj integrirane v spletnih aplikacijah. Lahko se ozremo nazaj in rečemo, da so to bili prvi zametki, ki so uporabnikom omogočili, da ustvarjajo splet tak kot ga poznamo danes. Z izboljševanjem internetne infrastrukture so se izboljšale hitrosti prenosa podatkov. Z razvojem spletnih tehnologij se je izboljša celotna uporabniška izkušnja. V zadnjih dvajsetih letih smo bili priča razvoju napredka tako na programski kot tudi na strojni opremi. Na tem mestu se je smiselno vprašati, kaj je bilo tisto bistveno, ki je celotno zadevo izboljšalo in kako se bo izboljševala v prihodnosti? Internet v osnovi še vedno deluje tako kot je dvajest let nazaj. Princip je isti. Imamo odjemalca (ang. client) na eni strani in imamo strežnik (ang. server) na drugi strani. Odjemalec vzpostavi komunikacijo s strežnikom. Od njega zahteva neko akcijo in le ta jo izvrši. Sliši se komično, a gledano poenostavljeno, splet še danes deluje tako. Če pa pogledamo podrobno, se razlike enormne. Najpomembnejša razlika je, da se je komunikacija med odjemalcem in strežnikom, ter obratno, začela dogajati v realnem času.
+Še ne dolgo nazaj se nam je internet zdel počasen. Vse skupaj je delovalo zelo statično. Lahko bi rekel, da smo dve desetletji nazaj splet uporabljali le za brskanje. Nato so se počasi pojavile spletne strani, ki so omogočale nekaj malega interaktivnosti. To so bile funkcionalnosti kot so vpisovanje komentarjev, iskalniki, spletne galerije, forumi... Danes se nam zdijo te funkcionalnosti že skoraj integrirane v spletnih aplikacijah. Lahko se ozremo nazaj in rečemo, da so to bili prvi zametki, ki so uporabnikom omogočili, da ustvarjajo splet tak kot ga poznamo danes. Z izboljševanjem internetne infrastrukture so se izboljšale hitrosti prenosa podatkov. Z razvojem spletnih tehnologij se je izboljša celotna uporabniška izkušnja. V zadnjih dvajsetih letih smo bili priča razvoju napredka tako na programski kot tudi na strojni opremi. Na tem mestu se je smiselno vprašati, kaj je bilo tisto bistveno, ki je celotno zadevo izboljšalo in kako se bo izboljševala v prihodnosti? Internet v osnovi še vedno deluje tako kot je dvajest let nazaj. Princip je isti. Imamo odjemalca (ang. client) na eni strani in imamo strežnik (ang. server) na drugi strani. Odjemalec vzpostavi komunikacijo s strežnikom. Od njega zahteva neko akcijo in le ta jo izvrši. Sliši se komično, a gledano poenostavljeno, splet še danes deluje tako. Če pa pogledamo podrobno, se razlike enormne. Najpomembnejša razlika je, da se je komunikacija med odjemalcem in strežnikom, ter obratno, začela dogajati v realnem času.
 
-V okviru diplomske naloge bi radi preučili algoritme in raziskali celoten sistem, ki na spletu omogoča urejanje golega besedila v realnem času. Tega se bomo lotili tako, da bomo pregledali raziskave, ki so bile objavljene v akademski sferi. Prvi zapisi o algoritmih sodelovanja uporabnikov segajo že v leto 1989. Kasneje je pri raziskavah precej pripomogla tudi ustanovitev SIGCE (The Special Interest Group on Collaborative Computing), ki promovira raziskovalce na tem področju. Skratka preleteli bomo nekaj raziskav iz tega področja. Po pridobljenem teoretičnem znanju, bomo poiskali članke, ki so bili napisani s strani industrije. Radi bi izvedeli kaj od teorije se lahko uporabi v praksi. Največ uporabnih informacij bomo dobili od protokola Google Wave. Ne smemo pa pozabiti, da obstaja mnogo drugih uporabnih orodij (npr. Share.js), od katerih se lahko naučimo praktičnega dela. Cilj diplomske naloge je, da zasnujemo enega izmed algoritmov na plaformi Node.js.  Ker hočemo doseči, da je algoritem na strežniškem delu neodvisen od odjemalcev, mora delovati kot API. Kot smo omenili, je uporabnost take izvedbe ravno v tem, da je neodvisen od odjemalcev, ki se nanj povezujejo, naj si bo spletna aplikacija ali mobilna naprava. Poleg tega tak način izvedbe spodbuja nadaljni razvoj celotnega sistema na različnih odjemalcih.
+V okviru diplomske naloge bi radi preučili algoritme in raziskali celoten sistem, ki na spletu omogoča urejanje golega besedila v realnem času. Tega se bomo lotili tako, da bomo pregledali raziskave, ki so bile objavljene v akademski sferi. Leta 1989 so se pojavili prvi zapisi \cite{ccigs} o zagotavljanju vmesnika za deljno okolje  (ang. shared environment). V naslednjih nekaj letih se bili na tej podlagi predlagane nekatere izboljšave \cite{hllbw}. Kasneje je pri raziskavah precej pripomogla tudi ustanovitev SIGCE \cite{sigce}, ki promovira raziskovalce na tem področju. Skratka preleteli bomo nekaj raziskav iz tega področja. Po pridobljenem teoretičnem znanju, bomo poiskali članke, ki so bili napisani s strani industrije. Radi bi izvedeli kaj od teorije se lahko uporabi v praksi. Največ uporabnih informacij bomo dobili od protokola Google Wave \cite{wave}. Ne smemo pa pozabiti, da obstaja mnogo drugih uporabnih orodij \cite{share}, od katerih se lahko naučimo praktičnega dela. Cilj diplomske naloge je, da zasnujemo enega izmed algoritmov na plaformi \textbf{node.js} \cite{node}.  Ker hočemo doseči, da je algoritem na strežniškem delu neodvisen od odjemalcev, mora delovati kot API. Kot smo omenili, je uporabnost take izvedbe ravno v tem, da je neodvisen od odjemalcev, ki se nanj povezujejo, naj si bo spletna aplikacija ali mobilna naprava. Poleg tega tak način izvedbe spodbuja nadaljni razvoj celotnega sistema na različnih odjemalcih.
 
-V nadaljevanju bomo v drugem poglavju najprej podrobno predstavili problem. V tretjem poglavju bomo preučili načine za sodelovanje v realnem času. V četrem poglavju jih bomo primerjali po njihovih lastnostih. V petem poglavju bomo preučili algoritem za iskanje razlik v besedilu. V šestem poglavje se bomo iz teoretičnega dela preselil na praktičen del. Nekateri algoritmi, ki so bili na akademskem področju uspešni, so se implementirali v končnih ali v pol produktih. Na kratko bomo predstavili nekaj teh produktov. V sedmem poglavju bomo poskusili tudi sami narediti zasnovo urejevalnika v realnem času. Na koncu, v osmem poglavju, sledijo še sklepne ugotovitve.
+Po uvodu bomo v drugem poglavju najprej predstavili problem in izzive CE. V tretjem poglavju bomo preučili načine za sodelovanje v realnem času. V četrem poglavju jih bomo primerjali po njihovih lastnostih. V petem poglavju bomo preučili algoritem za iskanje razlik v besedilu. V šestem poglavje se bomo iz teoretičnega dela preselil na praktičen del. Nekateri algoritmi, ki so bili na akademskem področju uspešni, so se implementirali v končnih ali v pol produktih. Na kratko bomo predstavili nekaj teh produktov. V sedmem poglavju bomo poskusili tudi sami narediti zasnovo urejevalnika v realnem času. Na koncu, v osmem poglavju, sledijo še sklepne ugotovitve.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Konflikti in konsistentnost}
@@ -211,6 +218,7 @@ Kako reševati konflikte in zagotoviti konsistentnost med oddaljenimi uporabniki
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Diferenčna sinhronizacija}
+\label{sec:ds}
 
 Konceptualno enostavni načini sinhronizacije so zaklepanje (ang. locking), prenašanje dogodkov (ang. event passing) in trosmerno združevanje (ang. three way merge).
 
@@ -344,6 +352,7 @@ Kjub temu, da je med sodelovanjem uporabnikov in strežnika prišlo do izpada v 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Operativna transformacija}
+\label{sec:ot}
 
 Operativna transformacija se je prvič omenjala v članku Concurrency Control in Groupware Systems. Pri Googlu so Operativno transformacijo vzeli za osnovno pri načrtovanju protokola Wave, ki se uporablja v Google Docsih, kar nakazuje na njeno uporabnost.
 
@@ -527,6 +536,7 @@ Na koncu Bine dobi potrditev svoje spremembe in Alja prejme Binetovo spremembo. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Brez operativne transformacije}
+\label{sec:woot}
 
 V tem poglavju bomo opisali protokol Brez operativne transformacije, bolj znan pod kratico WOOT. Bil je narejen kot odgovor na kopleksnost OT. Rekli smo, da se \linebreak pri OT med uporabnike pošiljajo spremembe in lokacija sprememb, primer \linebreak {\tt \{ Vstavi ‘M’ @11 \}}. OT skrbi za pravilno transformacijo lokacij sprememb. Pristop WOOT je drugačen in ga je lažje razumeti. WOOT skrbi za pravilno razvrščanje sprememb oziroma operacij, kot se jih običajno poimenuje. Glavna razlika je v podajanju informacij. Lahko si predstavljamo, da na vsak znak v dokumentu kaže unikatni kazalec, to je identifikacijska številka. Med oddaljene uporabnike, ki sodelujejo pri urejanju dokumenta, se pošiljajo informacije med katerima znakoma oziroma na kateremu znaku je bila narejena sprememba. Posebnost protokola WOOT je, da se znakov v dokumentu nikoli ne briše, le označi se jih kot nevidne.
 
@@ -713,32 +723,38 @@ Nam semper augue at rhoncus laoreet. Nunc non aliquet risus. Curabitur dictum, n
 \addcontentsline{toc}{chapter}{Literatura}
 \begin{thebibliography}{99}
 
-\bibitem{problem} The Dojo Fundation. Open Cooperative Web Framework.
-\\Dostopno na: http://opencoweb.org/ocwdocs/intro/openg.html
+\bibitem{ccigs} C.A. Ellis, S.J. Gibbs. “Concurrency Control in Groupware Systems”.
+\\\url{http://www-ihm.lri.fr/~mbl/ENS/CSCW/2012/papers/Ellis-SIGMOD89.pdf}
 
-\bibitem{diffsync} Neil Fraser. Differential Synchronization.
-\\Dostopno na: https://neil.fraser.name/writing/sync/
+\bibitem{hllbw} D. A. Nichols, P. Curtis, M. Dixon, J. Lamping. “High-Latency, Low-Bandwidth Windowing in the Jupiter Collaboration System”.
+\\\url{http://lively-kernel.org/repository/webwerkstatt/!svn/bc/15693/projects/Collaboration/paper/Jupiter.pdf}
 
-\bibitem{gdocs22} J. Day-Richter. What’s different about the new Google Docs: Conflict resolution.
-\\Dostopno na: http://googledocs.blogspot.com/2010/09/whats-different-about-\\new-google-docs\_22.html
-
-\bibitem{gdocs23} J. Day-Richter. What’s different about the new Google Docs: Making collaboration fast.
-\\Dostopno na: http://googledocs.blogspot.com/2010/09/whats-different-about-\\new-google-docs\_23.html
-
-\bibitem{woot} G. Oster, P. Urso, P. Molli, A. Imine. Real time group editors without Operational transformation.
-\\Dostopno na: http://hal.inria.fr/docs/00/07/12/40/PDF/RR-5580.pdf
-
-\bibitem{faq} C. Sun. Operational Transformation Frequently Asked Questions and Answers.
-\\Dostopno na: http://cooffice.ntu.edu.sg/otfaq/
-
-\bibitem{grove} C.A. Ellis, S.J. Gibbs. “Concurrency Control in Groupware Systems”.
-\\Dostopna na: http://www-ihm.lri.fr/~mbl/ENS/CSCW/2012/papers/Ellis-\\SIGMOD89.pdf
-
-\bibitem{jupiter} D. A. Nichols, P. Curtis, M. Dixon, J. Lamping. “High-Latency, Low-Bandwidth Windowing in the Jupiter Collaboration System”.
-\\Dostopno na: http://lively-kernel.org/repository/webwerkstatt/!svn/bc/15693/\\projects/Collaboration/paper/Jupiter.pdf
+\bibitem{sigce} The Special Interest Group on Collaborative Computing
+\\\url{http://cooffice.ntu.edu.sg/sigce/}
 
 \bibitem{wave} D. Wang, A. Mah, S. Lassen. Google Wave Operational Transformation.
-\\Dostopno na: http://www.waveprotocol.org/whitepapers/operational-transform
+\\\url{http://www.waveprotocol.org/whitepapers/operational-transform}
+
+\bibitem{share} J. Gentle. ShareJS - Live concurrent editing in your app.
+\\\url{http://sharejs.org/}
+
+\bibitem{node} Joyent, Inc., R. Dahl. Node.js.
+\\\url{http://nodejs.org/}
+
+\bibitem{problem} The Dojo Fundation. Open Cooperative Web Framework.
+\\\url{http://opencoweb.org/ocwdocs/intro/openg.html}
+
+\bibitem{diffsync} Neil Fraser. Differential Synchronization.
+\\\url{https://neil.fraser.name/writing/sync/}
+
+\bibitem{gdocs22} J. Day-Richter. What’s different about the new Google Docs: Conflict resolution.
+\\\url{http://googledocs.blogspot.com/2010/09/whats-different-about-new-google-docs_22.html}
+
+\bibitem{gdocs23} J. Day-Richter. What’s different about the new Google Docs: Making collaboration fast.
+\\\url{http://googledocs.blogspot.com/2010/09/whats-different-about-new-google-docs_23.html}
+
+\bibitem{woot} G. Oster, P. Urso, P. Molli, A. Imine. Real time group editors without Operational transformation.
+\\\url{http://hal.inria.fr/docs/00/07/12/40/PDF/RR-5580.pdf}
 
 \end{thebibliography}
 
