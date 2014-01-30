@@ -159,10 +159,10 @@ Phasellus volutpat orci elementum quam ultricies, et pellentesque enim bibendum.
 
 V okviru diplomske naloge bi radi preučili algoritme in raziskali celoten sistem, ki na spletu omogoča urejanje golega besedila v realnem času. Tega se bomo lotili tako, da bomo pregledali raziskave, ki so bile objavljene v akademski sferi. Leta 1989 so se pojavili prvi zapisi \cite{ccigs} o zagotavljanju vmesnika za deljno okolje  (ang. shared environment). V naslednjih nekaj letih se bili na tej podlagi predlagane nekatere izboljšave \cite{hllbw}. Kasneje je pri raziskavah precej pripomogla tudi ustanovitev SIGCE \cite{sigce}, ki promovira raziskovalce na tem področju. Skratka preleteli bomo nekaj raziskav iz tega področja. Po pridobljenem teoretičnem znanju, bomo poiskali članke, ki so bili napisani s strani industrije. Radi bi izvedeli kaj od teorije se lahko uporabi v praksi. Največ uporabnih informacij bomo dobili od protokola Google Wave \cite{wave-ot}. Ne smemo pa pozabiti, da obstaja mnogo drugih uporabnih orodij \cite{share}, od katerih se lahko naučimo praktičnega dela. Cilj diplomske naloge je, da zasnujemo enega izmed algoritmov na plaformi \textbf{node.js} \cite{node}.  Ker hočemo doseči, da je algoritem na strežniškem delu neodvisen od odjemalcev, mora delovati kot API. Kot smo omenili, je uporabnost take izvedbe ravno v tem, da je neodvisen od odjemalcev, ki se nanj povezujejo, naj si bo spletna aplikacija ali mobilna naprava. Poleg tega tak način izvedbe spodbuja nadaljni razvoj celotnega sistema na različnih odjemalcih.
 
-Po uvodu bomo v drugem poglavju najprej predstavili problem in izzive CE. V tretjem poglavju bomo preučili načine za sodelovanje v realnem času. V četrem poglavju jih bomo primerjali po njihovih lastnostih. V petem poglavju bomo preučili algoritem za iskanje razlik v besedilu. V šestem poglavje se bomo iz teoretičnega dela preselil na praktičen del. Nekateri algoritmi, ki so bili na akademskem področju uspešni, so se implementirali v končnih ali v pol produktih. Na kratko bomo predstavili nekaj teh produktov. V sedmem poglavju bomo poskusili tudi sami narediti zasnovo urejevalnika v realnem času. Na koncu, v osmem poglavju, sledijo še sklepne ugotovitve.
+Po uvodu bomo v drugem poglavju najprej predstavili problem in izzive CE. V tretjem poglavju bomo preučili protokole in algoritme za sodelovanje v realnem času. V četrem poglavju jih bomo primerjali po njihovih lastnostih. V petem poglavju bomo poiskali algoritem za iskanje razlik v besedilu. V šestem poglavje se bomo iz teoretičnega dela preselil na praktičen del. Nekateri algoritmi, ki so bili na akademskem področju uspešni, so se implementirali v končnih ali v pol produktih. Na kratko bomo predstavili nekaj teh produktov. V sedmem poglavju bomo poskusili tudi sami narediti zasnovo urejevalnika v realnem času. Na koncu, v osmem poglavju, sledijo še sklepne ugotovitve.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Konflikti in konsistentnost}
+\chapter{Sodelovanje v realnem času}
 
 Leta 2004 oziroma 2005 se je začela uveljavljati tehnologija AJAX. Njen glavni namen je, da odjemalcu omogoča pošiljanje asinhronih zahtev na strežnik. V praksi je bila razlika videna v osveževanju spletnih strani. V preteklosti je brskalnik osvežil celotno spletno stran za vsako zahtevo, ki jo je naredil na strežnik. Uporaba AJAX-a pa omogoča, da so zahteve na strežnik manjše, bolj dinamične in najpomembnejše, asinhrone. Namesto celotne strani lahko osvežimo le nek manjši del. Lahko od strežnika zahtevamo ali mu pošljemo le nekaj malega podatkov. Kako pogosto delamo asinhrone zahtevke ni pomemebno. Naj si bo za vsako uporabnikovo interakcijo ali ponavljajoče z metodo pozivanja (ang. polling) \cite{diffsync} ali dolgega pozivanja (ang. long polling).
 
@@ -171,7 +171,7 @@ Naslednja pomembna stvar na spletu je protokol WebSocket. Trenutno je še v povo
 Ti dve tehnologiji omenjam zato, ker sta in bosta po mojem mnenju največ prispevali pri izboljšanju uporabniške izkušnje na spletu. Interakcija med odjemalcem in strežnikom je postala bolj tekoča kot je bila v preteklosti. Z njo nam je bila dana možnost za razvoj orodij za sodelovanje v realnem času (ang. real-time collaboration tools). Obstaja že mnogo orodij, ki preko sodelovanja (ang. collaboration) rešujejo nek specifičen problem. Na podoben problem smo naleteli tudi sami in sicer urejanje besedila v realnem času. Z urejanjem besedila nimamo v mislih označevanje besedila s krepko, ležečo, podčrtano pisavo in tako naprej, ampak za urejanje golega besedila kot takega. Sliši se enostavno. Uporabnik lahko doda črko, pobriše črko, se pravi operira z manjšimi enotami (črke, besede), ki se združujejo v večje enote (stavki, povedi, sporočilo, besedilo, dokument). Sistem mora skrbeti za izmenjevanje nastalega besedila med udeleženci \cite{gdocs23}. Na tak način delujejo spletna klepetalnica. Udeleženci v pogovoru si med sabo izmenjujo sporočila. To naj si bodo večja ali manjše enote teksta. Sistem mora le skrbeti, da se le te pravilno prenesejo med udeleženci pogovora. Vendar zadeva ni niti približno tako enostavna. Bistvena razlika urejevalnika v realnem času v primerjavi s spletno klepetalnico je v obliki hranjenja in operiranja nastalih podatkov. Pri spletnih klepetalnicah se vsako posamezno sporočilo na strežniku hrani kot samostojno enoto, ki se jo v celoti razpošlje med udeležence. Pri urejevalnikih besedila v realnem času pa je besedilo, ki ga udeležencih urejajo, enotno za vse udeležence hkrati. Lahko bi rekel, da vsi udeleženci urejajo skupni dokument. Posamezne manjše enote besedila, ki se izmenjujejo med udeleženci, so le koščki celotnega dokumenta. Pred tako nastalim dokumentom mora delovati algoritem, ki zna te manjša enote besedila združevati v dokument \cite{gdocs22}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Predstavitev problema na konkretnem primeru}
+\section{Konflikti in konsistentnost}
 
 Da bo problem razumljiv še najmanj veščemu uporabniku tehnologij, bomo problem predstavili na konkretnem primeru \cite{problem}.
 
@@ -212,7 +212,7 @@ Predstavljajmo si enostavno rešitev za posodabljanja nakupovalnega listka, ki A
 Problem nastane še večji pri sodelovanju večih uporabnikov in še z večjo zamudo pri dostavi sprememb na nakupovlnam listku. Recimo, da se Alji in Binetu pridruži še Cene. Bine ima počasen internet. Alja in Cene na seznam dodata in odstranita deset novih artiklov še preden Bine dobi eno spremembo. Medtem ko Bine ureja svoj seznam, so spremembe Alje in Ceneta še na poti k njemu. Za zagotovitev konsistentnosti bi morala aplikacija upoštevati zakasnjene oddaljene spremembe na osnovi prvotne verzije nakupovalnega listka.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Sodelovanje v realnem času}
+\chapter{Protokoli in algoritmi}
 
 Kako reševati konflikte in zagotoviti konsistentnost med oddaljenimi uporabniki pri sočasnem urejanju, je eden izmed glavnih izivov moje diplomske naloge. V tem poglavju bomo raziskali protokole, ki omogočajo sodelovanje uporabnikov v realnem času in teoretično rešujejo omenjena problema. Najbolj razširjeni so Operativna transformacija (ang. Operational transformation), Diferenčna sinhronizacija (ang. Differential synchronization) in protokol Brez operativne transformacije (ang. Without operational transformation, bolj znan pod kratico WOOT).
 
@@ -650,7 +650,7 @@ Prikazane so konfliktne črke v Cenetovem dokumentu tik pred integracijo črke {
 Ko se integrira še Binetov presledek, dobimo “{\tt Uboga mala muca!}”.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Primerjava algoritmov}
+\chapter{Primerjava po lastnostih}
 
 Phasellus felis diam, molestie in laoreet ac, vestibulum at nunc.
 
@@ -685,7 +685,7 @@ Mauris imperdiet ut leo a tempus. Aliquam tempor condimentum massa, at varius di
 Quisque ut velit bibendum, convallis urna vitae, tempor felis. Fusce cursus condimentum nisl, accumsan pharetra lorem iaculis sit amet. In ac lectus est. Nulla facilisi. Vivamus ornare justo id neque interdum, auctor ornare turpis cursus.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Algoritmi za iskanje razlik v besedilu}
+\chapter{Iskanje razlik v besedilu}
 
 Nulla vel lorem erat. Nullam convallis molestie mauris non vulputate. Fusce sagittis purus non mi interdum, ac tempor nunc vulputate. Vivamus tempor diam a laoreet porta. Aliquam adipiscing elit vel risus accumsan, eget lacinia felis rutrum. Mauris ornare mattis vestibulum. Proin adipiscing semper turpis, eleifend sollicitudin tortor aliquam eget.
 
