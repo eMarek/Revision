@@ -168,7 +168,7 @@ Leta 2004 oziroma 2005 se je začela uveljavljati tehnologija AJAX. Njen glavni 
 
 Naslednja pomembna stvar na spletu je protokol WebSocket. Trenutno je še v povojih. Danes naj bi ga podpirali že vsi najnovejši brskalniki, vendar ga uporabljajo le redke spletne aplikacije. Sprememba, ki jo prinaša WebSocket je način komunikacije med odjemalcem in strežnikom. Omogoča dvosmerno komunikacijo \cite{wave-cs}. Po novem lahko tudi strežnik pošilja zahtevo odjemalcu.
 
-Ti dve tehnologiji omenjamo zato, ker sta in bosta največ prispevali pri izboljšanju uporabniške izkušnje na spletu. Interakcija med odjemalcem in strežnikom je postala bolj tekoča kot je bila v preteklosti. Z njo nam je bila dana možnost za razvoj orodij za sodelovanje v realnem času (ang. real-time collaboration tools). Obstaja že mnogo orodij, ki preko sodelovanja (ang. collaboration) rešujejo nek specifičen problem. Na podoben problem smo naleteli tudi sami in sicer urejanje besedila v realnem času. Z urejanjem besedila nimamo v mislih označevanje besedila s krepko, ležečo, podčrtano pisavo in tako naprej, ampak za urejanje golega besedila kot takega. Sliši se enostavno. Uporabnik lahko doda črko, pobriše črko, se pravi operira z manjšimi enotami (črke, besede), ki se združujejo v večje enote (stavki, povedi, sporočilo, besedilo, dokument). Sistem mora skrbeti za izmenjevanje nastalega besedila med udeleženci \cite{gdocs23}. Na tak način delujejo spletna klepetalnica. Udeleženci v pogovoru si med sabo izmenjujo sporočila. To naj si bodo večja ali manjše enote teksta. Sistem mora le skrbeti, da se le te pravilno prenesejo med udeležence pogovora. Vendar zadeva ni niti približno tako enostavna. Bistvena razlika urejevalnika v realnem času v primerjavi s spletno klepetalnico je v obliki hranjenja in operiranja nastalih podatkov. Pri spletnih klepetalnicah se vsako posamezno sporočilo na strežniku hrani kot samostojno enoto, ki se jo v celoti razpošlje med udeležence. Pri urejevalnikih besedila v realnem času pa je besedilo, ki ga udeleženci urejajo, enotno za vse udeležence hkrati. Lahko bi rekel, da vsi udeleženci urejajo skupni dokument. Posamezne manjše enote besedila, ki se izmenjujejo med udeleženci, so le koščki celotnega dokumenta. Pred tako nastalim dokumentom mora delovati algoritem, ki zna te manjša enote besedila združevati v dokument \cite{gdocs22}.
+Ti dve tehnologiji omenjamo zato, ker sta in bosta največ prispevali pri izboljšanju uporabniške izkušnje na spletu. Interakcija med odjemalcem in strežnikom je postala bolj tekoča kot je bila v preteklosti. Z njo nam je bila dana možnost za razvoj orodij za sodelovanje v realnem času (ang. real-time collaboration tools). Obstaja že mnogo orodij, ki preko sodelovanja (ang. collaboration) rešujejo nek specifičen problem. Na podoben problem smo naleteli tudi sami in sicer urejanje besedila v realnem času. Z urejanjem besedila nimamo v mislih označevanje besedila s krepko, ležečo, podčrtano pisavo in tako naprej, ampak za urejanje golega besedila kot takega. Sliši se enostavno. Uporabnik lahko doda črko, pobriše črko, se pravi operira z manjšimi enotami (črke, besede), ki se združujejo v večje enote (stavki, povedi, sporočilo, besedilo, dokument). Sistem mora skrbeti za izmenjevanje nastalega besedila med udeleženci \cite{gdocs23}. Na tak način delujejo spletna klepetalnica. Udeleženci v pogovoru si med sabo izmenjujo sporočila. To naj si bodo večja ali manjše enote. Sistem mora le skrbeti, da se le te pravilno prenesejo med udeležence pogovora. Vendar zadeva ni niti približno tako enostavna. Bistvena razlika urejevalnika v realnem času v primerjavi s spletno klepetalnico je v obliki hranjenja in operiranja nastalih podatkov. Pri spletnih klepetalnicah se vsako posamezno sporočilo na strežniku hrani kot samostojno enoto, ki se jo v celoti razpošlje med udeležence. Pri urejevalnikih besedila v realnem času pa je besedilo, ki ga udeleženci urejajo, enotno za vse udeležence hkrati. Zaradi razumljivosti v nadaljevanju bomo besedilo, ki ga urejajo uporabniki, poimenovali dokument. Lahko bi rekel, da vsak udeleženec ureja svoj lokalni dokument, preko katerega nastaja skupni dokument. Posamezne manjše enote besedila, ki se izmenjujejo med udeleženci, so le koščki celotnega dokumenta. Pred tako nastalim dokumentom mora delovati algoritem, ki zna te manjša enote besedila združevati v dokument \cite{gdocs22}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Sočasnost in konsistentnost}
@@ -232,6 +232,7 @@ Diferenčna sinhronizacija (v nadaljevanju DS) je metoda s katero ohranjamo doku
 
 Ker nobena izmed naštetih rešitev sinhronizacije ni zadovoljiva, si oglejmo DS bolj podrobno. DS je simetričen algoritem, ki uporablja neskončno ciklov razlik na dokumentih in z njimi popravlja ostale dokumente v ciklu. Najprej bomo preučili osnovno topologijo DS, ki teoretična podlaga za izboljšave z metodo dveh senc in z metodo garantirane dostave.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Osnovna topologija}
 
 Na Sliki \ref{ds1} je z diagramom prikazana DS. V osnovni topologiji obstajata dokument uporabnika in dokument računalnika. Oba sta locirana na istem sistemu brez internetne povezave. Med njima se nahaja dokument imenovan skupna senca (ang. common shadow). Predvidimo, da imajo na začetku vsi trije dokumenti isto vsebino. Cilj je, da so dokumenti vseskozi čim bolj enaki. Ostale entitete so še razlika, sprememba in popravek. Razlika je signal, ki pove, da se dokument uporabnika razlikuje od skupne sence. Na ta način vemo, da je uporabnik naredil spremembo na svojem dokumentu. Ni nam potrebno spremljati vsake uporabnikove akcije. Ko se ve, kakšne spremembe so bile narejene, se mora dokument prekopirati v senco. Sprememba se pošlje v smeri računalnika. Na dokumentu računalnika se naredi popravek. Proces se ponovi še v smeri računalnika proti uporabniku. Vsi trije dokumenti so sinhronizirani.
@@ -246,6 +247,7 @@ Sistem je zanesljiv. Težava je, da taka zasnova ne omogoča sodelovanja oddalje
 \label{ds1}
 \end{figure}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Metoda dveh senc}
 
 Konceptualno še vedno ostajamo pri istem algoritmu. Razlika je v topologiji. Namesto skupne sence uporabimo senco uporabnika in senco strežnika, ki se s popravki posodabljata ločeno. Taka zasnova DS omogoča sodelovanje oddaljenih uporabnikov. Vsak uporabnik je na svojem sistemu. Uporabnike povezuje centralni strežnik. Zaradi enostavnosti razlage je na Sliki \ref{ds2} prikazan le en uporabnik in strežnik, ki sta ločna s črtkano črto. Po vsakem ciklu morata biti dokument uporabnika in dokument strežnika identična.
@@ -262,6 +264,7 @@ Sistem omogoča sodelovanje oddaljenih uporabnikov, vendar ni zanesljiv. Lahko s
 \label{ds2}
 \end{figure}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Metoda garantirane dostave}
 
 DS z metodo garantirane dostave je nadgradnja metode dveh senc. Iz Slike \ref{ds3} lahko razberemo, da se je topologija razširila še z varnostnima kopijama sence uporabnika in sence strežnika. Tudi tokrat mora biti vseh šest dokumentov v konsistentnem stanju. Namesto ene same spremembe, se lahko pošlje več sprememb na enkrat. Nove v topologiji so tudi številke verzij. S črko {\tt n} je označena številka verzije uporabnika. S črko {\tt m} je označena številka verzije strežnika. Na začetku sta obe številki verziji enaki {\tt 0}.
@@ -366,15 +369,16 @@ Pri razlagi postopka DS nismo omenjali konkretnih lokacij sprememb, ampak le kak
 \section{Operativna transformacija}
 \label{sec:ot}
 
-Operativna transformacija se je prvič omenjala v članku Concurrency Control in Groupware Systems. Pri Googlu so Operativno transformacijo vzeli za osnovno pri načrtovanju protokola Wave, ki se uporablja v Google Docsih, kar nakazuje na njeno uporabnost.
+Operativna transformacija (v nadaljevanju OT) se je prvič omenjala v članku Concurrency Control in Groupware Systems \cite{ccigs}. Pri Googlu so Operativno transformacijo vzeli za osnovno pri načrtovanju protokola Wave \cite{wave-ot}, ki se uporablja v Google Docsih, kar nakazuje na njeno uporabnost.
 
-Zaradi razumljivosti bomo besedilo, ki ga urejajo uporabniki, poimenovali dokument. Dokument je shranjen kot serija kronoloških sprememb narejenih na dokumentu. Primer spremembe je {\tt \{ Vstavi ‘M’ @11 \}}, ki pomeni “v dokumentu na lokacijo 11 vstavi črko M” ali {\tt \{ Pobriši @3-7 \}}, ki pomeni “v dokumentu pobriši vse znake med lokacijo 3 in 7”. Obstajajo še druge vrste sprememb kot so oblikovanja besedila, zaklep odstavka, razveljevitev spremembe... Zaradi enostavnosti razlage se bomo osredotočili le na omenjena dva tipa sprememb. Ko uporabnik ureja besedilo, ne spreminja osnovnih znakov, ki bi skupaj predstavljali besedilo kot dokument. Namesto tega se njegove spremembe shranjujejo v revizijski dnevnik. Seveda dokumenta kot zaključene celote znakov obstaja. Vendar pomembne so spremembe, ki so bile narejene na tem dokumentu. Če se urejanju skupnega dokumenta pridruži nov uporabnik, mu iz revizijskega dnevnika ponovimo vse (od prve do zadnje) spremembe in že lahko sodeluje pri urejanju tako kot ostali uporabniki.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Osnovno delovanje}
 
-Glede na to, da poznamo revizijo vseh sprememb narejenih na dokumentu, lahko preverimo, kaj je uporabnik imel v svojem urejevalniku, preden je naredil novo spremembo. Na ta način njegovo spremembo pravilno umestimo v skupno besedilo skupaj z ostalimi spremembami, ki so bile narejene med tem. Algoritem, ki skrbi za umeščanje ali združevanje (ang. merging) sprememb, se imenuje Operativna transformacija (v nadaljevanju OT).
+Pri OT je dokument shranjen kot serija kronoloških sprememb (včasih poimenovanih tudi operacij) narejenih na dokumentu. Primer spremembe je {\tt \{ Vstavi ‘M’ @11 \}}, ki pomeni “v dokumentu na lokacijo 11 vstavi črko M” ali {\tt \{ Pobriši @3-7 \}}, ki pomeni “v dokumentu pobriši vse znake med lokacijo 3 in 7”. Obstajajo še druge vrste sprememb kot so oblikovanja besedila, zaklep odstavka, razveljevitev spremembe... Zaradi enostavnosti razlage se bomo osredotočili le na omenjena dva tipa sprememb. Ko uporabnik ureja besedilo, se njegove spremembe shranjujejo v revizijski dnevnik. Seveda hranimo tudi dokument kot zaključeno celoto znakov. Vendar pomembne so spremembe, ki so bile narejene na tem dokumentu. Če se urejanju skupnega dokumenta pridruži nov uporabnik, mu iz revizijskega dnevnika ponovimo vse (od prve do zadnje) spremembe in že lahko sodeluje pri urejanju tako kot ostali uporabniki.
 
-\bigskip
+Glede na to, da poznamo revizijo vseh sprememb narejenih na dokumentu, lahko preverimo, kaj je uporabnik imel v svojem urejevalniku, preden je naredil novo spremembo. Na ta način njegovo spremembo pravilno umestimo v skupno besedilo skupaj z ostalimi spremembami, ki so bile narejene med tem. Algoritem, ki skrbi za umeščanje ali združevanje (ang. merging) sprememb, se imenuje OT.
 
-Poglejmo delovanje OT na primeru. Predpostavimo, da imamo dokument v katerem se trenutno nahaja stavek “ENOSTAVNO KOT PASULJ” in zasede dvajset lokacij. Urejanju tega dokumenta se pridružita Alja in Bine. Če Bine spremeni stavek v “ENOSTAVNO KOT KEKS”, potem je za to moral narediti pet sprememb.
+Poglejmo delovanje OT na primeru \cite{gdocs22}. Predpostavimo, da imamo dokument v katerem se trenutno nahaja stavek “ENOSTAVNO KOT PASULJ” in zasede dvajset lokacij. Urejanju tega dokumenta se pridružita Alja in Bine.
 
 \begin{figure}[placement h]
 \begin{center}
@@ -384,7 +388,9 @@ Poglejmo delovanje OT na primeru. Predpostavimo, da imamo dokument v katerem se 
 \label{ot1}
 \end{figure}
 
-Predstavljajmo si, da med tem ko Bine tipka, začne stavek spreminjati tudi Alja. in sicer v “TAKO ENOSTAVNO KOT PASULJ”. Tudi Alja je morala narediti pet sprememb.
+Če Bine spremeni stavek v “ENOSTAVNO KOT KEKS”, potem je za to moral narediti pet sprememb. Naj pripomnimo, da bi lahko stavek spremenil tudi samo z dvema spremembama in sicer {\tt \{ Pobriši @15-20 \}} in {\tt \{ Vstavi ‘KEKS’ @15 \}}. Lahko bi tudi vsako črko pobrisal posebej. Tako bi bilo sprememb še več kot jih je prikazanih na Sliki \ref{ot1}. Več o spremembah in iskanju razlik v besedilu bomo govorili v Poglavju \ref{chp:diff}. Zaradi enostavnosti razlage recimo, da je Bine naredil pet sprememb.
+
+Predstavljajmo si, da med tem ko Bine tipka, začne stavek spreminjati tudi Alja. in sicer v “TAKO ENOSTAVNO KOT PASULJ”. Tudi Alja je naredila pet sprememb.
 
 \begin{figure}[placement h]
 \begin{center}
@@ -403,8 +409,6 @@ Predstavljajmo si, da med tem ko Bine tipka, začne stavek spreminjati tudi Alja
 \caption{Brez transformacije pride do nekonsistentnosti.}
 \label{ot3}
 \end{figure}
-
-\pagebreak
 
 Alja je imela pet znakov v začetku stavka, o katerih Bine še ni bil seznanjen. Lokacija Binetove spremembe je zato napačna glede na Aljino vezijo dokumenta. Da bi se izognili temu problemu, mora Alja narediti transformacijo Binetovih sprememb relativno na svoj lokalni dokument. V našem primeru, ko Alja sprejme Binetove spremembe, mora lokacijo spremembe zamakniti za pet znakov, kolikor jih je vpisala na začetku stavka. Ko naredi to transformacijo in izvrši Binetovo prvo spremembo, dobi pravilen stavek.
 
