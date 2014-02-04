@@ -378,7 +378,7 @@ Pri OT je dokument shranjen kot serija kronoloških sprememb (včasih poimenovan
 
 Glede na to, da poznamo revizijo vseh sprememb narejenih na dokumentu, lahko preverimo, kaj je uporabnik imel v svojem urejevalniku, preden je naredil novo spremembo. Na ta način njegovo spremembo pravilno umestimo v skupno besedilo skupaj z ostalimi spremembami, ki so bile narejene med tem. Algoritem, ki skrbi za umeščanje ali združevanje (ang. merging) sprememb, se imenuje OT.
 
-Poglejmo delovanje OT na primeru \cite{gdocs22}. Predpostavimo, da imamo dokument v katerem se trenutno nahaja stavek “ENOSTAVNO KOT PASULJ” in zasede dvajset lokacij. Urejanju tega dokumenta se pridružita Alja in Bine.
+Poglejmo delovanje OT na primeru \cite{gdocs22}. Predpostavimo, da imamo dokument v katerem se trenutno nahaja stavek “ENOSTAVNO KOT PASULJ” in zasede dvajset lokacij (ali mest). Urejanju tega dokumenta se pridružita Alja in Bine.
 
 \begin{figure}[placement h]
 \begin{center}
@@ -388,7 +388,7 @@ Poglejmo delovanje OT na primeru \cite{gdocs22}. Predpostavimo, da imamo dokumen
 \label{ot1}
 \end{figure}
 
-Če Bine spremeni stavek v “ENOSTAVNO KOT KEKS”, potem je za to moral narediti pet sprememb. Naj pripomnimo, da bi lahko stavek spremenil tudi samo z dvema spremembama in sicer {\tt \{ Pobriši @15-20 \}} in {\tt \{ Vstavi ‘KEKS’ @15 \}}. Lahko bi tudi vsako črko pobrisal posebej. Tako bi bilo sprememb še več kot jih je prikazanih na Sliki \ref{ot1}. Več o spremembah in iskanju razlik v besedilu bomo govorili v Poglavju \ref{chp:diff}. Zaradi enostavnosti razlage recimo, da je Bine naredil pet sprememb.
+Če Bine spremeni stavek v “ENOSTAVNO KOT KEKS”, potem je za to moral narediti pet sprememb, ki jih prikazuje Slika \ref{ot1}. Naj pripomnimo, da bi Bine lahko stavek spremenil tudi samo z dvema spremembama in sicer {\tt \{ Pobriši @15-20 \}} in {\tt \{ Vstavi ‘KEKS’ @15 \}}. Lahko bi tudi vsako črko pobrisal posebej. Tako bi bilo sprememb še več kot jih je prikazanih na Sliki \ref{ot1}. Več o spremembah in iskanju razlik v besedilu bomo govorili v Poglavju \ref{chp:diff}. Zaradi enostavnosti razlage recimo, da je Bine naredil pet sprememb.
 
 Predstavljajmo si, da med tem ko Bine tipka, začne stavek spreminjati tudi Alja. in sicer v “TAKO ENOSTAVNO KOT PASULJ”. Tudi Alja je naredila pet sprememb.
 
@@ -410,13 +410,17 @@ Predstavljajmo si, da med tem ko Bine tipka, začne stavek spreminjati tudi Alja
 \label{ot3}
 \end{figure}
 
-Alja je imela pet znakov v začetku stavka, o katerih Bine še ni bil seznanjen. Lokacija Binetove spremembe je zato napačna glede na Aljino vezijo dokumenta. Da bi se izognili temu problemu, mora Alja narediti transformacijo Binetovih sprememb relativno na svoj lokalni dokument. V našem primeru, ko Alja sprejme Binetove spremembe, mora lokacijo spremembe zamakniti za pet znakov, kolikor jih je vpisala na začetku stavka. Ko naredi to transformacijo in izvrši Binetovo prvo spremembo, dobi pravilen stavek.
+Alja je imela pet znakov v začetku stavka, o katerih Bine še ni bil seznanjen. Lokacija Binetove spremembe je zato napačna glede na Aljino vezijo dokumenta. Da bi se izognili temu problemu, mora Alja narediti transformacijo Binetovih sprememb relativno na svoj lokalni dokument. V našem primeru, ko Alja sprejme Binetove spremembe, mora lokacijo spremembe zamakniti za pet znakov, kolikor jih je vpisala na začetku stavka. Sprememba {\tt \{ Pobriši @15-20 \}} se transformira v {\tt \{ Pobriši @20-25 \}}, kot je pravilno prikazano na sliki \ref{ot4}.
+
+\pagebreak
+
+Ko Alja naredi transformacijo in izvrši Binetovo prvo spremembo, dobi pravilen stavek.
 
 \begin{figure}[placement h]
 \begin{center}
 \includegraphics[width=12cm]{ot4.png}
 \end{center}
-\caption{Z uporabo Operativne transformacije dobimo pravilen rezultat.}
+\caption{Z uporabo OT dobimo pravilen rezultat.}
 \label{ot4}
 \end{figure}
 
@@ -440,7 +444,7 @@ Včasih spremembe ne povzročajo konfliktov in ni potrebe po transformaciji. Ko 
 \label{ot6}
 \end{figure}
 
-Tako Alja kot Bine v svojem lokalnem dokumentu na koncu vidita stavek “TAKO ENOSTAVNO KOT KEKS”. Algoritem, ki smo ga uporabili za zamikanje sprememb, se imenuje Operativna transformacija. Pravilno implementiran algoritem nam garantira, da imajo vsi uporabniki, ko prejmejo vse spremembe, isto verzijo dokumenta.
+Tako Alja kot Bine v svojem lokalnem dokumentu na koncu vidita stavek “TAKO ENOSTAVNO KOT KEKS”. To ne bi bilo mogoče, če ne bi uporabili algoritem za zamikanje sprememb. Pravilno implementiran algoritem OT nam garantira, da imajo vsi uporabniki, ko prejmejo vse spremembe, isto verzijo dokumenta.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Protokol sodelovanja}
