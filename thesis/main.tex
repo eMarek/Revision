@@ -560,7 +560,7 @@ Na koncu Bine dobi potrditev svoje spremembe in Alja prejme Binetovo spremembo. 
 \section{Brez operativne transformacije}
 \label{sec:woot}
 
-V tem poglavju bomo opisali protokol Brez operativne transformacije, bolj znan pod kratico WOOT. Bil je narejen kot odgovor na kopleksnost OT. Rekli smo, da se \linebreak pri OT med uporabnike pošiljajo spremembe in lokacija sprememb, primer \linebreak {\tt \{ Vstavi ‘M’ @11 \}}. OT skrbi za pravilno transformacijo lokacij sprememb. Pristop WOOT je drugačen in ga je lažje razumeti. WOOT skrbi za pravilno razvrščanje sprememb oziroma operacij, kot se jih običajno poimenuje. Glavna razlika je v podajanju informacij. Lahko si predstavljamo, da na vsak znak v dokumentu kaže unikatni kazalec, to je identifikacijska številka. Med oddaljene uporabnike, ki sodelujejo pri urejanju dokumenta, se pošiljajo informacije med katerima znakoma oziroma na kateremu znaku je bila narejena sprememba. Posebnost protokola WOOT je, da se znakov v dokumentu nikoli ne briše, le označi se jih kot nevidne.
+V tem poglavju bomo opisali protokol Brez operativne transformacije \cite{woot}, bolj znan pod kratico WOOT. Bil je narejen kot odgovor na kopleksnost OT. Rekli smo, da se \linebreak pri OT med uporabnike pošiljajo spremembe in lokacija sprememb, primer \linebreak {\tt \{ Vstavi ‘M’ @11 \}}. OT skrbi za pravilno transformacijo lokacij sprememb. Pristop WOOT je drugačen in ga je lažje razumeti. WOOT skrbi za pravilno razvrščanje sprememb oziroma operacij, kot se jih običajno poimenuje. Glavna razlika je v podajanju informacij. Lahko si predstavljamo, da na vsak znak v dokumentu kaže unikatni kazalec, to je identifikacijska številka. Med oddaljene uporabnike, ki sodelujejo pri urejanju dokumenta, se pošiljajo informacije med katerima znakoma oziroma na kateremu znaku je bila narejena sprememba. Posebnost protokola WOOT je, da se znakov v dokumentu nikoli ne briše, le označi se jih kot nevidne.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Podatkovni model}
@@ -587,7 +587,7 @@ Poznamo tudi dva posebna znaka, ki označujeta konec in začetek dokumenta. Upor
 \label{woot2}
 \end{figure}
 
-Znaka {\tt (00000)} in {\tt (11111)} označujeta začetek oziroma konec dokumenta. Za vse ostale znake se v stolpcih od leve proti desni hranijo identifikacijska številka, vidnost, vsebina, prejšnji ter naslednji soseda. Iz identifikacijskih številke vidimo, da je prvo besedo skupaj s presledkom napisala Alja z unikatno številko {\tt 217}. Drugo besedo skupaj s klicajem je napisal Bine. Njegov dokument je označen z unikatno števliko {\tt 558}. Lahko bi si vsak uporabnik shranjeval katera unikatna številka predstavlja katerega uporabnika, vendar ni potrebno. Vse črke so vidne. Nobena črka do sedaj še ni bila pobrisana. Glede na oznake sosedov so črke pravilne razvrščene.
+Znaka {\tt (00000)} in {\tt (11111)} označujeta začetek oziroma konec dokumenta. Za vse ostale znake se v stolpcih od leve proti desni hranijo identifikacijska številka, vidnost, vsebina, prejšnji ter naslednji sosed. Iz identifikacijskih številke vidimo, da je prvo besedo skupaj s presledkom napisala Alja z unikatno številko {\tt 217}. Drugo besedo skupaj s klicajem je napisal Bine. Njegov dokument je označen z unikatno števliko {\tt 558}. Lahko bi si vsak uporabnik shranjeval katera unikatna številka predstavlja katerega uporabnika, vendar ni potrebno. Vse črke so vidne. Nobena črka do sedaj še ni bila pobrisana. Glede na oznake sosedov so črke pravilne razvrščene.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Operacije}
@@ -610,7 +610,7 @@ Alja in Bine želita stavek “{\tt Ubogi mucek!}” urediti v “{\tt Uboga muc
 \begin{center}
 \includegraphics[width=13cm]{woot4.png}
 \end{center}
-\caption{Generiranje in integracija brisanja črke. Na Sliki \ref{woot2} vidimo, da je identifikacijska številka črke {\tt a} enaka {\tt (217,4)}. Operacija se pošlje Alji.}
+\caption{Generiranje in integracija brisanja črke. Na Sliki \ref{woot2} vidimo, da je identifikacijska številka črke {\tt i} enaka {\tt (217,4)}. Operacija se pošlje Alji.}
 \label{woot4}
 \end{figure}
 
@@ -646,9 +646,9 @@ Vsi na enkrat začnejo urejati. Alja se odloči, da bo vpisala črko {\tt a}, ke
 \label{woot6}
 \end{figure}
 
-Poglejmo na Sliko \ref{woot6} kaj se je zgodilo. Alja in Bine sta hkrati vpisala črki {\tt a} in {\tt l} pred začetek besede {\tt muca}. Nato se je aktiviral Cene in dodal še njegov prispevek s črkami {\tt m} in {\tt a}. Da je stavek brez pravopisanih napak, je na koncu Bine vpisal še presledek. Ker ta zadnja sprememba ni nič posebenga, jo odmislimo pri razmišljanju. Operacije označene v pravokotnikih so se integrirala najprej lokalno, nato pa so bile poslane naprej po omrežju. Puščice prikazujejo pošljanje operacije še drugim dvema uporabnikoma. Uporabniki so skupno naredili štiri vstavljanja črka {\tt m}, {\tt a}, {\tt l} in {\tt a}. Kljub temu, da se pri nobenem uporabniku niso črke vstavljale v tem zaporedju, vsi na koncu vidijo isti pravilen rezultat.
+Poglejmo na Sliko \ref{woot6} kaj se je zgodilo. Alja in Bine sta hkrati vpisala črki {\tt a} in {\tt l} pred začetek besede “{\tt muca}”. Nato se je aktiviral Cene in dodal še njegov prispevek s črkami {\tt m} in {\tt a}. Da je stavek brez pravopisanih napak, je na koncu Bine vpisal še presledek. Ker ta zadnja sprememba ni nič posebenga, jo odmislimo pri razmišljanju. Operacije označene v pravokotnikih so se integrirala najprej lokalno, nato pa so bile poslane naprej po omrežju. Puščice prikazujejo pošljanje operacije še drugim dvema uporabnikoma. Uporabniki so skupno naredili štiri vstavljanja črka {\tt m}, {\tt a}, {\tt l} in {\tt a}. Kljub temu, da se pri nobenem uporabniku niso črke vstavljale v tem zaporedju, vsi na koncu vidijo isti pravilen rezultat.
 
-Za študijo primera vzemimo Ceneta. Najprej je od Alje prejel, da mora med presledek in črko {\tt m} vpisati črko {\tt a}. Ker sam ni še nič urejal, je to operacijo integriral brez težav. Nato je naredil dve lokalni integraciji. Pred prej vpisani {\tt a} od Alje je vpisal črko {\tt m}, za njim pa črko {\tt a}. Ker je šlo za lokalno integracijo, jo je lahko izvedel brez težav. Cene je imel v tem trenutku v svojem dokumentu nesmiselen stavek “{\tt Uboga maamuca!}”. Nato je prejel Binetovo spremembo {\tt \{ Vstavi ‘ ’$\prec$‘l’$\prec$‘m’ \}}. Zmeden bralec bi lahko mislil, da je pravilna integracija črke {\tt l} na lokacijo 7. Nastal bi stavek “{\tt Uboga lmaamuca!}”. Res je, da Cene sprejme informacijo, da mora črko {\tt l} locirati med presledek in m, vendar je ta informacija podana z identifikaciskimi številkami in ne z alfanumeričnimi znaki kot smo to že omenil. Po tem premisleku nam je jasno, da mora biti črka {\tt l} integrirana med presledek in drugi {\tt m} v stavku. Potemtakem so kar štiri možnosti kam se lahko integrira {\tt l}. Nastanejo lahko variante:
+Za študijo primera vzemimo Ceneta. Najprej je od Alje prejel, da mora med presledek in črko {\tt m} vpisati črko {\tt a}. Ker sam ni še nič urejal, je to operacijo integriral brez težav. Nato je naredil dve lokalni integraciji. Pred prej vpisani {\tt a} od Alje je vpisal črko {\tt m}, za njim pa črko {\tt a}. Ker je šlo za lokalno integracijo, jo je lahko izvedel brez težav. Cene je imel v tem trenutku v svojem dokumentu nesmiselen stavek “{\tt Uboga maamuca!}”. Nato je prejel Binetovo spremembo {\tt \{ Vstavi ‘ ’$\prec$‘l’$\prec$‘m’ \}}. Zmeden bralec bi lahko mislil, da je pravilna integracija črke {\tt l} na lokacijo 7. Nastal bi stavek “{\tt Uboga lmaamuca!}”. Res je, da Cene sprejme informacijo, da mora črko {\tt l} locirati med presledek in m, vendar je ta informacija podana z identifikaciskimi številkami in ne z alfanumeričnimi znaki kot smo to že omenil. Po tem premisleku nam je jasno, da mora biti črka {\tt l} integrirana med presledek in drugi {\tt m} v stavku, torej {\tt \{ Vstavi (217,5)$\prec$(558,7)$\prec$(558,0) \}}. Potemtakem so kar štiri možnosti kam se lahko integrira {\tt l}. Nastanejo lahko variante:
 
 \begin{itemize}
 	\item {\tt Uboga lmaamuca!}
@@ -669,7 +669,7 @@ Kako urejevalnik ve, kam go mora postaviti? Da bomo lažje razrešili ta problem
 
 Prikazane so konfliktne črke v Cenetovem dokumentu tik pred integracijo črke {\tt l (558,7)}. Postopek je sledeč. Vzamemo seznam črk, ki so znotraj meje med katere bi se moral integrirati {\tt l}. Dobimo črke {\tt m (609,0)}, {\tt a (217,7)} in {\tt a (609,1)}. Iz tega seznama odstranimo črke, ki imajo prejšnjega ali naslednjega soseda znoraj meje med katere bi se moral integrirati {\tt l}. Ostane nam samo črka {\tt a (217,7)}. Primerjamo identifikacijsko številko črke {\tt a} in črke {\tt l}. Ker je 217 manjše od 558, se bo črka {\tt l (558,7)} postavila desno od črke {\tt a (217,7)}. Primerjavo moramo nadaljevati z vsemi črkami do meje. Naslednja po vrsti je črka {\tt a (609,1)}. Ker je 558 manjše od 609, se bo črka {\tt l (558,7)} postavila levo od črke {\tt a (609,1)}. Primerjanje zaključeno. Pravilna oblika stavka je “{\tt Uboga malamuca!}”.
 
-Ko se integrira še Binetov presledek, dobimo “{\tt Uboga mala muca!}”.
+Ko se integrira še Binetov presledek, dobimo “{\tt Uboga mala muca!}”. Po podobnem postopku tudi ostala dva uporabnika dobita dokument z isto vsebino.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Primerjava po lastnostih}
