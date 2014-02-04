@@ -215,6 +215,7 @@ Med drugim sta značilnosti sistemov za skupinsko delo v realnem času \cite{cci
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Protokoli in algoritmi}
+\label{chp:protalg}
 
 Kako zagotoviti konsistentnost med oddaljenimi uporabniki pri sočasnem urejanju, je eden izmed glavnih izivov moje diplomske naloge. V tem poglavju bomo raziskali protokole, ki omogočajo sodelovanje uporabnikov v realnem času in teoretično rešujejo omenjena problema. Najbolj razširjeni so Diferenčna sinhronizacija (ang. Differential synchronization), Operativna transformacija (ang. Operational transformation) in protokol Brez operativne transformacije (ang. Without operational transformation), bolj znan pod kratico WOOT.
 
@@ -448,6 +449,7 @@ Tako Alja kot Bine v svojem lokalnem dokumentu na koncu vidita stavek “{\tt TA
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Protokol sodelovanja}
+\label{subsec:ps}
 
 Z uporabo OT smo se naučili, kako z zamikanjem lokacij sprememb večim uporabnikom dopustiti urejanje istega dokumenta brez konflikov. Še vedno pa obstaja težava, kako vsako spremembo pravilno združiti z drugimi spremembami, če se le te zgodijo istočano. Zagotoviti moramo, da vsak oddaljeni uporabnik ve, da obstajajo spremembe, ki morajo biti združene. Za to skrbi Protokol sodelovanja (ang. Collaboartion protocol). Tehnologiji OT in Protokol sodelovanja skupaj, znak za znakom, skrbita za sodelovanja v realnem času \cite{gdocs23}.
 
@@ -564,6 +566,7 @@ V tem poglavju bomo opisali protokol Brez operativne transformacije \cite{woot},
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Podatkovni model}
+\label{subsec:pm}
 
 Dokument pri WOOT-u je shranjen kot zaporedje znakov predstavljenih z identifikacijskimi številkami (ang. identifier order). Zaporedje znakov besedila “{\tt Ubogi mucek!}” se prikaže kot na Sliki \ref{woot1}.
 
@@ -575,7 +578,7 @@ Dokument pri WOOT-u je shranjen kot zaporedje znakov predstavljenih z identifika
 \label{woot1}
 \end{figure}
 
-Za vsak znak v dokumentu hranimo 5 informacij: identifikacijo številko (ang. ID), vidnost, vsebino znaka, prejšnji znak in naslednji znak. Identifikacijska številka je kazalec na znak, ki je sestavljena iz unikatne oznake dokumenta in lokalne ure oziroma števca. Primer identifikacijske številka je {\tt (558,3)}. Unikatna oznaka dokumenta je številka, ki predstavlja uporabnika. Ko uporabnik prvič začne urejati dokument, se mu ta številka dodeli ali si jo izbere sam na podlagi predhodnega preverjanja unikatnostni. Lokalna ura je števec, ki se uporabniku povečuje za vsak vpisan znak. Na ta način je vsak znak v dokumentu označen z unikatnim kazalcem. Vidnost nam pove ali uporabnik določen znak vidi. Pri brisanju, se vidnost postavi na 0, sicer pa je vidnost pozitivna. Vsebina znaka je črka ali številka, ki jo znak predstavlja. Prejšnji znak je identifikacijska številka levega soseda. Naslednji znak je identifikacijska številka desnega soseda.
+Za vsak znak v dokumentu hranimo pet informacij: identifikacijo številko (ang. ID), vidnost, vsebino znaka, prejšnji znak in naslednji znak. Identifikacijska številka je kazalec na znak, ki je sestavljena iz unikatne oznake dokumenta in lokalne ure oziroma števca. Primer identifikacijske številka je {\tt (558,3)}. Unikatna oznaka dokumenta je številka, ki predstavlja uporabnika. Ko uporabnik prvič začne urejati dokument, se mu ta številka dodeli ali si jo izbere sam na podlagi predhodnega preverjanja unikatnostni. Lokalna ura je števec, ki se uporabniku povečuje za vsak vpisan znak. Na ta način je vsak znak v dokumentu označen z unikatnim kazalcem. Vidnost nam pove ali uporabnik določen znak vidi. Pri brisanju, se vidnost postavi na 0, sicer pa je vidnost pozitivna. Vsebina znaka je črka ali številka, ki jo znak predstavlja. Prejšnji znak je identifikacijska številka levega soseda. Naslednji znak je identifikacijska številka desnega soseda.
 
 Poznamo tudi dva posebna znaka, ki označujeta konec in začetek dokumenta. Uporabljata se zato, da lahko prvemu znaku nastavimo prejšnjega in zadnjemu znaku naslednjega soseda. Alja in Bine na Sliki \ref{woot2} urejata dokument v katerem se trenutno nahaja besedilo “{\tt Ubogi mucek!}”. Dokument bi bil pri pri Alji in Binetu shranjen kot zaporedje znakov od {\tt U} do klicaja.
 
@@ -674,7 +677,27 @@ Ko se integrira še Binetov presledek, dobimo “{\tt Uboga mala muca!}”. Po p
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Primerjava po lastnostih}
 
-Phasellus felis diam, molestie in laoreet ac, vestibulum at nunc.
+V Poglavju \ref{chp:protalg} smo spoznali glavne tri protokole in njihove algoritme za sodelovanje pri urejanju besedila v realnem času. Pozoren bralec je lahko ugotovil, da smo nekatere pomankljivosti določenega algoritma namenoma spustili. Na drugi strani pa bi lahko nekatere prednosti bolje poudarili. Namen tega poglavja je, da jih primerjamo po njihovih lastnostih in tako predstavimo tako njihovo negativno kot pozitivno plat.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Hranjenje dokumenta}
+
+V vseh treh primerih vsak uporabnik ureja svoj lokalen dokument. Vendar je ta dokument skupen vsem uporabnikom. Ko uporabniki obmirujejo (nehajo tipkati ali kako drugače delati spremembe na dokumentu), bi se morali vsi dokumenti v najkraješem možnem času poenotiti. Naj si bo to preko centralnega strežnika v primeru DS in OT ali preko ostalih uporabnikov pri WOOT. Vsi uporabniki bi morali videti isti dokument, ne glede na to kater algoritem za sodelovanje v realnem času se uporablja zadaj. Obstaja pa bistvena razlika, kako je ta dokument v osnovi shranjen. Vprašamo se lahko, kaj se zgodi, ko se urejanju pridruži nov uporabnik. Na kakšen način se dokument, shranjen v svoji primarni obliki, prikaže uporabniku berljivi (ang. human readable) obliki?
+
+Pri DS se posamezen dokument za vse uporabnike hrani kot dokument strežnika. Za vsakega uporabnika posebej pa na strežniku obstaja še senca dokumenta strežnika in varnostna kopija sence strežnika. Na strani uporabnika imamo podobne tri dokumente, vendar so to lokalni dokumenti, ki se nahajajo pri uporabniku. Zanimivo je, da je dokument strežnika že v uporabniku berljivi obliki. Ko se urejanju pridruži nov uporabnik, mu v njegovemu grafičnemu umesniku že takoj prikažemo vsebino dokumenta. Zadaj je potrebno poskrbeti, da se pravilno inicializirajo senca in kopija sence strežnika. Pri uporabniku pa se morajo postaviti vsi trije dokumenti.
+
+Pri OT smo v Poglavju \ref{subsec:ps} zapisali, da si morata za posamezen dokument tako strežnik kot uporabnik hraniti trenutno stanje dokumenta. Kar je shranjeno v trenutnem stanju dokumenta v odjemalcu, je to kar uporabnik dejansko vidi. Vendar je pri OT poudarek na spremembah. Najpomembnejša stvar na strežniku je revizijski dnevnik dokumenta in je enoten za vse uporabnike. V njem so kronološko shranjene vse spremembe, ki so jih naredili uporabniki. Da dokument prikažemo novemu uporabniku, le ponovimo revizijski dnevnik od začetka do konca \cite{gdocs22}. Seveda se mora v uporabnikovem odjemalcu pripraviti, da si bo beležil spremembe in številko zadnje sinhronizirane revizije.
+
+Pri primerjavi DS in OT lahko ugotovimo, da je hranjenje dokumenta v obeh primerih z nekaj modifikacijami precej podobno. Če bi algoritem DS dopolnili, da bi si beležil spremembe, ki jih naredijo uporabniki, bi tudi pri DS imeli revizijski dnevnik dokumenta. Tudi na OT bi lahko naredili nekaj modifikacij. Novemu uporabniku bi kar takoj prikazali trenutno stanje dokumenta, kot ga hrani strežnik. Številko zadnje sinhronizirane revizije bi odjemalcu poslali posebej. Z omenjenima modifikacijama bi bilo hranjene dokumenta precej podobno.
+
+WOOT temelji na protokolu točka-točka in ne uporablja centralnega strežnika. Da bi se urejanju pridružil nov uporabnik, mora biti to poskrbljeno preko kakega drugega sistema ali preko souporabnika v obliki povabila (ang. request). Posebnost WOOT-a je tudi to, kako se uporabniku prikaže dokument. Kot smo omenili v Poglavju \ref{subsec:pm}, za vsak znak v dokumentu hranimo pet informacij. Ko želimo novemu uporabniku prikazati dokument v uporabniku berljivi obliki, se naredi ena iteracija preko vseh znakov. Pobrisane znake (označene kot skrite) se uporabniku ne prikaže. Vse ostale znake se prikaže glede na to katero črko ali številko predstavljajo. V bistvu se ta iteracija naredi vedno ko uporabnik naredi ali prejme spremembo v dokumentu. Le tako je lahko dokument vedno v pravi obliki.
+
+Slabost WOOT-a v primerjavi z DS in OT je, da se znaki v dokumentu nikoli ne brišejo, le skrivajo se. V primeru, da se pri urejanju dokumenta med uporabniki veliko tudi briše, velikost dokumenta nenormalno raste.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Zahtevnost algoritma}
+
+Zahtevnost protokola oziroma algoritma je širok pojem. Objektivno gledano bi lahko ta pojem zajel koliko procesorske moči porabi posamezen algoritem. Koliko časa bi nam vzelo, da bi ga implementirali, je tudi eden izmed načinov merjenja zahtevnosti. Veliko bolj subjektivna ocena je, kako lahko oziroma kako težko je algoritem razumeti. Nek algoritem je za nekoga lažje razumljiv, medtem ko je isti algoritem za drugega težje razumljiv. Odvisno od predznanja. Če pa imamo stastične podatke dovolj velikega vzorca anketirancev, lahko iz njega povzamemo objektivne podatke. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Delovanje pri počasni povezavi}
@@ -687,24 +710,19 @@ Cras dictum laoreet mi at lacinia. Sed nec volutpat leo. Nulla facilisi. Sed at 
 Donec sed eros venenatis, facilisis quam non, aliquam libero. Vivamus in vulputate leo. Integer tellus ipsum, venenatis ut sagittis eu, elementum eu nisi. Curabitur sit amet consectetur sem. Nulla in velit sed arcu ultrices fermentum. Fusce in est at sem interdum sagittis vel ac tellus.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Zahtevnost algoritma}
-
-Maecenas consequat adipiscing ligula, a imperdiet ligula tincidunt ut. Sed a tristique quam. Sed quis posuere lorem. In suscipit lacus eu velit pellentesque scelerisque. Etiam pretium in mi vel placerat. Nunc at ultrices lacus, id tincidunt magna.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Model odjemalec-strežnik ali decentralizacija}
 
-Proin adipiscing ac dui vel rutrum. Aenean sit amet placerat nibh. Nulla tempus tristique tortor in auctor. Fusce volutpat mattis fermentum. Maecenas accumsan nibh ut nisi consequat, eget blandit augue auctor. Aenean ac elementum mi. Aenean eu mattis ipsum. Vivamus dolor ipsum, aliquet id dapibus mattis, pretium vel enim.
+Proin adipiscing ac dui vel rutrum. Aenean sit amet placerat nibh. Nulla tempus tristique tortor in auctor. Fusce volutpat mattis fermentum. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Implementacija undo}
+
+Maecenas accumsan nibh ut nisi consequat, eget blandit augue auctor. Aenean ac elementum mi. Aenean eu mattis ipsum. Vivamus dolor ipsum, aliquet id dapibus mattis, pretium vel enim.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Konsistentnost}
 
 Mauris imperdiet ut leo a tempus. Aliquam tempor condimentum massa, at varius diam egestas nec. Mauris eu sem at odio sagittis porta. Curabitur quis rhoncus magna, vitae dignissim enim.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Shranjevanje podatkov}
-
-Quisque ut velit bibendum, convallis urna vitae, tempor felis. Fusce cursus condimentum nisl, accumsan pharetra lorem iaculis sit amet. In ac lectus est. Nulla facilisi. Vivamus ornare justo id neque interdum, auctor ornare turpis cursus.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Nadzor sočasnosti}
