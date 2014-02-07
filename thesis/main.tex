@@ -595,7 +595,7 @@ Znaka {\tt (00000)} in {\tt (11111)} označujeta začetek oziroma konec dokument
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Operacije}
 
-Osredotočili se bomo na operaciji {\tt Vstavi} in {\tt Pobriši}. Ko uporabnik generira operacijo, se operacija najprej integrira lokalno. Nato se razpošlje vsem oddaljenim uporabnikom, ki sodelujejo pri urejanju. Ko jo sprejmejo, se še njim integrira v dokument.
+Osredotočili se bomo na operaciji “{\tt Vstavi}” in “{\tt Pobriši}”. Ko uporabnik generira operacijo, se operacija najprej integrira lokalno. Nato se razpošlje vsem oddaljenim uporabnikom, ki sodelujejo pri urejanju. Ko jo sprejmejo, se še njim integrira v dokument.
 
 Potreba po vnaprejšnji lokalni integracija pride iz razvrščanja znakov. Na primer, ko uporabnik generira spremembo {\tt \{ Vstavi ‘a’ @10 \}}, se le ta v uporabniškem vmesniku prikaže kot črka {\tt a} na lokaciji 10. Sprememba se mora pretvoriti v \linebreak {\tt \{ Vstavi ‘c’$\prec$‘a’$\prec$‘e’ \}}, ki pomeni vstavi črko {\tt a}, med črko {\tt c} in {\tt e}. Lokacija spremembe je tako definirana s svojima dvema sosedoma in ne s konkretno številko lokacije. Pretvorba je prikazana poenostavljeno. V dejanskem algoritmu bi sosednja dva znaka označlil z njunima identifikacijskama števikama. Podobno kot vstavljanje, se mora tudi brisanje pretvoriti WOOT protokolu primerno. Sprememba \linebreak {\tt \{ Pobriši @5 \}} pobriše znak na lokaciji 5. V primeru Alje in Bineta imamo na lokaciji 5 črko {\tt i}, zato moramo spremembo pretvoriti v {\tt \{ Pobriši ‘i’ \}}. Seveda je tudi ta primer poenostavljen, saj je tudi operacija brisanja vezana na identifikacijsko številko in ne na konkretno črko ali številko. Pomembno je poudariti, da znakov pri protokolu WOOT nikoli ne brišemo, ampak jih le skrivamo. Dokument je shranjen kot zaporedje uporabniku vidnih in uporabniku nevidinih znakov. Na ta način je razvrščanje spremembe vedno pravilno, saj je odvisno tudi od nevidnih znakov.
 
@@ -695,6 +695,28 @@ WOOT temelji na protokolu točka-točka in ne uporablja centralnega strežnika. 
 Slabost WOOT-a v primerjavi z DS in OT je, da se znaki v dokumentu nikoli ne brišejo, le skrivajo se. V primeru, da se pri urejanju dokumenta med uporabniki veliko tudi briše, velikost dokumenta nenormalno raste.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Struktura porazdelitve}
+
+Ko govorimo o strukturi porazdelitve, govorimo o arhitekturi omrežja. Poznamo model odjemalec-strežnik (ang. client-server) in model točka-točka (ang. P2P). Pri modelu odjemalec-strežnik vsak posamezen odjemalec (uporabnik) centralnemu strežniku pošilja zahteve, medtem ko si pri modelu točka-točka med seboj povezane točke (uporabniki) izmenjujejo vire brez uporabe centraliziranega strežnika \cite{p2p} \cite{c-s}. Njuna aritektura je prikazana na sliki \ref{p2p_c-s}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=13cm]{p2p_c-s.png}
+\end{center}
+\caption{Na levi je model odjemalec-strežnik, na desni je model točka-točka.}
+\label{p2p_c-s}
+\end{figure}
+
+Oba modela smo že omenili, ko smo opisovali izbrane tri protokole ter algoritme. Avtorji algoritma WOOT so se naslanjali na dejstvo, da je model točka-točka boljši za distribucijo vsebine. Ta potencial so želeli izkoristiti in tako WOOT v osnovi deluje na modelu točka-točka, čeprav bi se ga dalo realizirati tudi na modelu odjemalec-strežnik. Za DS in OT smo rekli, da temeljila na modelu odjemalec-strežnik. Pri OT to ni čisto res. Hipotezo ovrže prvi članek o OT \cite{ccigs}, saj pravi: “Za sisteme za skupinsko delo v realnem času je značilno, da so porazdeljeni (ang. distributed). Na splošno ni mogoče domnevati, da so vsi udeleženci povezani z isitim strojem ali da so v istem lokalnem omrežju.“ Glede na potrebe po rešitvi zapletenih stanj, ki lahko nastanejo, če poleg “{\tt Vstavi}” in “{\tt Pobriši}” dodamo še bolj zapletene spremembe, so se v naslednjih raziskavah OT \cite{hllbw} začele pojavljati rešitve zasnovane na modelu odjemalec-strežnik. Izkazale so se za boljše, saj zmanjšujejo verjetnost napak pri zapletenih spremembah na dokumentu.
+
+Torej imamo DS na modelu odjemalec-strežnik, OT na modelu odjemalec-strežnik pri zapletenih spremembah oziroma na modelu točka-točka pri enostavnih spremembah ter WOOT na modelu točka-točka ali na modelu odjemalec-strežnik. Vprašanje je, kaj je boljše? Od čese je sploh odvisno, kateri model je boljši? Če med sabo primerjamo modela po zanesljivosti (ang. reliability) in razširljivosti (ang. scalability), je model točka-točka zmagovalec. Pri razširljivosti je neomejen. Zanesljivost pa je zelo visoka. Če en souporabnik odpove, so na voljo še vsi ostali souporabniki na katere se lahko priklopi uporabnik. Pri modelu odjemalec-strežnik je zgodba drugačna. Razširljivosti je slaba, saj je število povezav na en strežnik omejeno mnogo. Tudi z zanesljivosti ni drugače. Ko odpove strežnik, odpovejo vsi souporabniki.
+
+Ker sta DS in OT močno odvisna od modela odjemalec-strežnik, obstajajo raziskave \cite{diffsync} na temo izboljšanja zanesljivosti in razširljivosti. Ideja je, da med sabo povežemo več strežnikov, ki si med sabo izmenjujejo spremembe v dokumentu ravno tako kot si jih izmenjujeta odjemalec in strežnik. Tako hkrati izboljašmo razširljivost in zanesljivost. Več uporabnikov se lahko pridruži urejanju. V primeru izpada enega strežnika, se lahko prevežejo na drugega.
+
+Končna ugotovitev je, da so DS, OT in WOOT enakovredni po strukturi porazdelitve, saj sta model odjemalec-strežnik in model točka-točka primerljiva po zanesljivosti in razširljivosti.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Zahtevnost algoritma}
 
 Zahtevnost protokola oziroma algoritma je širok pojem. Objektivno gledano bi lahko ta pojem zajel koliko procesorske moči porabi posamezen algoritem. Koliko časa bi nam vzelo, da bi ga implementirali, je tudi eden izmed načinov merjenja zahtevnosti. Veliko bolj subjektivna ocena je, kako lahko oziroma kako težko je algoritem razumeti. Nek algoritem je za nekoga lažje razumljiv, medtem ko je isti algoritem za drugega težje razumljiv. Odvisno od predznanja. Če pa imamo stastične podatke dovolj velikega vzorca anketirancev, lahko iz njega povzamemo objektivne podatke. 
@@ -708,11 +730,6 @@ Cras dictum laoreet mi at lacinia. Sed nec volutpat leo. Nulla facilisi. Sed at 
 \section{Iskanje razlik ali poslušalci akcij}
 
 Donec sed eros venenatis, facilisis quam non, aliquam libero. Vivamus in vulputate leo. Integer tellus ipsum, venenatis ut sagittis eu, elementum eu nisi. Curabitur sit amet consectetur sem. Nulla in velit sed arcu ultrices fermentum. Fusce in est at sem interdum sagittis vel ac tellus.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Model odjemalec-strežnik ali decentralizacija}
-
-Proin adipiscing ac dui vel rutrum. Aenean sit amet placerat nibh. Nulla tempus tristique tortor in auctor. Fusce volutpat mattis fermentum. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Implementacija undo}
@@ -807,6 +824,12 @@ Nam semper augue at rhoncus laoreet. Nunc non aliquet risus. Curabitur dictum, n
 
 \bibitem{woot} G. Oster, P. Urso, P. Molli, A. Imine. “Real time group editors without Operational transformation”.
 \\\url{http://hal.inria.fr/docs/00/07/12/40/PDF/RR-5580.pdf}
+
+\bibitem{p2p} Wikipedia, the free encyclopedia. “Peer-to-peer”.
+\\\url{http://en.wikipedia.org/wiki/Peer-to-peer}
+
+\bibitem{c-s} Wikipedia, the free encyclopedia. “Client–server model”.
+\\\url{http://en.wikipedia.org/wiki/Client-server_model}
 
 \end{thebibliography}
 
