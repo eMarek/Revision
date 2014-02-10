@@ -172,6 +172,7 @@ Ti dve tehnologiji omenjamo zato, ker sta in bosta največ prispevali pri izbolj
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Sočasnost in konsistentnost}
+\label{sec:con}
 
 Da bo problem razumljiv še najmanj veščemu poznavalcu tehnologij, bomo problem predstavili na konkretnem primeru \cite{problem} med dvema udeležencema (ang. participants) oziroma uporabnikoma.
 
@@ -746,6 +747,17 @@ Seveda bi se dalo tudi WOOT implementirati z algoritmom za iskanje razlik v bese
 Ponovno ni konkretnega zmagovalca med protokoli glede zaznavanja sprememb. Po našem mnenju je pri DS in OT najbolj primerno uporabiti algoritme za iskanje razlik med besedilom, pri WOOT pa je bolj primerno uporabiti poslušalce dogodkov. Katerega je bolj smiselno implementirati je odvisno od platforme in od predvidene dolžine besedila.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Problem sočasnosti}
+
+O problemu sočasnosti smo govorili na začetku naše diplomske naloge v Poglavju \ref{sec:con}. Do težave pride, ko več uporabnikov v istem času na isti lokaciji naredi neko spremembo. Za vzdrževanje konsistentnosti potrebujemo algoritme za nadzor sočasnosti kot so na primer DS, OT in WOOT.  Algoritme za nadzor sočasnosti lahko klasificiramo kot pesimistične ali optimistične \cite{hllbw}. Pesimistični algoritem vnaprej potrebuje komunikacijo s centralnim strežnikom ali s souporabnikom. Ko uporabnik naredi spremembo, mora počakati na povratno informacijo ali je s spremembo vse v redu ali ne. Če ni težav, se nova sprememba uveljavi na dokumentu. Sicer mora uporabnik popraviti svojo spremembo in poskusiti ponovno. Optimistični algoritem deluje ravno nasportno. V tem primeru uporabnik naredi spremembo in jo pošlje na strežnik ali souporabniku. Naloga strežnika oziroma souporabnika je, da to spremembo umesti v dokument na način, da se med souporabniki ohrani konsistentnost. Pesisimističen nadzor pri urejanju golega besedila v realnem času ne pride v poštev. V praksi ga ponavadi najdemo v kombinaciji skupaj z zaklepanjem dokumenta. Vsi trije naši protokoli temeljijo na optimističnem nadzoru sočasnosti. Kljub učinkovitosti protokolov se vseeno najde kakšna nezažljena zadeva.
+
+Poglejemo si specifičen primer sočasnega brisanja istega znaka v dokumentu pri uporabi OT. Recimo, da imamo dokument z nekaj deset znaki. Urejata ga uporabnika Alja in Bine. Oba na enkrat pobrišeta četrti znak. V istem času odpošljeta svoji spremembi {\tt \{ Pobriši @4 \}}. Na strežnik bodo obe spremembi prišle hkrati, vendar se bodo sprocesirali ena za drugo. Recimo, da se bo najprej sprocesirala Aljina sprememba. Pobrisala bo četrti znak. Alji se bo nazaj poslala potrditev o uspešnem izbrisu, Binetu pa se bo poslala zahteva za brisanje četrtega znaka. Nato strežnik začne procesirati Binetovo spremembo, v kateri piše naj se pobriše četrti znak. Res se pobriše trenutno četrti znak, ampak to ni isti znak, ki ga je izbrisal Bine v svojem lokalnem dokumentu. Ne strežniku se dejansko pobriše znak, ki ga ima Bine v svojem lokalnem dokumentu na petem mestu. Potrditev o uspešnem izbrisu se pošlje Binetu, Alji pa zahteva za brisanje četrega znaka. Podobno kot na strežniku, se tudi v lokalnih dokumentih Alje in Bineta še enkrat pobriše četrti znak. Končni rezultat v vseh dokumentih sta pobrisana četrti in peti znak, čeprav sta Alja in Bine želela pobrisati le četrti znak.
+
+Še en primer ne najboljše rešitve algoritma je pri protkolu WOOT. Predstavljajmo si uporabnike Aljo (217), Bineta (558) in Ceneta (609), ki urejajo dokument. Številka v oklepaju predstavlja posameznega uporabnika. Alja in Bine istočasno na isto mesto vpišeta vsak svojo začetnico imena. Alja naredit spremembo {\tt \{ Vstavi ‘t’$\prec$‘a’$\prec$‘d’ \}}, Bine pa {\tt \{ Vstavi ‘t’$\prec$‘b’$\prec$‘d’ \}}. Ne pozabimo, da sprememba nosi informacijo med katerema dvema znakoma se mora vstaviti uporabnikov znak. Kot vidimo se vstavljanje integrira med črki “{\tt t}” in “{\tt d}”.  Vsak svojo spremembo pošljeta Cenetu. On obe spremembi sprejme. Najprej začne procesirati Binetovo spremembo, vstavljanje črke “{\tt b}”. Le ta se integrira brez težav. Nato začne procesirati Aljino spremembo, vstavljanje črke “{\tt a}”. Vstaviti se mora med črki “{\tt t}” in “{\tt d}” med katerima dvema se že nahaja “{\tt b}”. Črka “{\tt a}” bi se lahko vstavila pred “{\tt b}” ali za “{\tt b}”. Ker je Aljina številka 217 manjša od Binetove 557, se črka “{\tt a}” vstavi pred črko “{\tt b}”. Rešitev je sicer enostavna, vendar ta način vedno daje prednost uporabnikom z nižjo številko pred tistim z višjo številko. Previlgiranost enega uporabnika pred drugimi bi lahko rešili z uro oziroma s časovnimi žigi. Pri integraciji sprememb pri odaljenem uporabiku bi lahko istoležeče spremembe razvrščali glede na vrstni red procesiranje. Kasneje sprocesirani znak, bi moral ležati bolj desno. To je sicer rešitev z enkopravnim razvščanjem sprememb, vendar nam podre konsistentnost pri drugih uporabnikih. Rešitev je neuporabna. Druga rešitev je, da uporabnik sam pošlje kdaj je naredil spremembo. Se pravi skupaj s spremembo se pošlje tudi časovni žig spremembe. Isto ležeče spremembe se bi tako razvrščale glede na časovni žig. To zahteva natančno usklajenost ure pri vseh oddaljenih uporabnikih. Že to je precej težko doseči, poleg tega pa lahko uporabnik tudi goljufa kdaj je naredil spremembo. Tako si ustvari previligiran položaj.
+
+Kot vidimo ima OT težave s sočasnostjo istoležečih sprememb pri kombinaciji “{\tt Pobriši-Pobriši}”, WOOT pa pri kombinaciji “{\tt Vstavi-Vstavi}”. DS nima izrazitih težav.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Zahtevnost algoritma}
 
 Zahtevnost protokola oziroma algoritma je širok pojem. Objektivno gledano bi lahko ta pojem zajel koliko procesorske moči porabi posamezen algoritem. Koliko časa bi nam vzelo, da bi ga implementirali, je tudi eden izmed načinov merjenja zahtevnosti. Veliko bolj subjektivna ocena je, kako lahko oziroma kako težko je algoritem razumeti. Nek algoritem je za nekoga lažje razumljiv, medtem ko je isti algoritem za drugega težje razumljiv. Odvisno od predznanja. Če pa imamo stastične podatke dovolj velikega vzorca anketirancev, lahko iz njega povzamemo objektivne podatke.
@@ -754,16 +766,6 @@ Zahtevnost protokola oziroma algoritma je širok pojem. Objektivno gledano bi la
 \section{Implementacija undo}
 
 Maecenas accumsan nibh ut nisi consequat, eget blandit augue auctor. Aenean ac elementum mi. Aenean eu mattis ipsum. Vivamus dolor ipsum, aliquet id dapibus mattis, pretium vel enim.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Konsistentnost}
-
-Mauris imperdiet ut leo a tempus. Aliquam tempor condimentum massa, at varius diam egestas nec. Mauris eu sem at odio sagittis porta. Curabitur quis rhoncus magna, vitae dignissim enim.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Nadzor sočasnosti}
-
-Nam et elit a tortor aliquet laoreet. Pellentesque congue, risus ultricies rhoncus tincidunt, quam libero tempor tellus, sit amet bibendum velit augue eleifend lectus.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Iskanje razlik}
