@@ -738,7 +738,7 @@ Na Zemlji so si vsi trije algoritmi nekako enakovredni. Bolj kot problem počasn
 
 Pri razlagi protokolov za urejanje besedila v realnem času smo rekli, da uporabniki delajo spremembe na besedilu. Osredotočili smo se na spremembi “{\tt Vstavi}” in “{\tt Pobriši}”. Obstajajo tudi še druge, ki jih v tej diplomski nalogi nismo zajeli. Dejstvo pa je, da besedo “sprememba” nismo nikoli točno definirali. Govorili smo le o tem, da uporabnik naredi spremembo. Vzrok temu je, da različni akademski člani, uporabljajo različno terminologijo za poimenovanje uporabnikove interakcije z urejevalnikom besedila. Druga težava pa je, da različni protokoli predvidevajo različno zaznavanje sprememb in jih tud različno obravnavajo.
 
-Ko uporabnik ureja besedilo v svojem dokumentu, sta dve možnosti. Ali zaznavamo vse njegove operacije preko poslušalcev dogodka (ang. event listeners) ali pa v besedilu iščemo nastale spremembe. Med prvimi raziskavami so bili poslušalci dogodkov precej popularni. Zaznavanje pisanja in brisanja golega besedila je precej enostavno na bilo kateri platformi. Poleg tipkanja kot takega lahko uporabnik naredi tudi operacije kot so izreži besedilo, prilepi besedilo, povleci in spusti besedilo, zamenjava besedila, povrni besedilo... Operaciji kot sta samodokončanje in pravpisni popravek lahko naredi tudi sam urejevalnik. Ko osnovnima dvema operacijama dodamo še bolj zapletene operacije, so poslušalci dogodkov preveč kompleksni. Včasih se jih niti ne da realizirati. Tako so se vedno bolj začeli uveljavljati algoritmi za iskanje razlik med besediloma. Kako delujejo bomo opisali v Poglavju \ref{chp:diff}. Na tem mestu povejmo le to, da je njihov glavni namen iskanje sprememb v besedilu. Spremembe, ki jih algoritmi najdejo, so posledica uporabnikove interakcije z urejevalnikom. Njihova dobra lastnost je, da so v osnovi implementirani povsem neodvisno od uporabnika. Vseeno pa najdejo vse operacije, ki jih naredil uporabnik v besedilu in tudi vse operacije samega urejevalnika v besedilu. Slaba stran algoritmov za iskanje razlik v besedilu je časovna zahtevnost, ki povečuje čas za iskanje sprememb v besedilu.
+Ko uporabnik ureja besedilo v svojem dokumentu, sta dve možnosti. Ali zaznavamo vse njegove operacije preko poslušalcev dogodka (ang. event listeners) ali pa v besedilu iščemo nastale spremembe. Pri primitivnih implementacijah so bili poslušalci dogodkov precej popularni. Zaznavanje pisanja in brisanja golega besedila je precej enostavno na bilo kateri platformi. Poleg tipkanja kot takega lahko uporabnik naredi tudi operacije kot so izreži besedilo, prilepi besedilo, povleci in spusti besedilo, zamenjava besedila, povrni besedilo... Operaciji kot sta samodokončanje in pravpisni popravek lahko naredi tudi sam urejevalnik. Ko osnovnima dvema operacijama dodamo še bolj zapletene operacije, poslušalci dogodkov postanejo preveč zapleteni. Včasih se jih niti ne da realizirati. Tako so se vedno bolj začeli uveljavljati algoritmi za iskanje razlik med besediloma. Kako delujejo bomo opisali v Poglavju \ref{chp:diff}. Na tem mestu povejmo le to, da je njihov glavni namen iskanje sprememb v besedilu. Spremembe, ki jih algoritmi najdejo, so posledica uporabnikove interakcije z urejevalnikom. Njihova dobra lastnost je, da so v osnovi implementirani povsem neodvisno od uporabnika. Vseeno pa najdejo vse spremembe, ki nastanejo ob uporabnikovih operacijah v besedilu in tudi vse spremembe, ki nastanejo ob operacijah samega urejevalnika v besedilu.
 
 Poglejmo si kako je z obravnavanimi protkoli. Pri DS smo že v osnovni topologiji na Sliki \ref{ds1} omenili tri entitete in sicer razliko, spremembo in popravek. To nakazuje, da DS predvideva uporabo algoritma za iskanje razlik v besedilu. Najdene spremembe, se kot popravki uveljavijo na oddaljenemu računalniku. Pri OT o nastanku spremembi nismo kaj dosti govorili. Smo pa poudarili, da so spremembe pomemben del OT, saj je dokument shranjen kot revizijski dnevnik sprememb. Kako implementirati zaznavanje spremembe v praksi, je programerjeva odločitev. Le potrebno je biti pazljiv, da se že poslanih spremembe ne pošilja še enkrat. Spremembe pri WOOT se običajno imenujejo operacije. To pa zato, ker to v bistvu so. Če se uporabnikove operacije zaznava preko poslušalcev dogodkov, je posamezna operacija tudi že sprememba. Na tak način pa naj bi WOOT tudi delovala. Urejevalnik mora biti sposoben zaznavati uporabnikove operacije kot spremembe, jih integrirati v lokalni dokument in jih poslati ostalim uporabnikom za integracijo v njihovih dokumentih.
 
@@ -766,7 +766,34 @@ Zahtevnost protokola oziroma algoritma je širok pojem. Objektivno gledano bi la
 \chapter{Iskanje razlik}
 \label{chp:diff}
 
-Nulla vel lorem erat. Nullam convallis molestie mauris non vulputate. Fusce sagittis purus non mi interdum, ac tempor nunc vulputate. Vivamus tempor diam a laoreet porta. Aliquam adipiscing elit vel risus accumsan, eget lacinia felis rutrum. Mauris ornare mattis vestibulum. Proin adipiscing semper turpis, eleifend sollicitudin tortor aliquam eget.
+Algoritmi za iskanje razlik v besedilu se uporabljajo za zaznavanje sprememb, ki nastanejo, ko uporabnik ureja besedilo. Preprost primer razlike med dvema besedila je prikazan na Sliki \ref{diff1}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=10cm]{diff1.png}
+\end{center}
+\caption{Primer razlike. Prečrtane črke so črke, ki so bile v izvirnemu besedilu izbrisane, podčrtane črke pa dodane.}
+\label{diff1}
+\end{figure}
+
+
+Raziskave na tem področju so se začele že pred pojavom sodelovanja v realnem času in so jih obširno proučevali \cite{f-cmpr, o-nd, s-cmpr} ter kasneje \cite{diffstrg}. Namen vseh raziskav je bil, da se izboljša časovna zahtevnost algoritma za iskanje razlik. V čem je problem? Med tem ko uporabnik tipka, se morajo spremembe v najkrajšem možnem času poslati na strežnik. Če bi bil algoritem počasen in bi več sekund ali celo minut zamujal, bi bila uporabniška izkušnja zelo slaba. Pri več minutni zamudi že težko govorimo o sodelovanje uporabnikov v realnem času.
+
+Besedilo, ki je skupno tako izvirnemu kot tudi spremenjenemu besedilu, imenujemo najdaljše skupno zaporedje (ang. longest common subsequence). V našem primeru to zaporedje sestavljajo črke “{\tt Leloil}”. Na Sliki \ref{diff1} so to črke v razliki, ki niso ne prečrtane ne podčrtane. Med izvirnim besedilom in spremenjenim besedilom lahko izračunamo tudi Levenshteinovo razdaljo. To je številka, ki pove, koliko sprememb bi morali narediti na izvirnemu besedilu, da dobimo spremenjeno besedilo. Levenshteinovo razdalja našega primera je 12. Na Sliki \ref{diff1} lahko vidimo sedem prečrtanih črk in pet podčrtanih črk. Skupaj torej 12 sprememb, sedemkrat brisanja in petkrat vstavljanje. Na podlagi najdaljšega skupnega zaporedja in Levenshteinovo razdalje lahko predvidimo scenarij najkrajšega urejanja (ang. shortest edit script). To bi bili  {\tt \{ Pobriši ‘ta’ \}}, {\tt \{ Vstavi ‘do’ \}}, {\tt \{ Pobriši ‘nos’ \}}, {\tt \{ Vstavi ‘m’ \}}, {\tt \{ Pobriši ‘ka’ \}}, {\tt \{ Vstavi ‘ec’ \}}. Ali so to res operacije, kot jih je naredil uporabnik, ne vemo. Dejstvo pa je, da so to spremembe v besedilu. Uporabnik, bi lahko v celoti pobrisal besedo “{\tt Letalonosilka}” in na novo napisal “{\tt Ledolomilec}”. Problem, ki ga rešujemo, je zagotavljanje konsistentnost med uporabniki. Ne zanima nas katere operacije so se zgodile v urejevalniku. Ni pomemebno kako je uporabnik uredil besedilo. Pomembno je vsebina besedila. Za to je dovolj, da ugotavljamo le kakšne so spremembe v besedilu in ne kako smo prišli do njih.
+
+V nadaljevanju bomo na primeru prikazali kako poisakati nadaljše skupno zaporedje, kako izračunati Levenshteinovo razdaljo in kako priti do scenarija najkrajšega urejanja.
+
+\section{Najdaljše skupno zaporedje}
+
+Fusce accumsan, massa a mollis eleifend, sapien lectus commodo lectus, vitae venenatis ipsum diam at risus. Suspendisse potenti. Duis quis convallis augue.
+
+\section{Levenshteinova razdalja}
+
+Praesent facilisis vehicula molestie. Phasellus tempor pharetra mauris in ultrices. Aenean tempor facilisis diam sit amet ornare.
+
+\section{Scenarij najkrajšega urejanja}
+
+Suspendisse egestas purus ac elementum porttitor. Sed feugiat suscipit quam, at congue purus ornare ut. Nunc consequat placerat mi, eu vulputate diam cursus vitae. Quisque nec vulputate ante. Vestibulum ac commodo metus. Vestibulum laoreet magna sit amet interdum auctor.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Urejevalniki v realnem času}
