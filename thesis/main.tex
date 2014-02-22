@@ -766,31 +766,89 @@ Zahtevnost protokola oziroma algoritma je širok pojem. Objektivno gledano bi la
 \chapter{Iskanje razlik}
 \label{chp:diff}
 
-Algoritmi za iskanje razlik v besedilu se uporabljajo za zaznavanje sprememb, ki nastanejo, ko uporabnik ureja besedilo. Preprost primer razlike med dvema besedila je prikazan na Sliki \ref{diff1}.
+Algoritmi za iskanje razlik v besedilu se uporabljajo za zaznavanje sprememb, ki nastanejo, ko uporabnik ureja besedilo. Preprost primer razlike med dvema besedila je prikazan na Sliki \ref{diff}.
 
 \begin{figure}[placement h]
 \begin{center}
-\includegraphics[width=10cm]{diff1.png}
+\includegraphics[width=10cm]{diff.png}
 \end{center}
 \caption{Primer razlike. Prečrtane črke so črke, ki so bile v izvirnemu besedilu izbrisane, podčrtane črke pa dodane.}
-\label{diff1}
+\label{diff}
 \end{figure}
-
 
 Raziskave na tem področju so se začele že pred pojavom sodelovanja v realnem času in so jih obširno proučevali \cite{f-cmpr, o-nd, s-cmpr} ter kasneje \cite{diffstrg}. Namen vseh raziskav je bil, da se izboljša časovna zahtevnost algoritma za iskanje razlik. V čem je problem? Med tem ko uporabnik tipka, se morajo spremembe v najkrajšem možnem času poslati na strežnik. Če bi bil algoritem počasen in bi več sekund ali celo minut zamujal, bi bila uporabniška izkušnja zelo slaba. Pri več minutni zamudi že težko govorimo o sodelovanje uporabnikov v realnem času.
 
-Besedilo, ki je skupno tako izvirnemu kot tudi spremenjenemu besedilu, imenujemo najdaljše skupno zaporedje (ang. longest common subsequence). V našem primeru to zaporedje sestavljajo črke “{\tt Leloil}”. Na Sliki \ref{diff1} so to črke v razliki, ki niso ne prečrtane ne podčrtane. Med izvirnim besedilom in spremenjenim besedilom lahko izračunamo tudi Levenshteinovo razdaljo. To je številka, ki pove, koliko sprememb bi morali narediti na izvirnemu besedilu, da dobimo spremenjeno besedilo. Levenshteinovo razdalja našega primera je 12. Na Sliki \ref{diff1} lahko vidimo sedem prečrtanih črk in pet podčrtanih črk. Skupaj torej 12 sprememb, sedemkrat brisanja in petkrat vstavljanje. Na podlagi najdaljšega skupnega zaporedja in Levenshteinovo razdalje lahko predvidimo scenarij najkrajšega urejanja (ang. shortest edit script). To bi bili  {\tt \{ Pobriši ‘ta’ \}}, {\tt \{ Vstavi ‘do’ \}}, {\tt \{ Pobriši ‘nos’ \}}, {\tt \{ Vstavi ‘m’ \}}, {\tt \{ Pobriši ‘ka’ \}}, {\tt \{ Vstavi ‘ec’ \}}. Ali so to res operacije, kot jih je naredil uporabnik, ne vemo. Dejstvo pa je, da so to spremembe v besedilu. Uporabnik, bi lahko v celoti pobrisal besedo “{\tt Letalonosilka}” in na novo napisal “{\tt Ledolomilec}”. Problem, ki ga rešujemo, je zagotavljanje konsistentnost med uporabniki. Ne zanima nas katere operacije so se zgodile v urejevalniku. Ni pomemebno kako je uporabnik uredil besedilo. Pomembno je vsebina besedila. Za to je dovolj, da ugotavljamo le kakšne so spremembe v besedilu in ne kako smo prišli do njih.
+Besedilo, ki je skupno tako izvirnemu kot tudi spremenjenemu besedilu, imenujemo najdaljše skupno zaporedje (ang. longest common subsequence). V našem primeru to zaporedje sestavljajo črke “{\tt Leloil}”. Na Sliki \ref{diff} so to črke v razliki, ki niso ne prečrtane ne podčrtane. Med izvirnim besedilom in spremenjenim besedilom lahko izračunamo tudi Levenshteinovo razdaljo. To je številka, ki pove, koliko sprememb bi morali narediti na izvirnemu besedilu, da dobimo spremenjeno besedilo. Levenshteinovo razdalja našega primera je 12. Na Sliki \ref{diff} lahko vidimo pet prečrtanih črk in sedem podčrtanih črk. Skupaj torej 12 sprememb, petkrat brisanja in sedemkrat vstavljanje. Na podlagi najdaljšega skupnega zaporedja in Levenshteinovo razdalje lahko predvidimo scenarij najkrajšega urejanja (ang. shortest edit script). To bi bili {\tt \{ Pobriši ‘do’ \}}, {\tt \{ Vstavi ‘ta’ \}}, {\tt \{ Pobriši ‘m’ \}}, {\tt \{ Vstavi ‘nos’ \}}, {\tt \{ Pobriši ‘ec’ \}}, {\tt \{ Vstavi ‘ka’ \}}. Ali so to res operacije, kot jih je naredil uporabnik, ne vemo. Dejstvo pa je, da so to spremembe v besedilu. Uporabnik, bi lahko v celoti pobrisal besedo “{\tt Ledolomilec}” in na novo napisal “{\tt Letalonosilka}”. Problem, ki ga rešujemo, je zagotavljanje konsistentnost med uporabniki. Ne zanima nas katere operacije so se zgodile v urejevalniku. Ni pomemebno kako je uporabnik uredil besedilo. Pomembno je vsebina besedila. Za to je dovolj, da ugotavljamo le kakšne so spremembe v besedilu in ne kako smo prišli do njih.
 
 V nadaljevanju bomo na primeru prikazali kako poisakati nadaljše skupno zaporedje, kako izračunati Levenshteinovo razdaljo in kako priti do scenarija najkrajšega urejanja.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Najdaljše skupno zaporedje}
 
-Fusce accumsan, massa a mollis eleifend, sapien lectus commodo lectus, vitae venenatis ipsum diam at risus. Suspendisse potenti. Duis quis convallis augue.
+Iskanje najdaljšega skupnega zaporedja bomo prikazali tabelarično \cite{lcs}. Kot je prikazano na Sliki \ref{lcs1} horizontalno na vrh tabele vpišemo daljšega od besedil, ki jih primerjamo. V našem primeru je to spremenjeno besedilo “{\tt Letalonosilka}”. Ima  {\tt n=13} znakov. Vsak znak je označen s številko od 1 do 13. Vertikalno ob tabeli vpišemo krajšega od besedil, to je izvirno besedilo “{\tt Ledolomilec}”. Ima  {\tt m=11} znakov. Vsak znak je označena s številko od 1 do 11. Vsa polja {\tt (x,y)} v tabeli bomo zapolnili s številkami od 0 do števila znakov, ki se ujemajo v obeh besedilih.
 
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=7cm]{lcs1.png}
+\end{center}
+\caption{Priprava na iskanje najdaljšega skupnega zaporedja.}
+\label{lcs1}
+\end{figure}
+
+Zgornjo ničto vrstico in levi ničti stolpec zapolnimo z ničlami. To lahko naredimo zaradi logičnega razloga. Če katero koliko besedilo primerjamo z praznim besedilom, ti dve besedila nimata skupnega zaporedja.
+
+Postopek za iskanje najdaljšega skupnega zaporedja se prične v zgornjem levem polju {\tt (1,1)}, se nadaljuje do konca vrstice. Nato gre v naslednjo vrstico, se ponovi za vse vrstice in se konča v spodnjem desnem polju {\tt (11,13)}. V vsakem polju v tabeli se primerja črki, ki pokrivajo to polje. Če sta črki enaki, se v polje vpiše za eno večje število kot je v zgornje-levo ležečem polju. Med ta dva polja se vriše še tako imenovani mostiček (ang. bridge). Če sta črki različni, se v polje vpiše večjega od zgornje ali levo ležečega polja.
+
+Začnimo v polju {\tt (1,1)}. Primerjamo črki “{\tt L}” in “{\tt L}”. Ker sta črki enaki in je v zgornje-levo ležečem polju {\tt (0,0)} ničla, se v polje {\tt (1,1)} vpiše 1. Med polja {\tt (0,0)} in {\tt (1,1)} vrišemo mostiček. Nadaljujemo s poljem {\tt (1,2)}. Črki “{\tt L}” in “{\tt e}” sta različni. Vrednost levo ležečega polja {\tt (1,1)} je 1, kar je več od zgornje ležečga polja {\tt (0,2)}, ki je 0. V polje {\tt (1,2)} se torej vpiše vrednost 1. Slika \ref{lcs2} prikazuje izpolnjena prva dva polja.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=7cm]{lcs2.png}
+\end{center}
+\caption{Izgled tabele po prvih dveh korakih.}
+\label{lcs2}
+\end{figure}
+
+Ker se črki “{\tt L}” v besedi “{\tt Letalonosilka}” ne ponovi več, je v vseh poljih v prvi vrstici vrednost 1. Nadaljujemo v drugi vrstici. Pričnemo v polju {\tt (2,1)}. Ker sta črki “{\tt e}” in “{\tt L}” različni, se v polje {\tt (2,1)} vpiše večja od vrednosti levo ležečega polja {\tt (2,0)} 0 in zgornje ležečga polja {\tt (1,1)} 1, torej 1. Postopek se nadaljuje v polju {\tt (2,2)}. Črki “{\tt e}” in “{\tt e}” sta enaki. Vrednost zgornje-levo ležečega polja {\tt (1,1)} je 1. V polje {\tt (2,2)} se vpiše za 1 večje vrednost, torej 2. Doriše se mostiček. V tem trenutku tabela izgleda kot je na Sliki \ref{lcs3}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=7cm]{lcs3.png}
+\end{center}
+\caption{Pri primerjavi besedil smo našli že dve skupni črki.}
+\label{lcs3}
+\end{figure}
+
+\pagebreak
+
+Po opisanem postopku nadaljujemo čez vse vrstice. Pazljivi moramo biti pri črkah, ki se v besedi ponovijo dvakrat, kot recimo črka “{\tt o}”. Izpolnjena tabela na koncu izgleda kot je prikazano na Sliki \ref{lcs4}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=7cm]{lcs4.png}
+\end{center}
+\caption{Izpolnjena tabela po postopku za iskanje najdaljšega skupnega zaporedja.}
+\label{lcs4}
+\end{figure}
+
+V spodanjem desnem polju {\tt (n,m)}, to je {\tt (11,13)}, se nahaja vrednost 6. To pomeni, da je v besedah, ki smo jih primerjali, najdaljše skupno zaporedje dolgo 6 znakov. Vprašanje je, kateri znaki ga sestavljajo? Opazimo nekaj zanimivega. Ustvarili smo otočke (ang. islands) številk od 1 do 6. Na Sliki \ref{lcs5} smo jih poudarili z debelejšo črto, ki predstavlja mejo otočka. Te otočki so povezani v mostički. Da bo bomo izvedeli kateri znaki sestavljajo najdaljše skupno zaporednje bomo morali potovati od spodnjega desnega polja vse do zgorjnjega levega polja. Premikamo se v levo vse do leve meje otočka, nato navzgor vse do zgornje meje otočka. Pri mostičku prestopimo mejo in ponovimo postopek. Na ta način pridemo vse do zgornjega levega polja. Glej Sliko \ref{lcs5}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=7cm]{lcs5.png}
+\end{center}
+\caption{Označena pot je razlika med izvirnim in spremenjenim besedilom.}
+\label{lcs5}
+\end{figure}
+
+Označena pot od polja {\tt (0,0)} do {\tt (11,13)} predstavlja razliko, ki smo jo omenili v Sliki \ref{diff}. Diagonalne črtice (mostički) nam povedo, da se tiste črke v besedilu niso spremenile in predstavljajo najdaljše skupno zaporedje “{\tt Leloil}”. Vertikalne črtice predstavljajo pobrisane črke iz izvirnega besedila. Horizontalne črtice predstavljajo vstavljene črke v spremenjenemu besedilu.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Levenshteinova razdalja}
 
 Praesent facilisis vehicula molestie. Phasellus tempor pharetra mauris in ultrices. Aenean tempor facilisis diam sit amet ornare.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Scenarij najkrajšega urejanja}
 
 Suspendisse egestas purus ac elementum porttitor. Sed feugiat suscipit quam, at congue purus ornare ut. Nunc consequat placerat mi, eu vulputate diam cursus vitae. Quisque nec vulputate ante. Vestibulum ac commodo metus. Vestibulum laoreet magna sit amet interdum auctor.
@@ -885,6 +943,9 @@ Nam semper augue at rhoncus laoreet. Nunc non aliquet risus. Curabitur dictum, n
 
 \bibitem{diffstrg} N. Fraser. “Diff Strategies”, 2006.
 \\\url{https://neil.fraser.name/writing/diff/}
+
+\bibitem{lcs} D. Sodkiewicz. “Longest Common Subsequence Algorithm”, 2013.
+\\\url{https://www.youtube.com/watch?v=P-mMvhfJhu8}
 
 \end{thebibliography}
 
