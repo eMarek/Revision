@@ -776,7 +776,7 @@ Algoritmi za iskanje razlik v besedilu se uporabljajo za zaznavanje sprememb, ki
 \label{diff}
 \end{figure}
 
-Raziskave na tem področju so se začele že pred pojavom sodelovanja v realnem času in so jih obširno proučevali \cite{f-cmpr, o-nd, s-cmpr} ter kasneje \cite{diffstrg}. Namen vseh raziskav je bil, da se izboljša časovna zahtevnost algoritma za iskanje razlik. V čem je problem? Med tem ko uporabnik tipka, se morajo spremembe v najkrajšem možnem času poslati na strežnik. Če bi bil algoritem počasen in bi več sekund ali celo minut zamujal, bi bila uporabniška izkušnja zelo slaba. Pri več minutni zamudi že težko govorimo o sodelovanje uporabnikov v realnem času.
+Raziskave na tem področju so se začele že pred pojavom sodelovanja v realnem času in so jih obširno proučevali \cite{f-cmpr, o-nd, o-np} ter kasneje \cite{diffstrg}. Namen vseh raziskav je bil, da se izboljša časovna zahtevnost algoritma za iskanje razlik. V čem je problem? Med tem ko uporabnik tipka, se morajo spremembe v najkrajšem možnem času poslati na strežnik. Če bi bil algoritem počasen in bi več sekund ali celo minut zamujal, bi bila uporabniška izkušnja zelo slaba. Pri več minutni zamudi že težko govorimo o sodelovanje uporabnikov v realnem času.
 
 Besedilo, ki je skupno tako izvirnemu kot tudi spremenjenemu besedilu, imenujemo najdaljše skupno zaporedje (ang. longest common subsequence). V našem primeru to zaporedje sestavljajo črke “{\tt Leloil}”. Na Sliki \ref{diff} so to črke v razliki, ki niso ne prečrtane ne podčrtane. Med izvirnim besedilom in spremenjenim besedilom lahko izračunamo tudi Levenshteinovo razdaljo (ang. Levenshtein distance). To je številka, ki pove, koliko sprememb bi morali narediti na izvirnemu besedilu, da dobimo spremenjeno besedilo. Levenshteinovo razdalja našega primera je 12. Na Sliki \ref{diff} lahko vidimo pet prečrtanih črk in sedem podčrtanih črk. Skupaj torej 12 sprememb, petkrat brisanja in sedemkrat vstavljanje. Na podlagi najdaljšega skupnega zaporedja in Levenshteinovo razdalje lahko predvidimo scenarij najkrajšega urejanja (ang. shortest edit script). To bi bili {\tt \{ Pobriši ‘do’ \}}, {\tt \{ Vstavi ‘ta’ \}}, {\tt \{ Pobriši ‘m’ \}}, {\tt \{ Vstavi ‘nos’ \}}, {\tt \{ Pobriši ‘ec’ \}}, {\tt \{ Vstavi ‘ka’ \}}. Ali so to res operacije, kot jih je naredil uporabnik, ne vemo. Dejstvo pa je, da so to spremembe v besedilu. Uporabnik, bi lahko v celoti pobrisal besedo “{\tt Ledolomilec}” in na novo napisal “{\tt Letalonosilka}”. Problem, ki ga rešujemo, je zagotavljanje konsistentnost med uporabniki. Ne zanima nas katere operacije so se zgodile v urejevalniku. Ni pomemebno kako je uporabnik uredil besedilo. Pomembno je vsebina besedila. Za to je dovolj, da ugotavljamo le kakšne so spremembe v besedilu in ne kako smo prišli do njih.
 
@@ -784,6 +784,7 @@ V nadaljevanju bomo na primeru prikazali kako poisakati nadaljše skupno zapored
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Najdaljše skupno zaporedje}
+\label{sec:lcs}
 
 Iskanje najdaljšega skupnega zaporedja bomo prikazali tabelarično \cite{lcs}. Kot je prikazano na Sliki \ref{lcs1} horizontalno na vrh tabele vpišemo daljšega od besedil, ki jih primerjamo. V našem primeru je to spremenjeno besedilo “{\tt Letalonosilka}”. Ima  {\tt n=13} znakov. Vsak znak je označen s številko od 1 do 13. Vertikalno ob tabeli vpišemo krajšega od besedil, to je izvirno besedilo “{\tt Ledolomilec}”. Ima  {\tt m=11} znakov. Vsak znak je označena s številko od 1 do 11. Vsa polja {\tt (i,j)} v tabeli bomo zapolnili s številkami od 0 do števila znakov, ki se ujemajo v obeh besedilih.
 
@@ -845,6 +846,7 @@ Označena pot od polja {\tt (0,0)} do {\tt (11,13)} predstavlja razliko, ki smo 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Levenshteinova razdalja}
+\label{sec:led}
 
 Iskanje Levenshteinove razdalje {\tt D(i,j)} bomo prikazali po korakih. Pripravimo si tabelo kot je prikazano na Sliki \ref{led1}.
 
@@ -896,8 +898,27 @@ Ironično je, da bi lahko Levenshteinovo razdaljo med besedama “{\tt Ledolomil
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Scenarij najkrajšega urejanja}
+\label{sec:ses}
 
-Suspendisse egestas purus ac elementum porttitor. Sed feugiat suscipit quam, at congue purus ornare ut. Nunc consequat placerat mi, eu vulputate diam cursus vitae. Quisque nec vulputate ante. Vestibulum ac commodo metus. Vestibulum laoreet magna sit amet interdum auctor.
+Scenarij najkrajšega urejanja lahko izluščimo iz tabele na Sliki \ref{lcs5}. Le sprehoditi bi se morali po najdeni poti. Težava je, da je časovna zahtevnost iskanje najdaljšega skupnega zaporedja, ki smo ga prikazali v Poglavju \ref{sec:lcs} enaka {\tt O(nm)}, kjer sta {\tt n} in {\tt m} dolžini besedil. Pri dolgih besedilih bi bil v praksi tak algoritem zelo počasen in neučinkovit. Namen tega poglavja je, da predstavimo izboljšan algoritem \cite{o-np} s časovno zahtevnostjo {\tt O(np)} v najslabšem možnem primeru, pri čemer je {\tt p=d/2-$\Delta$/2}. Število {\tt $\Delta$=n-m}, kjer je {\tt n} dolžina daljšega besedila in {\tt m} dolžina krajšega besedila. Število {\tt d} je Levenshteinova razdalja, ki smo jo izračunali v Poglavju \ref{sec:led}. Ideja izboljšanja algoritma je v optimizaciji iskanja poti od izvira (ang. source) v točki {\tt (0,0)} do ponora (ang. sink) v točki {\tt (n,m)}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=8cm]{ses1.png}
+\end{center}
+\caption{Priprava na iskanje scenarija najkrajšega urejanja.}
+\label{ses1}
+\end{figure}
+
+Označimo diagonalna polja {\tt k} z oznako od {\tt -m} do {\tt n}, kot je prikazano s krogci na Sliki \ref{ses1}. Označili smo pas med diagonalo {\tt k=0} in {\tt k=$\Delta$=n-m=2}. Prva diagona poteka skozi izvir. Druga diagonala poteka skozi ponor. Če bi bili besedili identični, bi se ti dve diagonali pokrivali. Po tej diagonali pa bi potekala tudi pot, ki smo jo našli v Sliki \ref{lcs5}. Glede na to, da sta v našem primeru besedili različni, to pomeni, da bo pot potekala po označenem pasu in v bližini njega. Koliko se bo pot oddaljila od označenega pasa je odvisno od vrednosti {\tt p}. Ker vrednosti {\tt p} v začetku algorima ne poznamo, jo moramo računati za vsako polje sproti. Iskanje poti bomo optimizirali tako, da bomo namesto vseh polj v tabeli raziskali samo tiste, ki so možni kandidati za pot (scenarij najkrajšega urejanja).
+
+\pagebreak
+
+Levi ničti stolpec zapolnimo z vrednostimi od 1 do {\tt m}. Vrednost {\tt m=11} predstavlja krajšo od obeh besedil. Pri zgornji ničti vrstici imamo manjšo posebnost. Polja znotraj obarvanega pasu (glej Sliko \ref{ses1}) zapolnimo z vrednostimi 0. Vrednost vsakega nadaljnega polja v ničti vrstici pa je za eno večje od levo ležečega polja. Zadnje polje v ničti vrstici mora imeti vrednost {\tt m=11}.
+
+Podobno kot pri Poglavju \ref{sec:lcs} in \ref{sec:led} se vrednosti polj v tabeli išče od leve proti desni in od zgoraj navzdol. Bistvena razlika je, da ne iščemo vedno do konca vrstice in ne začnemo vedno iskati pri začetku vrstice. Prične se v zgornjem levem polju {\tt (1,1)} z vrednostjo {\tt p=0}. Ko v tabeli najdemo vsa polja z vrednostjo {\tt 0}, začnemo iskati polja z vrendostjo {\tt 1}. Ko v tabeli najdemo vsa polja z vrednostjo {\tt 1}, začnemo iskati polja z naslednjo vrednostjo. Postopek ponavljamo dokler ne dosežemo spodnjega desnega polja {\tt (n,m)}.
+
+Na začetku tega poglavja smo rekli, da je vrednost {\tt p=d/2-$\Delta$/2}. To drži, vendar drži le za spodnje desno polje {\tt (n,m)}. Posamezno polje znotraj tabele se računa na način kot je prikazan na Sliki \ref{ses2}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Urejevalniki v realnem času}
@@ -984,7 +1005,7 @@ Nam semper augue at rhoncus laoreet. Nunc non aliquet risus. Curabitur dictum, n
 \bibitem{o-nd} E. W. Myers. “An O(ND) Difference Algorithm and Its Variations”, 1986.
 \\\url{https://neil.fraser.name/software/diff_match_patch/myers.pdf}
 
-\bibitem{s-cmpr} S. Wu, U. Manber, G. Myers, W. Miller. “An O(NP) Sequence Comparison Algorithm”, 1989.
+\bibitem{o-np} S. Wu, U. Manber, G. Myers, W. Miller. “An O(NP) Sequence Comparison Algorithm”, 1989.
 \\\url{http://www.itu.dk/stud/speciale/bepjea/xwebtex/litt/an-onp-sequence-comparison-algorithm.pdf}
 
 \bibitem{diffstrg} N. Fraser. “Diff Strategies”, 2006.
