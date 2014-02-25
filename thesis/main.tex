@@ -778,15 +778,15 @@ Algoritmi za iskanje razlik v besedilu se uporabljajo za zaznavanje sprememb, ki
 
 Raziskave na tem področju so se začele že pred pojavom sodelovanja v realnem času in so jih obširno proučevali \cite{f-cmpr, o-nd, o-np} ter kasneje \cite{diffstrg}. Namen vseh raziskav je bil, da se izboljša časovna zahtevnost algoritma za iskanje razlik. V čem je problem? Med tem ko uporabnik tipka, se morajo spremembe v najkrajšem možnem času poslati na strežnik. Če bi bil algoritem počasen in bi več sekund ali celo minut zamujal, bi bila uporabniška izkušnja zelo slaba. Pri več minutni zamudi že težko govorimo o sodelovanje uporabnikov v realnem času.
 
-Besedilo, ki je skupno tako izvirnemu kot tudi spremenjenemu besedilu, imenujemo najdaljše skupno zaporedje (ang. longest common subsequence). V našem primeru to zaporedje sestavljajo črke “{\tt Leloil}”. Na Sliki \ref{diff} so to črke v razliki, ki niso ne prečrtane ne podčrtane. Med izvirnim besedilom in spremenjenim besedilom lahko izračunamo tudi Levenshteinovo razdaljo (ang. Levenshtein distance). To je številka, ki pove, koliko sprememb bi morali narediti na izvirnemu besedilu, da dobimo spremenjeno besedilo. Levenshteinovo razdalja našega primera je 12. Na Sliki \ref{diff} lahko vidimo pet prečrtanih črk in sedem podčrtanih črk. Skupaj torej 12 sprememb, petkrat brisanja in sedemkrat vstavljanje. Na podlagi najdaljšega skupnega zaporedja in Levenshteinovo razdalje lahko predvidimo scenarij najkrajšega urejanja (ang. shortest edit script). To bi bili {\tt \{ Pobriši ‘do’ \}}, {\tt \{ Vstavi ‘ta’ \}}, {\tt \{ Pobriši ‘m’ \}}, {\tt \{ Vstavi ‘nos’ \}}, {\tt \{ Pobriši ‘ec’ \}}, {\tt \{ Vstavi ‘ka’ \}}. Ali so to res operacije, kot jih je naredil uporabnik, ne vemo. Dejstvo pa je, da so to spremembe v besedilu. Uporabnik, bi lahko v celoti pobrisal besedo “{\tt Ledolomilec}” in na novo napisal “{\tt Letalonosilka}”. Problem, ki ga rešujemo, je zagotavljanje konsistentnost med uporabniki. Ne zanima nas katere operacije so se zgodile v urejevalniku. Ni pomemebno kako je uporabnik uredil besedilo. Pomembno je vsebina besedila. Za to je dovolj, da ugotavljamo le kakšne so spremembe v besedilu in ne kako smo prišli do njih.
+Besedilo, ki je skupno tako izvirnemu kot tudi spremenjenemu besedilu, imenujemo najdaljše skupno zaporedje (ang. longest common subsequence). V našem primeru to zaporedje sestavljajo črke “{\tt Leloil}”. Na Sliki \ref{diff} so to črke v razliki, ki niso ne prečrtane ne podčrtane. Med izvirnim besedilom in spremenjenim besedilom lahko izračunamo tudi najmanjšo razdaljo urejanja (ang. minimum edit distance) poimenovano tudi Levenshteinovo razdalja (ang. Levenshtein distance). To je številka, ki pove, koliko sprememb bi morali narediti na izvirnemu besedilu, da dobimo spremenjeno besedilo. Najmanjša razdalja urejanja našega primera je 12. Na Sliki \ref{diff} lahko vidimo pet prečrtanih črk in sedem podčrtanih črk. Skupaj torej 12 sprememb, petkrat brisanja in sedemkrat vstavljanje. Na podlagi najdaljšega skupnega zaporedja in najmanjše razdalje urejanja lahko predvidimo scenarij najkrajšega urejanja (ang. shortest edit script). To bi bili {\tt \{ Pobriši ‘do’ \}}, {\tt \{ Vstavi ‘ta’ \}}, {\tt \{ Pobriši ‘m’ \}}, {\tt \{ Vstavi ‘nos’ \}}, {\tt \{ Pobriši ‘ec’ \}}, {\tt \{ Vstavi ‘ka’ \}}. Ali so to res operacije, kot jih je naredil uporabnik, ne vemo. Dejstvo pa je, da so to spremembe v besedilu. Uporabnik, bi lahko v celoti pobrisal besedo “{\tt Ledolomilec}” in na novo napisal “{\tt Letalonosilka}”. Problem, ki ga rešujemo, je zagotavljanje konsistentnost med uporabniki. Ne zanima nas katere operacije so se zgodile v urejevalniku. Ni pomemebno kako je uporabnik uredil besedilo. Pomembno je vsebina besedila. Za to je dovolj, da ugotavljamo le kakšne so spremembe v besedilu in ne kako smo prišli do njih.
 
-V nadaljevanju bomo na primeru prikazali kako poisakati nadaljše skupno zaporedje, kako izračunati Levenshteinovo razdaljo in kako priti do scenarija najkrajšega urejanja.
+V nadaljevanju bomo na primeru prikazali kako poisakati \textbf{nadaljše skupno zaporedje}, kako izračunati \textbf{najmanjšo razdaljo urejanja} in kako priti do \textbf{scenarija najkrajšega urejanja}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Najdaljše skupno zaporedje}
 \label{sec:lcs}
 
-Iskanje najdaljšega skupnega zaporedja bomo prikazali tabelarično \cite{lcs}. Kot je prikazano na Sliki \ref{lcs1} horizontalno na vrh tabele vpišemo daljšega od besedil, ki jih primerjamo. V našem primeru je to spremenjeno besedilo “{\tt Letalonosilka}”. Ima  {\tt n=13} znakov. Vsak znak je označen s številko od 1 do 13. Vertikalno ob tabeli vpišemo krajšega od besedil, to je izvirno besedilo “{\tt Ledolomilec}”. Ima  {\tt m=11} znakov. Vsak znak je označena s številko od 1 do 11. Vsa polja {\tt (i,j)} v tabeli bomo zapolnili s številkami od 0 do števila znakov, ki se ujemajo v obeh besedilih.
+Iskanje najdaljšega skupnega zaporedja bomo prikazali tabelarično \cite{lcs}. Kot je prikazano na Sliki \ref{lcs1} horizontalno na vrh tabele vpišemo daljšega od besedil, ki jih primerjamo. V našem primeru je to spremenjeno besedilo “{\tt Letalonosilka}”. Ima  {\tt n=13} znakov. Vsak znak je označen s številko od 1 do 13. Vertikalno ob tabeli vpišemo krajšega od besedil, to je izvirno besedilo “{\tt Ledolomilec}”. Ima  {\tt m=11} znakov. Vsak znak je označena s številko od 1 do 11.
 
 \begin{figure}[placement h]
 \begin{center}
@@ -800,6 +800,7 @@ Zgornjo ničto vrstico in levi ničti stolpec zapolnimo z ničlami. To lahko nar
 
 Postopek za iskanje najdaljšega skupnega zaporedja se prične v zgornjem levem polju {\tt (1,1)}, se nadaljuje do konca vrstice. Nato gre v naslednjo vrstico, se ponovi za vse vrstice in se konča v spodnjem desnem polju {\tt (11,13)}. V vsakem polju v tabeli se primerja črki, ki pokrivajo to polje. Če sta črki enaki, se v polje vpiše za eno večje število kot je v zgornje-levo ležečem polju. Med ta dva polja se vriše še tako imenovani mostiček (ang. bridge). Če sta črki različni, se v polje vpiše večjega od zgornje ali levo ležečega polja.
 
+Vsa polja {\tt (i,j)} v tabeli bomo zapolnili s številkami od 0 do števila znakov, ki se ujemajo v obeh besedilih.
 Začnimo v polju {\tt (1,1)}. Primerjamo črki “{\tt L}” in “{\tt L}”. Ker sta črki enaki in je v zgornje-levo ležečem polju {\tt (0,0)} ničla, se v polje {\tt (1,1)} vpiše 1. Med polja {\tt (0,0)} in {\tt (1,1)} vrišemo mostiček. Nadaljujemo s poljem {\tt (1,2)}. Črki “{\tt L}” in “{\tt e}” sta različni. Vrednost levo ležečega polja {\tt (1,1)} je 1, kar je več od zgornje ležečga polja {\tt (0,2)}, ki je 0. V polje {\tt (1,2)} se torej vpiše vrednost 1. Slika \ref{lcs2} prikazuje izpolnjena prva dva polja.
 
 \begin{figure}[placement h]
@@ -810,7 +811,7 @@ Začnimo v polju {\tt (1,1)}. Primerjamo črki “{\tt L}” in “{\tt L}”. K
 \label{lcs2}
 \end{figure}
 
-Ker se črki “{\tt L}” v besedi “{\tt Letalonosilka}” ne ponovi več, je v vseh poljih v prvi vrstici vrednost 1. Nadaljujemo v drugi vrstici. Pričnemo v polju {\tt (2,1)}. Ker sta črki “{\tt e}” in “{\tt L}” različni, se v polje {\tt (2,1)} vpiše večja od vrednosti levo ležečega polja {\tt (2,0)} 0 in zgornje ležečga polja {\tt (1,1)} 1, torej 1. Postopek se nadaljuje v polju {\tt (2,2)}. Črki “{\tt e}” in “{\tt e}” sta enaki. Vrednost zgornje-levo ležečega polja {\tt (1,1)} je 1. V polje {\tt (2,2)} se vpiše za 1 večje vrednost, torej 2. Doriše se mostiček. V tem trenutku tabela izgleda kot je na Sliki \ref{lcs3}.
+Ker se črki “{\tt L}” v besedi “{\tt Letalonosilka}” ne ponovi več, je v vseh poljih v prvi vrstici vrednost 1. Nadaljujemo v drugi vrstici. Pričnemo v polju {\tt (2,1)}. Ker sta črki “{\tt e}” in “{\tt L}” različni, se v polje {\tt (2,1)} vpiše večja od vrednosti levo ležečega polja {\tt (2,0)} 0 in zgornje ležečga polja {\tt (1,1)} 1, torej 1. Postopek se nadaljuje v polju {\tt (2,2)}. Črki “{\tt e}” in “{\tt e}” sta enaki. Vrednost zgornje-levo ležečega polja {\tt (1,1)} je 1. V polje {\tt (2,2)} se vpiše za 1 večje vrednost, torej 2. Doriše se mostiček. Glej Sliko \ref{lcs3}.
 
 \begin{figure}[placement h]
 \begin{center}
@@ -819,8 +820,6 @@ Ker se črki “{\tt L}” v besedi “{\tt Letalonosilka}” ne ponovi več, je
 \caption{Pri primerjavi besedil smo našli že dve skupni črki.}
 \label{lcs3}
 \end{figure}
-
-\pagebreak
 
 Po opisanem postopku nadaljujemo čez vse vrstice. Pazljivi moramo biti pri črkah, ki se v besedi ponovijo dvakrat, kot recimo črka “{\tt o}”. Izpolnjena tabela na koncu izgleda kot je prikazano na Sliki \ref{lcs4}.
 
@@ -845,62 +844,62 @@ V spodanjem desnem polju {\tt (m,n)}, to je {\tt (11,13)}, se nahaja vrednost 6.
 Označena pot od polja {\tt (0,0)} do {\tt (11,13)} predstavlja razliko, ki smo jo omenili v Sliki \ref{diff}. Diagonalne črtice (mostički) nam povedo, da se tiste črke v besedilu niso spremenile in predstavljajo najdaljše skupno zaporedje “{\tt Leloil}”.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Levenshteinova razdalja}
-\label{sec:led}
+\section{Najmanjša razdalja urejanja}
+\label{sec:med}
 
-Iskanje Levenshteinove razdalje {\tt D(i,j)} bomo prikazali po korakih. Pripravimo si tabelo kot je prikazano na Sliki \ref{led1}.
+Iskanje najmanjše razdalje urejanja {\tt D(i,j)} bomo prikazali po korakih. Pripravimo si tabelo kot je prikazano na Sliki \ref{med1}.
 
 \begin{figure}[placement h]
 \begin{center}
-\includegraphics[width=7cm]{led1.png}
+\includegraphics[width=7cm]{med1.png}
 \end{center}
-\caption{Priprava na iskanje Levenshteinove razdalje.}
-\label{led1}
+\caption{Priprava na iskanje najmanjše razdalje urejanja.}
+\label{med1}
 \end{figure}
 
 Horizontalno na vrh tabele vpišemo daljšega od besedil, ki jih primerjamo. Vertikalno ob tabeli vpišemo krajšega od besedil. V prvem koraku je tabela zelo podobna tabeli na Sliki \ref{lcs1}. Razlika je v ničti vrstici in v ničtem stolpcu. Zgornjo ničto vrstico zapolnimo z vrednostimi od 0 do {\tt n}. Vrednost {\tt n=13} in predstavlja daljše od obeh besedil. Levi ničti stolpec zapolnimo z vrednostimi od 1 do {\tt m}. Vrednost {\tt m=11} in predstavlja krajšo od obeh besedil. To lahko naredimo zaradi logičnega razloga. Če katero koliko besedilo primerjamo z praznim besedilom, je število operacij enako število vseh vstavljanj oziroma vseh brisanj, da besedili poenotimo.
 
-Postopek za iskanje Levenshteinove razdalje se prične v zgornjem levem polju {\tt (1,1)}, se nadaljuje do konca vrstice. Nato gre v naslednjo vrstico, se ponovi za vse vrstice in se konča v spodnjem desnem polju {\tt (11,13)}. Vrednost vsakega polja v tabeli je odvisna od vrednosti sosednjih treh polj.
+Postopek za iskanje najmanjše razdalje urejanja se prične v zgornjem levem polju {\tt (1,1)}, se nadaljuje do konca vrstice. Nato gre v naslednjo vrstico, se ponovi za vse vrstice in se konča v spodnjem desnem polju {\tt (11,13)}. Vrednost vsakega polja v tabeli je odvisna od vrednosti sosednjih treh polj.
 
 \begin{figure}[placement h]
 \begin{center}
-\includegraphics[width=8cm]{led2.png}
+\includegraphics[width=8cm]{med2.png}
 \end{center}
-\caption{Izračun Levenshteinove razdalje \cite{led}, pri čemer {\tt X(i)} predstavlja i-ti znak v krajšem (izvirnem) besedilu in {\tt Y(j)} predstavlja j-ti znak v daljšem (spremenjenem) besedilu.}
-\label{led2}
+\caption{Izračun najmanjše razdalje urejanja \cite{med}, pri čemer {\tt X(i)} predstavlja i-ti znak v krajšem (izvirnem) besedilu in {\tt Y(j)} predstavlja j-ti znak v daljšem (spremenjenem) besedilu.}
+\label{med2}
 \end{figure}
 
-V posamezno polje se vpiše minimum od treh vrednosti. To so vrednost levo ležečega polja {\tt +1}, vrednost zgornje ležečega polja {\tt +1} ali vrednost zgornje-levo ležečga polja {\tt +2}, če sta polja različni, ali {\tt +0}, če sta polji enaki. Matematično to zapišemo kot je prikazano na Sliki \ref{led2}.
+V posamezno polje se vpiše minimum od treh vrednosti. To so vrednost levo ležečega polja {\tt +1}, vrednost zgornje ležečega polja {\tt +1} ali vrednost zgornje-levo ležečga polja {\tt +2}, če sta polja različni, ali {\tt +0}, če sta polji enaki. Matematično to zapišemo kot je prikazano na Sliki \ref{med2}.
 
 \begin{figure}[placement h]
 \begin{center}
-\includegraphics[width=7cm]{led3.png}
+\includegraphics[width=7cm]{med3.png}
 \end{center}
 \caption{Izgled tabele po prvih dveh korakih.}
-\label{led3}
+\label{med3}
 \end{figure}
 
-Začnimo v polju {\tt (1,1)}. Primerjamo črki “{\tt L}” in “{\tt L}”. Ker so vrednosti, ki jih pridobimo iz sosednjih treh polj enake {\tt 2} in {\tt 0} in {\tt 2}, se v polje {\tt (1,1)} vpiše minimalna od vrednosti, to je 0. Nadaljujemo s poljem {\tt (1,2)}. Vrednosti, ki jih dajo sosednja tri polja so enake {\tt 1} in {\tt 3} in {\tt 3}. Na mesto {\tt (1,2)} vpiše 1. Izgled tabele po dveh korakih je prikazan na Sliki \ref{led3}.
+Začnimo v polju {\tt (1,1)}. Primerjamo črki “{\tt L}” in “{\tt L}”. Ker so vrednosti, ki jih pridobimo iz sosednjih treh polj enake {\tt 2} in {\tt 0} in {\tt 2}, se v polje {\tt (1,1)} vpiše minimalna od vrednosti, to je 0. Nadaljujemo s poljem {\tt (1,2)}. Vrednosti, ki jih dajo sosednja tri polja so enake {\tt 1} in {\tt 3} in {\tt 3}. Na mesto {\tt (1,2)} vpišemo 1. Izgled tabele po dveh korakih je prikazan na Sliki \ref{med3}.
 
-Postopek nadaljujemo do konca prve vrstice. Ker se črka “{\tt L}” v besedilu “{\tt Letalonosika}” ne ponovi več, je vrednost vsakega nadaljnega polja za eno večje od levo ležečega polja. Postopek ponovimo še čez vse vrstice. Izpolnjena tabela na koncu izgleda kot je prikazano na Sliki \ref{led4}.
+Postopek nadaljujemo do konca prve vrstice. Ker se črka “{\tt L}” v besedilu “{\tt Letalonosika}” ne ponovi več, je vrednost vsakega nadaljnega polja za eno večje od levo ležečega polja. Postopek ponovimo še čez vse vrstice. Izpolnjena tabela na koncu izgleda kot je prikazano na Sliki \ref{med4}.
 
 \begin{figure}[placement h]
 \begin{center}
-\includegraphics[width=8cm]{led4.png}
+\includegraphics[width=8cm]{med4.png}
 \end{center}
-\caption{Izgled tabele po postopku za iskanje Levenshteinove razdalje.}
-\label{led4}
+\caption{Izgled tabele po postopku za iskanje najmanjše razdalje urejanja.}
+\label{med4}
 \end{figure}
 
 V spodnjem desnem polju smo dobili vrednost {\tt D(11,13) = 12}. Tako smo napovedali tudi na začetku Poglavja \ref{chp:diff}. Sedaj pa smo to vrednost tudi izračunali preko prikazanega postopka.
 
-Ironično je, da bi lahko Levenshteinovo razdaljo med besedama “{\tt Ledolomilec}” in “{\tt Letalonosilka}” razbrali že pri iskanju najdaljšega skupnega zaporedja. Če pogledamo Sliko \ref{lcs5}, lahko ugotovimo zanimivost. Vertikalne črtice predstavljajo pobrisane črke iz izvirnega besedila. Horizontalne črtice predstavljajo vstavljene črke v spremenjenemu besedilu. Levenshteinova razdalja je po definciji minimalno število operacij, ki jih moramo narediti na izvirnem besedilu, da dobimo spremenjeno besedilo. Če preštejemo vse vertikalne in horizontalne črtice na Sliki \ref{lcs5}, jih je ravno 12.
+Ironično je, da bi lahko najmanjšo razdaljo urejanja med besedama “{\tt Ledolomilec}” in “{\tt Letalonosilka}” razbrali že pri iskanju najdaljšega skupnega zaporedja. Če pogledamo Sliko \ref{lcs5}, lahko ugotovimo zanimivost. Vertikalne črtice predstavljajo pobrisane črke iz izvirnega besedila. Horizontalne črtice predstavljajo vstavljene črke v spremenjenemu besedilu. Najmanjša razdalja urejanja je po definciji minimalno število operacij, ki jih moramo narediti na izvirnem besedilu, da dobimo spremenjeno besedilo. Vseh vertikalnih in horizontalnih črtic na Sliki \ref{lcs5} je ravno 12.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Scenarij najkrajšega urejanja}
 \label{sec:ses}
 
-Scenarij najkrajšega urejanja lahko izluščimo iz tabele na Sliki \ref{lcs5}. Le sprehoditi bi se morali po najdeni poti. Težava je, da je časovna zahtevnost iskanje najdaljšega skupnega zaporedja, ki smo ga prikazali v Poglavju \ref{sec:lcs} enaka {\tt O(nm)}, kjer sta {\tt n} in {\tt m} dolžini besedil. Pri dolgih besedilih bi bil v praksi tak algoritem zelo počasen in neučinkovit. Namen tega poglavja je, da predstavimo izboljšan algoritem \cite{o-np} s časovno zahtevnostjo {\tt O(np)} v najslabšem možnem primeru, pri čemer je {\tt p=d/2-$\Delta$/2}. Število {\tt $\Delta$=n-m}, kjer je {\tt n} dolžina daljšega besedila in {\tt m} dolžina krajšega besedila. Število {\tt d} je Levenshteinova razdalja, ki smo jo izračunali v Poglavju \ref{sec:led}. Ideja izboljšanja algoritma je v optimizaciji iskanja poti od izvira (ang. source) v točki {\tt (0,0)} do ponora (ang. sink) v točki {\tt (n,m)}.
+Scenarij najkrajšega urejanja lahko izluščimo iz tabele na Sliki \ref{lcs5}. Le sprehoditi bi se morali po najdeni poti. Težava je, da je časovna zahtevnost iskanje najdaljšega skupnega zaporedja, ki smo ga prikazali v Poglavju \ref{sec:lcs}, enaka {\tt O(nm)}, kjer sta {\tt n} in {\tt m} dolžini besedil. Pri dolgih besedilih bi bil v praksi tak algoritem zelo počasen in neučinkovit. Namen tega poglavja je, da predstavimo izboljšan algoritem \cite{o-np} s časovno zahtevnostjo {\tt O(np)} v najslabšem možnem primeru, pri čemer je {\tt p=d/2-$\Delta$/2}. Število {\tt $\Delta$=n-m}, kjer je {\tt n} dolžina daljšega besedila in {\tt m} dolžina krajšega besedila. Število {\tt d} je najmanjša razdalja urejanja, ki smo jo izračunali v Poglavju \ref{sec:med}. Ideja izboljšanja algoritma je v optimizaciji iskanja poti od izvira (ang. source) v točki {\tt (0,0)} do ponora (ang. sink) v točki {\tt (n,m)}.
 
 \begin{figure}[placement h]
 \begin{center}
@@ -916,9 +915,9 @@ Označimo diagonalna polja {\tt k} z oznako od {\tt -m} do {\tt n}, kot je prika
 
 Levi ničti stolpec zapolnimo z vrednostimi od 1 do {\tt m}. Vrednost {\tt m=11} predstavlja krajšo od obeh besedil. Pri zgornji ničti vrstici imamo manjšo posebnost. Polja znotraj obarvanega pasu (glej Sliko \ref{ses1}) zapolnimo z vrednostimi 0. Vrednost vsakega nadaljnega polja v ničti vrstici pa je za eno večje od levo ležečega polja. Zadnje polje v ničti vrstici mora imeti vrednost {\tt m=11}.
 
-Podobno kot pri Poglavju \ref{sec:lcs} in \ref{sec:led} se vrednosti polj v tabeli išče od leve proti desni in od zgoraj navzdol. Bistvena razlika je, da ne iščemo vedno do konca vrstice in ne začnemo vedno iskati pri začetku vrstice. Prične se v zgornjem levem polju {\tt (1,1)} z vrednostjo {\tt p=0}. Ko v tabeli najdemo vsa polja z vrednostjo {\tt 0}, začnemo iskati polja z vrendostjo {\tt 1}. Ko v tabeli najdemo vsa polja z vrednostjo {\tt 1}, začnemo iskati polja z naslednjo vrednostjo. Postopek ponavljamo dokler ne dosežemo spodnjega desnega polja {\tt (n,m)}.
+Podobno kot pri Poglavju \ref{sec:lcs} in \ref{sec:med} se vrednosti polj v tabeli išče od leve proti desni in od zgoraj navzdol. Bistvena razlika je, da ne iščemo vedno do konca vrstice in ne začnemo vedno iskati pri začetku vrstice. Prične se v zgornjem levem polju {\tt (1,1)} z vrednostjo {\tt p=0}. Ko v tabeli najdemo vsa polja z vrednostjo {\tt 0}, začnemo iskati polja z vrendostjo {\tt 1}. Ko v tabeli najdemo vsa polja z vrednostjo {\tt 1}, začnemo iskati polja z naslednjo vrednostjo. Postopek ponavljamo dokler ne dosežemo spodnjega desnega polja {\tt (n,m)}.
 
-Na začetku tega poglavja smo rekli, da je vrednost {\tt p=d/2-$\Delta$/2}. To drži, vendar drži le za spodnje desno polje {\tt (n,m)}. Posamezno polje znotraj tabele se računa na način kot je prikazan na Sliki \ref{ses2}.
+Na začetku tega poglavja smo rekli, da je vrednost {\tt p=d/2-$\Delta$/2}. To drži, vendar drži le za spodnje desno polje {\tt (n,m)}. Posamezno polje znotraj tabele se računa na način kot je prikazan na Sliki \ref{ses1}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Urejevalniki v realnem času}
@@ -1014,7 +1013,7 @@ Nam semper augue at rhoncus laoreet. Nunc non aliquet risus. Curabitur dictum, n
 \bibitem{lcs} D. Sodkiewicz. “Longest Common Subsequence Algorithm”, 2013.
 \\\url{https://www.youtube.com/watch?v=P-mMvhfJhu8}
 
-\bibitem{led} D. Jurafsky. “Computing Minimum Edit Distance”, 2012.
+\bibitem{med} D. Jurafsky. “Computing Minimum Edit Distance”, 2012.
 \\\url{http://www.youtube.com/watch?v=z_CB7Gih_Mg}
 
 \end{thebibliography}
