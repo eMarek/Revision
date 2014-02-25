@@ -909,15 +909,33 @@ Scenarij najkrajšega urejanja lahko izluščimo iz tabele na Sliki \ref{lcs5}. 
 \label{ses1}
 \end{figure}
 
-Označimo diagonalna polja {\tt k} z oznako od {\tt -m} do {\tt n}, kot je prikazano s krogci na Sliki \ref{ses1}. Označili smo pas med diagonalo {\tt k=0} in {\tt k=$\Delta$=n-m=2}. Prva diagona poteka skozi izvir. Druga diagonala poteka skozi ponor. Če bi bili besedili identični, bi se ti dve diagonali pokrivali. Po tej diagonali pa bi potekala tudi pot, ki smo jo našli v Sliki \ref{lcs5}. Glede na to, da sta v našem primeru besedili različni, to pomeni, da bo pot potekala po označenem pasu in v bližini njega. Koliko se bo pot oddaljila od označenega pasa je odvisno od vrednosti {\tt p}. Ker vrednosti {\tt p} v začetku algorima ne poznamo, jo moramo računati za vsako polje sproti. Iskanje poti bomo optimizirali tako, da bomo namesto vseh polj v tabeli raziskali samo tiste, ki so možni kandidati za pot (scenarij najkrajšega urejanja).
+Označimo diagonalna polja {\tt k} z oznako od {\tt -m} do {\tt n}, kot je prikazano s krogci na Sliki \ref{ses1}. Označili smo pas med diagonalo {\tt k=0} in {\tt k=$\Delta$=n-m=2}. Prva diagona poteka skozi izvir. Druga diagonala poteka skozi ponor. Če bi bili besedili identični, bi se ti dve diagonali pokrivali. Po tej diagonali pa bi potekala tudi pot, ki smo jo našli v Sliki \ref{lcs5}. Glede na to, da sta v našem primeru besedili različni, to pomeni, da bo pot potekala po označenem pasu in v bližini njega. Koliko se bo pot oddaljila od označenega pasa je odvisno od vrednosti {\tt p}. Ker vrednosti {\tt p} v začetku algorima ne poznamo, jo moramo računati za vsako polje sproti. Na začetku tega poglavja smo rekli, da je vrednost {\tt p=d/2-$\Delta$/2}. To drži, vendar drži le za spodnje desno polje {\tt (n,m)}. Posamezno polje znotraj tabele se računa na način kot je prikazan na Sliki \ref{ses2}.
 
 \pagebreak
 
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=10cm]{ses2.png}
+\end{center}
+\caption{Računanje vrednosti {\tt p} med postopkom.}
+\label{ses2}
+\end{figure}
+
 Levi ničti stolpec zapolnimo z vrednostimi od 1 do {\tt m}. Vrednost {\tt m=11} predstavlja krajšo od obeh besedil. Pri zgornji ničti vrstici imamo manjšo posebnost. Polja znotraj obarvanega pasu (glej Sliko \ref{ses1}) zapolnimo z vrednostimi 0. Vrednost vsakega nadaljnega polja v ničti vrstici pa je za eno večje od levo ležečega polja. Zadnje polje v ničti vrstici mora imeti vrednost {\tt m=11}.
 
-Podobno kot pri Poglavju \ref{sec:lcs} in \ref{sec:med} se vrednosti polj v tabeli išče od leve proti desni in od zgoraj navzdol. Bistvena razlika je, da ne iščemo vedno do konca vrstice in ne začnemo vedno iskati pri začetku vrstice. Prične se v zgornjem levem polju {\tt (1,1)} z vrednostjo {\tt p=0}. Ko v tabeli najdemo vsa polja z vrednostjo {\tt 0}, začnemo iskati polja z vrendostjo {\tt 1}. Ko v tabeli najdemo vsa polja z vrednostjo {\tt 1}, začnemo iskati polja z naslednjo vrednostjo. Postopek ponavljamo dokler ne dosežemo spodnjega desnega polja {\tt (n,m)}.
+Podobno kot pri Poglavju \ref{sec:lcs} in \ref{sec:med} se vrednosti polj v tabeli išče od leve proti desni in od zgoraj navzdol. Bistvena razlika je, da ne iščemo vedno do konca vrstice in ne začnemo vedno iskati pri začetku vrstice. Iskanje poti bomo torej optimizirali tako, da bomo namesto vseh polj v tabeli raziskali samo tiste, ki so možni kandidati za pot (scenarij najkrajšega urejanja). Prične se v zgornjem levem polju {\tt (1,1)} z vrednostjo {\tt p=0}. Ko v tabeli najdemo vsa polja z vrednostjo {\tt 0}, začnemo iskati polja z vrendostjo {\tt 1}. Ko v tabeli najdemo vsa polja z vrednostjo {\tt 1}, začnemo iskati polja z naslednjo vrednostjo. Postopek ponavljamo dokler ne dosežemo spodnjega desnega polja {\tt (n,m)}. Smiselno se je vprašati kako algoritem ve, da v tabeli ne obstaja nobeno polje več s trenutno vrednostjo {\tt p}, ne da bi preiskali celotno tabelo. Kot bomo na koncu videli, so vrednosti polj na posamezni diagonali vedno naraščajoče. V praksi v našem primeru to pomeni (glej Sliko \ref{ses1}), da bodo polja na diagonalah z oznakami {\tt 0},{\tt 1} in {\tt 2} imele vrednosti {\tt 0} ali več. Polja na diagonalah z oznakami {\tt -1} in {\tt 3} bodo imela vrednosti {\tt 1} ali več. Polja na diagonalah z oznakami {\tt -2} in {\tt 4} bodo imela vrednost {\tt 2} ali več, itd. Na podlagi tega dejstva, je algoritem pri iskanju vrednosti {\tt p} omejen z robnimi diagonalami.
 
-Na začetku tega poglavja smo rekli, da je vrednost {\tt p=d/2-$\Delta$/2}. To drži, vendar drži le za spodnje desno polje {\tt (n,m)}. Posamezno polje znotraj tabele se računa na način kot je prikazan na Sliki \ref{ses1}.
+Začnimo torej v zgornjem levem polju. Vrednost polja {\tt (1,1)} po formuli na Sliki \ref{ses2} je {\tt p(1,1)=0}. Nadaljujemo proti koncu vrstice. Vrednosti polj {\tt (1,2)} in {\tt (1,3)} sta tudi {\tt p=0}. Vrednost naslednjega polja nas ne zanima več. Zakaj? Zadnja vrednost {\tt p} na diagonali z oznako {\tt 3} je {\tt 1}, kar je več od trenutno iskanih polj z vrednostjo {\tt p=0}. Nadaljujemo v naslednjo (drugo) vrstico. Prvo polje (2,1) lahko izpustimo, saj je zadnja vrednost na diagonali z oznako {\tt -1} že {\tt 1}, kar je več trenutno iskanih polj z verdnostjo {\tt p=0}. Nadaljujemo po vrstici. Izračunamo, da imajo naslednja tri polja {\tt (2,2)}, {\tt (2,3)} in {\tt (2,4)} vrednost {\tt p=0}. Polje {\tt (2,5)} nas trenutno ne zanima več. Nadaljujemo v naslednjo (tretjo) vrstico. Ugotovimo, da moramo za polja z vrednostjo {\tt p=0} iskati le na diagonalah z oznako {\tt 0}, {\tt 1} in {\tt 2}. V tretji vrstici na teh diagonalah ne obstaja nobeno polje več, ki bi imelo vrednost {\tt p=0}. Po iskanju polj z vrednostjo {\tt p=0} naša tabela izgleda kot je prikazano na Sliki \ref{ses3}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=8cm]{ses3.png}
+\end{center}
+\caption{V tabeli smo našli vsa polja, ki imajo verdnost {\tt p=0}.}
+\label{ses3}
+\end{figure}
+
+Nadaljujemo z iskanjem polj v tabeli, ki imajo vrednost {\tt p=1}. Ta polja se lahko v našem primeru nahajajo le na diagonalah z oznakami od {\tt -1} do {\tt 3}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Urejevalniki v realnem času}
