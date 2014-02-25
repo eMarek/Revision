@@ -859,17 +859,19 @@ Iskanje najmanjše razdalje urejanja {\tt D(i,j)} bomo prikazali po korakih. Pri
 
 Horizontalno na vrh tabele vpišemo daljšega od besedil, ki jih primerjamo. Vertikalno ob tabeli vpišemo krajšega od besedil. V prvem koraku je tabela zelo podobna tabeli na Sliki \ref{lcs1}. Razlika je v ničti vrstici in v ničtem stolpcu. Zgornjo ničto vrstico zapolnimo z vrednostimi od 0 do {\tt n}. Vrednost {\tt n=13} in predstavlja daljše od obeh besedil. Levi ničti stolpec zapolnimo z vrednostimi od 1 do {\tt m}. Vrednost {\tt m=11} in predstavlja krajšo od obeh besedil. To lahko naredimo zaradi logičnega razloga. Če katero koliko besedilo primerjamo z praznim besedilom, je število operacij enako število vseh vstavljanj oziroma vseh brisanj, da besedili poenotimo.
 
-Postopek za iskanje najmanjše razdalje urejanja se prične v zgornjem levem polju {\tt (1,1)}, se nadaljuje do konca vrstice. Nato gre v naslednjo vrstico, se ponovi za vse vrstice in se konča v spodnjem desnem polju {\tt (11,13)}. Vrednost vsakega polja v tabeli je odvisna od vrednosti sosednjih treh polj.
+Postopek za iskanje najmanjše razdalje urejanja se prične v zgornjem levem polju {\tt (1,1)}, se nadaljuje do konca vrstice. Nato gre v naslednjo vrstico, se ponovi za vse vrstice in se konča v spodnjem desnem polju {\tt (11,13)}. Vrednost vsakega polja v tabeli je odvisna od vrednosti sosednjih treh polj. V posamezno polje se vpiše minimum od treh vrednosti. To so vrednost levo ležečega polja {\tt +1}, vrednost zgornje ležečega polja {\tt +1} ali vrednost zgornje-levo ležečga polja {\tt +2}, če sta polja različni, ali {\tt +0}, če sta polji enaki. Matematično to zapišemo kot je prikazano na Sliki \ref{med2}.
 
 \begin{figure}[placement h]
 \begin{center}
 \includegraphics[width=8cm]{med2.png}
 \end{center}
-\caption{Izračun najmanjše razdalje urejanja \cite{med}, pri čemer {\tt X(i)} predstavlja i-ti znak v krajšem (izvirnem) besedilu in {\tt Y(j)} predstavlja j-ti znak v daljšem (spremenjenem) besedilu.}
+\caption{Izračun najmanjše razdalje urejanja \cite{med}, pri čemer {\tt X(i)} predstavlja i-ti znak v krajšem (izvirnem) besedilu in {\tt Y(j)} predstavlja j-ti znak v daljšem (spremenjenem) besedilu. Opomba! Pri iskanju vrednosti {\tt D(i,j)} nad diagonalo z oznako {\tt $\Delta$} (glej Sliko \ref{ses1}) lahko upoštevamo le vrednost levo ležečega polja in zgornje-levo ležečega polja. Zgornje ležeče polje bistveno ne vpliva na izračun. Pri iskanju vrednosti {\tt D(i,j)} nad diagonalo z oznako {\tt 0} lahko upoštevamo le vrednost zgornje ležečga polja in zgornje-levo ležečega polja. Levo ležeče polje bistveno en vpliva na izračun.}
 \label{med2}
 \end{figure}
 
-V posamezno polje se vpiše minimum od treh vrednosti. To so vrednost levo ležečega polja {\tt +1}, vrednost zgornje ležečega polja {\tt +1} ali vrednost zgornje-levo ležečga polja {\tt +2}, če sta polja različni, ali {\tt +0}, če sta polji enaki. Matematično to zapišemo kot je prikazano na Sliki \ref{med2}.
+Začnimo v polju {\tt (1,1)}. Primerjamo črki “{\tt L}” in “{\tt L}”. Ker so vrednosti, ki jih pridobimo iz sosednjih treh polj enake {\tt 2} in {\tt 0} in {\tt 2}, se v polje {\tt (1,1)} vpiše minimalna od vrednosti, to je 0. Nadaljujemo s poljem {\tt (1,2)}. Vrednosti, ki jih dajo sosednja tri polja so enake {\tt 1} in {\tt 3} in {\tt 3}. Na mesto {\tt (1,2)} vpišemo 1. Izgled tabele po dveh korakih je prikazan na Sliki \ref{med3}.
+
+\pagebreak
 
 \begin{figure}[placement h]
 \begin{center}
@@ -878,8 +880,6 @@ V posamezno polje se vpiše minimum od treh vrednosti. To so vrednost levo leže
 \caption{Izgled tabele po prvih dveh korakih.}
 \label{med3}
 \end{figure}
-
-Začnimo v polju {\tt (1,1)}. Primerjamo črki “{\tt L}” in “{\tt L}”. Ker so vrednosti, ki jih pridobimo iz sosednjih treh polj enake {\tt 2} in {\tt 0} in {\tt 2}, se v polje {\tt (1,1)} vpiše minimalna od vrednosti, to je 0. Nadaljujemo s poljem {\tt (1,2)}. Vrednosti, ki jih dajo sosednja tri polja so enake {\tt 1} in {\tt 3} in {\tt 3}. Na mesto {\tt (1,2)} vpišemo 1. Izgled tabele po dveh korakih je prikazan na Sliki \ref{med3}.
 
 Postopek nadaljujemo do konca prve vrstice. Ker se črka “{\tt L}” v besedilu “{\tt Letalonosika}” ne ponovi več, je vrednost vsakega nadaljnega polja za eno večje od levo ležečega polja. Postopek ponovimo še čez vse vrstice. Izpolnjena tabela na koncu izgleda kot je prikazano na Sliki \ref{med4}.
 
@@ -905,13 +905,11 @@ Scenarij najkrajšega urejanja lahko izluščimo iz tabele na Sliki \ref{lcs5}. 
 \begin{center}
 \includegraphics[width=8cm]{ses1.png}
 \end{center}
-\caption{Priprava na iskanje scenarija najkrajšega urejanja.}
+\caption{Priprava na iskanje scenarija najkrajšega urejanja z označenimi diagonalami.}
 \label{ses1}
 \end{figure}
 
 Označimo diagonalna polja {\tt k} z oznako od {\tt -m} do {\tt n}, kot je prikazano s krogci na Sliki \ref{ses1}. Označili smo pas med diagonalo {\tt k=0} in {\tt k=$\Delta$=n-m=2}. Prva diagona poteka skozi izvir. Druga diagonala poteka skozi ponor. Če bi bili besedili identični, bi se ti dve diagonali pokrivali. Po tej diagonali pa bi potekala tudi pot, ki smo jo našli v Sliki \ref{lcs5}. Glede na to, da sta v našem primeru besedili različni, to pomeni, da bo pot potekala po označenem pasu in v bližini njega. Koliko se bo pot oddaljila od označenega pasa je odvisno od vrednosti {\tt p}. Ker vrednosti {\tt p} v začetku algorima ne poznamo, jo moramo računati za vsako polje sproti. Na začetku tega poglavja smo rekli, da je vrednost {\tt p=d/2-$\Delta$/2}. To drži, vendar drži le za spodnje desno polje {\tt (n,m)}. Posamezno polje znotraj tabele se računa na način kot je prikazan na Sliki \ref{ses2}.
-
-\pagebreak
 
 \begin{figure}[placement h]
 \begin{center}
@@ -923,19 +921,95 @@ Označimo diagonalna polja {\tt k} z oznako od {\tt -m} do {\tt n}, kot je prika
 
 Levi ničti stolpec zapolnimo z vrednostimi od 1 do {\tt m}. Vrednost {\tt m=11} predstavlja krajšo od obeh besedil. Pri zgornji ničti vrstici imamo manjšo posebnost. Polja znotraj obarvanega pasu (glej Sliko \ref{ses1}) zapolnimo z vrednostimi 0. Vrednost vsakega nadaljnega polja v ničti vrstici pa je za eno večje od levo ležečega polja. Zadnje polje v ničti vrstici mora imeti vrednost {\tt m=11}.
 
-Podobno kot pri Poglavju \ref{sec:lcs} in \ref{sec:med} se vrednosti polj v tabeli išče od leve proti desni in od zgoraj navzdol. Bistvena razlika je, da ne iščemo vedno do konca vrstice in ne začnemo vedno iskati pri začetku vrstice. Iskanje poti bomo torej optimizirali tako, da bomo namesto vseh polj v tabeli raziskali samo tiste, ki so možni kandidati za pot (scenarij najkrajšega urejanja). Prične se v zgornjem levem polju {\tt (1,1)} z vrednostjo {\tt p=0}. Ko v tabeli najdemo vsa polja z vrednostjo {\tt 0}, začnemo iskati polja z vrendostjo {\tt 1}. Ko v tabeli najdemo vsa polja z vrednostjo {\tt 1}, začnemo iskati polja z naslednjo vrednostjo. Postopek ponavljamo dokler ne dosežemo spodnjega desnega polja {\tt (n,m)}. Smiselno se je vprašati kako algoritem ve, da v tabeli ne obstaja nobeno polje več s trenutno vrednostjo {\tt p}, ne da bi preiskali celotno tabelo. Kot bomo na koncu videli, so vrednosti polj na posamezni diagonali vedno naraščajoče. V praksi v našem primeru to pomeni (glej Sliko \ref{ses1}), da bodo polja na diagonalah z oznakami {\tt 0},{\tt 1} in {\tt 2} imele vrednosti {\tt 0} ali več. Polja na diagonalah z oznakami {\tt -1} in {\tt 3} bodo imela vrednosti {\tt 1} ali več. Polja na diagonalah z oznakami {\tt -2} in {\tt 4} bodo imela vrednost {\tt 2} ali več, itd. Na podlagi tega dejstva, je algoritem pri iskanju vrednosti {\tt p} omejen z robnimi diagonalami.
+Podobno kot pri Poglavju \ref{sec:lcs} in \ref{sec:med} se vrednosti polj v tabeli išče od leve proti desni in od zgoraj navzdol. Bistvena razlika je, da ne iščemo vedno do konca vrstice in ne začnemo vedno iskati pri začetku vrstice. Iskanje poti bomo torej optimizirali tako, da bomo namesto vseh polj v tabeli raziskali samo tiste, ki so možni kandidati za pot (scenarij najkrajšega urejanja). Prične se v zgornjem levem polju {\tt (1,1)} z vrednostjo {\tt p=0}. Ko v tabeli najdemo vsa polja z vrednostjo {\tt 0}, začnemo iskati polja z vrendostjo {\tt 1}. Ko v tabeli najdemo vsa polja z vrednostjo {\tt 1}, začnemo iskati polja z naslednjo vrednostjo. Postopek ponavljamo dokler ne dosežemo spodnjega desnega polja {\tt (n,m)}.
 
-Začnimo torej v zgornjem levem polju. Vrednost polja {\tt (1,1)} po formuli na Sliki \ref{ses2} je {\tt p(1,1)=0}. Nadaljujemo proti koncu vrstice. Vrednosti polj {\tt (1,2)} in {\tt (1,3)} sta tudi {\tt p=0}. Vrednost naslednjega polja nas ne zanima več. Zakaj? Zadnja vrednost {\tt p} na diagonali z oznako {\tt 3} je {\tt 1}, kar je več od trenutno iskanih polj z vrednostjo {\tt p=0}. Nadaljujemo v naslednjo (drugo) vrstico. Prvo polje (2,1) lahko izpustimo, saj je zadnja vrednost na diagonali z oznako {\tt -1} že {\tt 1}, kar je več trenutno iskanih polj z verdnostjo {\tt p=0}. Nadaljujemo po vrstici. Izračunamo, da imajo naslednja tri polja {\tt (2,2)}, {\tt (2,3)} in {\tt (2,4)} vrednost {\tt p=0}. Polje {\tt (2,5)} nas trenutno ne zanima več. Nadaljujemo v naslednjo (tretjo) vrstico. Ugotovimo, da moramo za polja z vrednostjo {\tt p=0} iskati le na diagonalah z oznako {\tt 0}, {\tt 1} in {\tt 2}. V tretji vrstici na teh diagonalah ne obstaja nobeno polje več, ki bi imelo vrednost {\tt p=0}. Po iskanju polj z vrednostjo {\tt p=0} naša tabela izgleda kot je prikazano na Sliki \ref{ses3}.
+Smiselno se je vprašati kako algoritem ve, da v tabeli ne obstaja nobeno polje več s trenutno vrednostjo {\tt p}, ne da bi preiskali celotno tabelo. Kot bomo na koncu videli, so vrednosti polj na posamezni diagonali vedno naraščajoče. V praksi v našem primeru to pomeni (glej Sliko \ref{ses1}), da bodo polja na diagonalah z oznakami {\tt 0},{\tt 1} in {\tt 2} imele vrednosti {\tt 0} ali več. Polja na diagonalah z oznakami {\tt -1} in {\tt 3} bodo imela vrednosti {\tt 1} ali več. Polja na diagonalah z oznakami {\tt -2} in {\tt 4} bodo imela vrednost {\tt 2} ali več, itd. Na podlagi tega dejstva, je algoritem pri iskanju vrednosti {\tt p} omejen z robnimi diagonalami.
+
+\pagebreak
+
+Začnimo torej v zgornjem levem polju. Vrednost polja {\tt (1,1)} po formuli na Sliki \ref{ses2} je {\tt p(1,1)=0}. Nadaljujemo proti koncu vrstice. Vrednosti polj {\tt (1,2)} in {\tt (1,3)} sta tudi {\tt p=0}. Vrednost naslednjega polja nas ne zanima več. Zakaj? Zadnja vrednost {\tt p} na diagonali z oznako {\tt 3} je {\tt 1}, kar je več od trenutno iskanih polj z vrednostjo {\tt p=0}. Nadaljujemo v naslednjo (drugo) vrstico. Prvo polje (2,1) lahko izpustimo, saj je zadnja vrednost na diagonali z oznako {\tt -1} že {\tt 1}, kar je več trenutno iskanih polj z vrednostjo {\tt p=0}. Nadaljujemo po vrstici. Izračunamo, da imajo naslednja tri polja {\tt (2,2)}, {\tt (2,3)} in {\tt (2,4)} vrednost {\tt p=0}. Polje {\tt (2,5)} nas trenutno ne zanima več. Nadaljujemo v naslednjo (tretjo) vrstico. Ugotovimo, da moramo za polja z vrednostjo {\tt p=0} iskati le na diagonalah z oznako {\tt 0}, {\tt 1} in {\tt 2}. V tretji vrstici na teh diagonalah ne obstaja nobeno polje več, ki bi imelo vrednost {\tt p=0}. Po iskanju polj z vrednostjo {\tt p=0} naša tabela izgleda kot je prikazano na Sliki \ref{ses3}.
 
 \begin{figure}[placement h]
 \begin{center}
 \includegraphics[width=8cm]{ses3.png}
 \end{center}
-\caption{V tabeli smo našli vsa polja, ki imajo verdnost {\tt p=0}.}
+\caption{V tabeli smo našli vsa polja, ki imajo vrednost {\tt p=0}.}
 \label{ses3}
 \end{figure}
 
-Nadaljujemo z iskanjem polj v tabeli, ki imajo vrednost {\tt p=1}. Ta polja se lahko v našem primeru nahajajo le na diagonalah z oznakami od {\tt -1} do {\tt 3}.
+\pagebreak
+
+Nadaljujemo z iskanjem polj v tabeli, ki imajo vrednost {\tt p=1}. Ta polja se lahko v našem primeru nahajajo le na diagonalah z oznakami od {\tt -1} do {\tt 3}. Po iskanju polj z vrednostjo {\tt p=1} naša tabela izgleda kot je prikazano na Sliki \ref{ses4}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=8cm]{ses4.png}
+\end{center}
+\caption{V tabeli smo našli vsa polja, ki imajo vrednost {\tt p=1}.}
+\label{ses4}
+\end{figure}
+
+Nadaljujemo z iskanjem polj v tabeli, ki imajo vrednost {\tt p=2}. Ta polja se lahko v našem primeru nahajajo le na diagonalah z oznakami od {\tt -2} do {\tt 4}. Po iskanju polj z vrednostjo {\tt p=2} naša tabela izgleda kot je prikazano na Sliki \ref{ses5}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=8cm]{ses5.png}
+\end{center}
+\caption{V tabeli smo našli vsa polja, ki imajo vrednost {\tt p=2}.}
+\label{ses5}
+\end{figure}
+
+\pagebreak
+
+Nadaljujemo z iskanjem polj v tabeli, ki imajo vrednost {\tt p=3}. Ta polja se lahko v našem primeru nahajajo le na diagonalah z oznakami od {\tt -3} do {\tt 5}. Po iskanju polj z vrednostjo {\tt p=3} naša tabela izgleda kot je prikazano na Sliki \ref{ses6}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=8cm]{ses6.png}
+\end{center}
+\caption{V tabeli smo našli vsa polja, ki imajo vrednost {\tt p=3}.}
+\label{ses6}
+\end{figure}
+
+Nadaljujemo z iskanjem polj v tabeli, ki imajo vrednost {\tt p=4}. Ta polja se lahko v našem primeru nahajajo le na diagonalah z oznakami od {\tt -4} do {\tt 6}. Po iskanju polj z vrednostjo {\tt p=4} naša tabela izgleda kot je prikazano na Sliki \ref{ses7}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=8cm]{ses7.png}
+\end{center}
+\caption{V tabeli smo našli vsa polja, ki imajo vrednost {\tt p=4}.}
+\label{ses7}
+\end{figure}
+
+\pagebreak
+
+Nadaljujemo z iskanjem polj v tabeli, ki imajo vrednost {\tt p=5}. Ta polja se lahko v našem primeru nahajajo le na diagonalah z oznakami od {\tt -5} do {\tt 7}. Po iskanju polj z vrednostjo {\tt p=5} naša tabela izgleda kot je prikazano na Sliki \ref{ses6}.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=8cm]{ses8.png}
+\end{center}
+\caption{V tabeli smo našli vsa polja, ki imajo vrednost {\tt p=5}.}
+\label{ses8}
+\end{figure}
+
+Postopek se zaključi, ko v spodenjem desnem polju {\tt (n,m)} najdemo vrednost {\tt p}. V našem primeru je {\tt p(11,13)=5}. Če primerjamo Sliko \ref{lcs5} in Sliko \ref{ses8} lahko opazimo, da pot iz Slike \ref{lcs5} res poteka po obarvanih poljah na Sliki \ref{ses8}. Privarčevali smo računanje vrednosti nekaterih polj v zgornjem desnem in v spodnjem levem delu tabele. V našem primeru je to la manjši del tabele. V praksi se izkaže, da je pri urejanju besedila to večji del tabele, saj se iskana pot razlike besedil vedno nahaja v pasu med diagonalama z oznako {\tt -p} in {\tt $\Delta$+p}.
+
+Do \textbf{scenarija najkrajšega urejanja} pridemo preko najdaljšega skupnega zaporedja, ki smo ga poiskali v Poglavju \ref{sec:lcs} in prikazali na Sliki \ref{lcs5}. V trenutnem Poglavju \ref{sec:ses} smo preko vrednosti {\tt p} predstavili kako iskanje poti optimizirati. V praksi se morajo vsi ti izračuni (\textbf{nadaljše skupno zaporedje}, \textbf{najmanjšo razdaljo urejanja} in \textbf{vrednost p}) pri primerjavi podbesedil računati sočasno tekom algoritma, saj le na ta način najbolje optimiziramo časovno zahtevnost.
+
+\pagebreak
+
+Šele na koncu, ko imamo Sliko \ref{ses9}, se sprehodimo po poti in izluščimo scenarija najkrajšega urejanja.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=8cm]{ses9.png}
+\end{center}
+\caption{Optimizirano iskanje najdaljšega skupnega zaporedja.}
+\label{ses9}
+\end{figure}
+
+Spremembe na besedilu so torej {\tt \{ Pobriši @3-4 \}}, {\tt \{ Vstavi ‘ta’ @4 \}}, {\tt \{ Pobriši @7 \}}, {\tt \{ Vstavi ‘nos’ @7 \}}, {\tt \{ Pobriši @10-11 \}}, {\tt \{ Vstavi ‘ka’ @11 \}}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Urejevalniki v realnem času}
