@@ -157,9 +157,9 @@ Phasellus volutpat orci elementum quam ultricies, et pellentesque enim bibendum.
 
 Še ne dolgo nazaj se nam je internet zdel počasen. Vse skupaj je delovalo zelo statično. Lahko bi rekel, da smo dve desetletji nazaj splet uporabljali le za brskanje. Nato so se počasi pojavile spletne strani, ki so omogočale nekaj malega interaktivnosti. To so bile funkcionalnosti kot so vpisovanje komentarjev, iskalniki, spletne galerije, forumi... Danes se nam zdijo te funkcionalnosti že skoraj integrirane v spletnih aplikacijah. Lahko se ozremo nazaj in rečemo, da so to bili prvi zametki, ki so uporabnikom omogočili, da ustvarjajo splet tak kot ga poznamo danes. Z nadgrajevanjem internetne infrastrukture so se povečale hitrosti prenosa podatkov. Z razvojem spletnih tehnologij se je izboljšala celotna uporabniška izkušnja. V zadnjih dvajsetih letih smo bili priča razvoju napredka tako na programski kot tudi na strojni opremi. Na tem mestu se je smiselno vprašati, kaj je bilo tisto bistveno, ki je celotno zadevo izboljšalo in kako se bo izboljševala v prihodnosti? Internet v osnovi še vedno deluje tako kot je dvajest let nazaj. Princip je isti. Imamo odjemalca (ang. client) na eni strani in imamo strežnik (ang. server) na drugi strani. Odjemalec vzpostavi komunikacijo s strežnikom. Od njega zahteva neko akcijo in le ta jo izvrši. Sliši se komično, a gledano poenostavljeno, splet še danes deluje tako. Če pa pogledamo podrobno, se razlike enormne. Komunikacija med odjemalcem in strežnikom, ter obratno, je omejena s svetlobno hitrostjo. Govorimo o prenosu podatkov v realnem času.
 
-V okviru diplomske naloge bi radi preučili algoritme in raziskali celoten sistem, ki na spletu omogoča urejanje golega besedila v realnem času. Tega se bomo lotili tako, da bomo pregledali raziskave, ki so bile objavljene v akademski sferi. Leta 1989 so se pojavili prvi zapisi \cite{ccigs} o zagotavljanju vmesnika za deljno okolje  (ang. shared environment). V naslednjih nekaj letih se bili na tej podlagi predlagane nekatere izboljšave \cite{hllbw}. Kasneje je pri raziskavah precej pripomogla tudi ustanovitev SIGCE \cite{sigce}, ki promovira raziskovalce na tem področju. Skratka preleteli bomo nekaj raziskav iz tega področja. Po pridobljenem teoretičnem znanju, bomo poiskali članke, ki so bili napisani s strani industrije. Radi bi izvedeli kaj od teorije se lahko uporabi v praksi. Največ uporabnih informacij bomo dobili od protokola Google Wave \cite{wave-ot}. Ne smemo pa pozabiti, da obstaja mnogo drugih uporabnih orodij \cite{share}, od katerih se lahko naučimo praktičnega dela. Cilj diplomske naloge je, da zasnujemo enega izmed algoritmov na plaformi \textbf{node.js} \cite{node}.  Ker hočemo doseči, da je algoritem na strežniškem delu neodvisen od odjemalcev, mora delovati kot API. Kot smo omenili, je uporabnost take izvedbe ravno v tem, da je neodvisen od odjemalcev, ki se nanj povezujejo, naj si bo spletna aplikacija ali mobilna naprava. Poleg tega tak način izvedbe spodbuja nadaljni razvoj celotnega sistema na različnih odjemalcih.
+V okviru diplomske naloge bi radi preučili algoritme in raziskali celoten sistem, ki na spletu omogoča urejanje golega besedila v realnem času. Tega se bomo lotili tako, da bomo pregledali raziskave, ki so bile objavljene v akademski sferi. Leta 1989 so se pojavili prvi zapisi \cite{ccigs} o zagotavljanju vmesnika za deljno okolje  (ang. shared environment). V naslednjih nekaj letih se bili na tej podlagi predlagane nekatere izboljšave \cite{hllbw}. Kasneje je pri raziskavah precej pripomogla tudi ustanovitev SIGCE \cite{sigce}, ki promovira raziskovalce na tem področju. Skratka preleteli bomo nekaj raziskav iz tega področja. Po pridobljenem teoretičnem znanju, bomo poiskali članke, ki so bili napisani s strani industrije. Radi bi izvedeli kaj od teorije se lahko uporabi v praksi. Nekateri algoritmi, ki so bili na akademskem področju uspešni, so se implementirali v končnih ali v pol produktih. Največ uporabnih informacij bomo dobili od protokola Google Wave \cite{wave-ot}. Ne smemo pa pozabiti, da obstaja mnogo drugih uporabnih orodij \cite{share}, od katerih se lahko naučimo praktičnega dela. Cilj diplomske naloge je, da zasnujemo enega izmed algoritmov na plaformi \textbf{node.js} \cite{node}.  Ker hočemo doseči, da je algoritem na strežniškem delu neodvisen od odjemalcev, mora delovati kot API. Kot smo omenili, je uporabnost take izvedbe ravno v tem, da je neodvisen od odjemalcev, ki se nanj povezujejo, naj si bo spletna aplikacija ali mobilna naprava. Poleg tega tak način izvedbe spodbuja nadaljni razvoj celotnega sistema na različnih odjemalcih.
 
-Po uvodu bomo v drugem poglavju najprej predstavili problem in izzive sodelovanja v realnem času. V tretjem poglavju bomo preučili protokole in algoritme za sodelovanje v realnem času. V četrem poglavju jih bomo primerjali po njihovih lastnostih. V petem poglavju bomo poiskali algoritem za iskanje razlik v besedilu. V šestem poglavje se bomo iz teoretičnega dela preselil na praktičen del. Nekateri algoritmi, ki so bili na akademskem področju uspešni, so se implementirali v končnih ali v pol produktih. Na kratko bomo predstavili nekaj teh produktov. V sedmem poglavju bomo opisali našo implementacijo zasnove urejevalnike v realnem času. Na koncu, v osmem poglavju, sledijo še sklepne ugotovitve.
+Po uvodu bomo v drugem poglavju najprej predstavili problem in izzive sodelovanja v realnem času. V tretjem poglavju bomo preučili protokole in algoritme za sodelovanje v realnem času. V četrem poglavju jih bomo primerjali po njihovih lastnostih. V petem poglavju bomo poiskali algoritem za iskanje razlik v besedilu. V šestem poglavju bomo opisali našo implementacijo zasnove urejevalnike v realnem času. Na koncu, v sedmem poglavju, sledijo še sklepne ugotovitve.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Sodelovanje v realnem času}
@@ -786,17 +786,17 @@ V nadaljevanju bomo na primeru prikazali kako poisakati \textbf{nadaljše skupno
 \section{Najdaljše skupno zaporedje}
 \label{sec:lcs}
 
-Iskanje najdaljšega skupnega zaporedja bomo prikazali tabelarično \cite{lcs}. Kot je prikazano na Sliki \ref{lcs1} horizontalno na vrh tabele vpišemo daljšega od besedil, ki jih primerjamo. V našem primeru je to spremenjeno besedilo “{\tt Letalonosilka}”. Ima  {\tt n=13} znakov. Vsak znak je označen s številko od 1 do 13. Vertikalno ob tabeli vpišemo krajšega od besedil, to je izvirno besedilo “{\tt Ledolomilec}”. Ima  {\tt m=11} znakov. Vsak znak je označena s številko od 1 do 11.
+Iskanje najdaljšega skupnega zaporedja bomo prikazali tabelarično \cite{lcs} kot je prikazano na Sliki \ref{lcs1}. 
 
 \begin{figure}[placement h]
 \begin{center}
-\includegraphics[width=7cm]{lcs1.png}
+\includegraphics[width=8cm]{lcs1.png}
 \end{center}
 \caption{Priprava na iskanje najdaljšega skupnega zaporedja.}
 \label{lcs1}
 \end{figure}
 
-Zgornjo ničto vrstico in levi ničti stolpec zapolnimo z ničlami. To lahko naredimo zaradi logičnega razloga. Če katero koliko besedilo primerjamo z praznim besedilom, ti dve besedila nimata skupnega zaporedja.
+Horizontalno na vrh tabele vpišemo daljšega od besedil, ki jih primerjamo. V našem primeru je to spremenjeno besedilo “{\tt Letalonosilka}”. Ima  {\tt n=13} znakov. Vsak znak je označen s številko od 1 do 13. Vertikalno ob tabeli vpišemo krajšega od besedil, to je izvirno besedilo “{\tt Ledolomilec}”. Ima  {\tt m=11} znakov. Vsak znak je označena s številko od 1 do 11. Zgornjo ničto vrstico in levi ničti stolpec zapolnimo z ničlami. To lahko naredimo zaradi logičnega razloga. Če katero koliko besedilo primerjamo z praznim besedilom, ti dve besedila nimata skupnega zaporedja.
 
 Postopek za iskanje najdaljšega skupnega zaporedja se prične v zgornjem levem polju {\tt (1,1)}, se nadaljuje do konca vrstice. Nato gre v naslednjo vrstico, se ponovi za vse vrstice in se konča v spodnjem desnem polju {\tt (11,13)}. V vsakem polju v tabeli se primerja črki, ki pokrivajo to polje. Če sta črki enaki, se v polje vpiše za eno večje število kot je v zgornje-levo ležečem polju. Med ta dva polja se vriše še tako imenovani mostiček (ang. bridge). Če sta črki različni, se v polje vpiše večjega od zgornje ali levo ležečega polja.
 
@@ -805,7 +805,7 @@ Začnimo v polju {\tt (1,1)}. Primerjamo črki “{\tt L}” in “{\tt L}”. K
 
 \begin{figure}[placement h]
 \begin{center}
-\includegraphics[width=7cm]{lcs2.png}
+\includegraphics[width=8cm]{lcs2.png}
 \end{center}
 \caption{Izgled tabele po prvih dveh korakih.}
 \label{lcs2}
@@ -815,7 +815,7 @@ Ker se črki “{\tt L}” v besedi “{\tt Letalonosilka}” ne ponovi več, je
 
 \begin{figure}[placement h]
 \begin{center}
-\includegraphics[width=7cm]{lcs3.png}
+\includegraphics[width=8cm]{lcs3.png}
 \end{center}
 \caption{Pri primerjavi besedil smo našli že dve skupni črki.}
 \label{lcs3}
@@ -825,7 +825,7 @@ Po opisanem postopku nadaljujemo čez vse vrstice. Pazljivi moramo biti pri črk
 
 \begin{figure}[placement h]
 \begin{center}
-\includegraphics[width=7cm]{lcs4.png}
+\includegraphics[width=8cm]{lcs4.png}
 \end{center}
 \caption{Izpolnjena tabela po postopku za iskanje najdaljšega skupnega zaporedja.}
 \label{lcs4}
@@ -835,7 +835,7 @@ V spodanjem desnem polju {\tt (m,n)}, to je {\tt (11,13)}, se nahaja vrednost 6.
 
 \begin{figure}[placement h]
 \begin{center}
-\includegraphics[width=7cm]{lcs5.png}
+\includegraphics[width=8cm]{lcs5.png}
 \end{center}
 \caption{Označena pot je razlika med izvirnim in spremenjenim besedilom.}
 \label{lcs5}
@@ -849,15 +849,15 @@ Označena pot od polja {\tt (0,0)} do {\tt (11,13)} predstavlja razliko, ki smo 
 
 Iskanje najmanjše razdalje urejanja {\tt D(i,j)} bomo prikazali po korakih. Pripravimo si tabelo kot je prikazano na Sliki \ref{med1}.
 
+Horizontalno na vrh tabele vpišemo daljšega od besedil, ki jih primerjamo. Vertikalno ob tabeli vpišemo krajšega od besedil. V prvem koraku je tabela zelo podobna tabeli na Sliki \ref{lcs1}. Razlika je v ničti vrstici in v ničtem stolpcu. Zgornjo ničto vrstico zapolnimo z vrednostimi od 0 do {\tt n}. Vrednost {\tt n=13} in predstavlja daljše od obeh besedil. Levi ničti stolpec zapolnimo z vrednostimi od 1 do {\tt m}. Vrednost {\tt m=11} in predstavlja krajšo od obeh besedil. To lahko naredimo zaradi logičnega razloga. Če katero koliko besedilo primerjamo z praznim besedilom, je število operacij enako število vseh vstavljanj oziroma vseh brisanj, da besedili poenotimo.
+
 \begin{figure}[placement h]
 \begin{center}
-\includegraphics[width=7cm]{med1.png}
+\includegraphics[width=8cm]{med1.png}
 \end{center}
 \caption{Priprava na iskanje najmanjše razdalje urejanja.}
 \label{med1}
 \end{figure}
-
-Horizontalno na vrh tabele vpišemo daljšega od besedil, ki jih primerjamo. Vertikalno ob tabeli vpišemo krajšega od besedil. V prvem koraku je tabela zelo podobna tabeli na Sliki \ref{lcs1}. Razlika je v ničti vrstici in v ničtem stolpcu. Zgornjo ničto vrstico zapolnimo z vrednostimi od 0 do {\tt n}. Vrednost {\tt n=13} in predstavlja daljše od obeh besedil. Levi ničti stolpec zapolnimo z vrednostimi od 1 do {\tt m}. Vrednost {\tt m=11} in predstavlja krajšo od obeh besedil. To lahko naredimo zaradi logičnega razloga. Če katero koliko besedilo primerjamo z praznim besedilom, je število operacij enako število vseh vstavljanj oziroma vseh brisanj, da besedili poenotimo.
 
 Postopek za iskanje najmanjše razdalje urejanja se prične v zgornjem levem polju {\tt (1,1)}, se nadaljuje do konca vrstice. Nato gre v naslednjo vrstico, se ponovi za vse vrstice in se konča v spodnjem desnem polju {\tt (11,13)}. Vrednost vsakega polja v tabeli je odvisna od vrednosti sosednjih treh polj. V posamezno polje se vpiše minimum od treh vrednosti. To so vrednost levo ležečega polja {\tt +1}, vrednost zgornje ležečega polja {\tt +1} ali vrednost zgornje-levo ležečga polja {\tt +2}, če sta polja različni, ali {\tt +0}, če sta polji enaki. Matematično to zapišemo kot je prikazano na Sliki \ref{med2}.
 
@@ -865,23 +865,23 @@ Postopek za iskanje najmanjše razdalje urejanja se prične v zgornjem levem pol
 \begin{center}
 \includegraphics[width=8cm]{med2.png}
 \end{center}
-\caption{Izračun najmanjše razdalje urejanja \cite{med}, pri čemer {\tt X(i)} predstavlja i-ti znak v krajšem (izvirnem) besedilu in {\tt Y(j)} predstavlja j-ti znak v daljšem (spremenjenem) besedilu. Opomba! Pri iskanju vrednosti {\tt D(i,j)} nad diagonalo z oznako {\tt $\Delta$} (glej Sliko \ref{ses1}) lahko upoštevamo le vrednost levo ležečega polja in zgornje-levo ležečega polja. Zgornje ležeče polje bistveno ne vpliva na izračun. Pri iskanju vrednosti {\tt D(i,j)} nad diagonalo z oznako {\tt 0} lahko upoštevamo le vrednost zgornje ležečga polja in zgornje-levo ležečega polja. Levo ležeče polje bistveno en vpliva na izračun.}
+\caption{Izračun najmanjše razdalje urejanja \cite{med}, pri čemer {\tt X(i)} predstavlja i-ti znak v krajšem (izvirnem) besedilu in {\tt Y(j)} predstavlja j-ti znak v daljšem (spremenjenem) besedilu. Opomba! Pri iskanju vrednosti {\tt D(i,j)} nad diagonalo z oznako {\tt $\Delta$} (glej Sliko \ref{ses1}) lahko upoštevamo le vrednost levo ležečega polja in zgornje-levo ležečega polja. Zgornje ležeče polje bistveno ne vpliva na izračun. Pri iskanju vrednosti {\tt D(i,j)} pod diagonalo z oznako {\tt 0} lahko upoštevamo le vrednost zgornje ležečga polja in zgornje-levo ležečega polja. Levo ležeče polje bistveno en vpliva na izračun.}
 \label{med2}
 \end{figure}
 
-Začnimo v polju {\tt (1,1)}. Primerjamo črki “{\tt L}” in “{\tt L}”. Ker so vrednosti, ki jih pridobimo iz sosednjih treh polj enake {\tt 2} in {\tt 0} in {\tt 2}, se v polje {\tt (1,1)} vpiše minimalna od vrednosti, to je 0. Nadaljujemo s poljem {\tt (1,2)}. Vrednosti, ki jih dajo sosednja tri polja so enake {\tt 1} in {\tt 3} in {\tt 3}. Na mesto {\tt (1,2)} vpišemo 1. Izgled tabele po dveh korakih je prikazan na Sliki \ref{med3}.
-
 \pagebreak
+
+Začnimo v polju {\tt (1,1)}. Primerjamo črki “{\tt L}” in “{\tt L}”. Ker so vrednosti, ki jih pridobimo iz sosednjih treh polj enake {\tt 2} in {\tt 0} in {\tt 2}, se v polje {\tt (1,1)} vpiše minimalna od vrednosti, to je 0. Nadaljujemo s poljem {\tt (1,2)}. Vrednosti, ki jih dajo sosednja tri polja so enake {\tt 1} in {\tt 3} in {\tt 3}. Na mesto {\tt (1,2)} vpišemo 1. Izgled tabele po dveh korakih je prikazan na Sliki \ref{med3}.
 
 \begin{figure}[placement h]
 \begin{center}
-\includegraphics[width=7cm]{med3.png}
+\includegraphics[width=8cm]{med3.png}
 \end{center}
 \caption{Izgled tabele po prvih dveh korakih.}
 \label{med3}
 \end{figure}
 
-Postopek nadaljujemo do konca prve vrstice. Ker se črka “{\tt L}” v besedilu “{\tt Letalonosika}” ne ponovi več, je vrednost vsakega nadaljnega polja za eno večje od levo ležečega polja. Postopek ponovimo še čez vse vrstice. Izpolnjena tabela na koncu izgleda kot je prikazano na Sliki \ref{med4}.
+Postopek nadaljujemo do konca prve vrstice. Ker se črka “{\tt L}” v besedilu “{\tt Letalonosika}” ne ponovi več, je vrednost vsakega nadaljnega polja za eno večje od levo ležečega polja. Postopek ponovimo še čez vse vrstice. Slika \ref{med4} prikazuje v celoti izpolnjeno tabelo.
 
 \begin{figure}[placement h]
 \begin{center}
@@ -1012,12 +1012,7 @@ Do \textbf{scenarija najkrajšega urejanja} pridemo preko najdaljšega skupnega 
 Spremembe na besedilu so torej {\tt \{ Pobriši @3-4 \}}, {\tt \{ Vstavi ‘ta’ @4 \}}, {\tt \{ Pobriši @7 \}}, {\tt \{ Vstavi ‘nos’ @7 \}}, {\tt \{ Pobriši @10-11 \}}, {\tt \{ Vstavi ‘ka’ @11 \}}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Urejevalniki v realnem času}
-
-Vestibulum euismod nisl orci. Curabitur consectetur, nibh vel tristique pretium, enim magna hendrerit tortor, non rutrum risus nibh et urna. Vivamus a ornare libero. Integer vitae tortor tincidunt, placerat mauris ac, molestie risus. Pellentesque ipsum neque, molestie nec malesuada blandit, fringilla cursus sapien. Sed sed risus lacinia, tempus tortor at, cursus metus. In lacinia elit vel est varius, feugiat faucibus libero vulputate. Nam molestie enim ut interdum venenatis. Donec dolor arcu, blandit et tempor nec, cursus a leo. Phasellus id sollicitudin sapien. Aenean placerat adipiscing metus eget rutrum.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Poskus implementacije OT}
+\chapter{Implementacije urejevalnika}
 
 Sed nec luctus elit. Etiam feugiat, ipsum at fringilla iaculis, ligula massa auctor lorem, quis viverra ligula quam ut orci. Ut faucibus consectetur velit vel adipiscing. Aliquam nec metus sapien. Morbi nec lobortis ipsum. Etiam vehicula, libero dapibus pulvinar pretium, orci nunc aliquam leo, id bibendum lacus diam id quam. Etiam at lectus ac mi malesuada ultricies. Cras id venenatis nisl. Mauris ullamcorper felis eget arcu rhoncus ullamcorper. Nullam sollicitudin justo in orci iaculis, eget tristique tellus adipiscing. Sed at bibendum felis, viverra mollis est. Proin convallis felis eget augue condimentum, at placerat sem porttitor. Sed turpis nulla, fringilla sit amet ultrices id, condimentum ut massa. Pellentesque nec augue a mauris commodo suscipit et in ante. Praesent mollis et diam nec fermentum.
 
