@@ -1,11 +1,10 @@
 // index.js
-
 "use strict";
 
 function showTable(table, longerText, shorterText) {
     var space = "   ";
 
-    // longer text
+    // show longer text horizontaly
     var line = space + space;
     var c = "";
     for (var i = 0; i < longerText.length; i++) {
@@ -14,10 +13,9 @@ function showTable(table, longerText, shorterText) {
     }
     console.log(line);
 
-    // shorter text
+    // show shorter text verticaly
     var line = space;
     table.forEach(function(tableRow, i) {
-
         if (!i) {
             line = space;
         } else {
@@ -25,13 +23,9 @@ function showTable(table, longerText, shorterText) {
             line = (space + c).slice(-space.length);
         }
 
-        tableRow.forEach(function(tableCol) {
-            if (!tableCol) {
-                tableCol = '-';
-            }
+        tableRow.forEach(function(tableCol, j) {
             line = line + (space + tableCol).slice(-space.length);
         })
-
         console.log(line);
     });
 }
@@ -44,16 +38,96 @@ var LCS = [];
 var MED = [];
 var SES = [];
 
-var falses = [];
+var EMPTY = '-';
+var empties = [];
 
 for (var i = 0; i <= longerText.length; i++) {
-    falses.push(false);
+    empties.push(EMPTY);
 }
 
 for (var i = 0; i <= shorterText.length; i++) {
-    LCS.push(falses);
-    MED.push(falses);
-    SES.push(falses);
+    LCS.push(empties.slice());
+    MED.push(empties.slice());
+    SES.push(empties.slice());
 }
 
-showTable(LCS, longerText, shorterText);
+var timestamp = new Date();
+var p = -1;
+
+var shorterChar, longerChar, matchingChar;
+var tempUpperLeft, tempUpper, tempLeft;
+var tempK, tempV, tempP;
+
+// fill the tables until the bottom right field is reached
+while (LCS[shorterText.length][longerText.length] == EMPTY) {
+
+    // increase P-value
+    p++;
+
+    // filling the tables as far as the P-value said
+    for (var i = 0; i <= shorterText.length; i++) {
+        for (var j = 0; j <= longerText.length; j++) {
+
+            // skip fields if they are not empty
+            if (LCS[i][j] != EMPTY && MED[i][j] != EMPTY && SES[i][j] != EMPTY) {
+                continue;
+            }
+
+            if (i == 0) {
+                // zero row fields
+
+                LCS[i][j] = 0;
+                MED[i][j] = j;
+                SES[i][j] = (j > delta) ? j - delta : 0;
+            } else if (j == 0) {
+                // zero col fileds
+
+                LCS[i][j] = 0;
+                MED[i][j] = i;
+                SES[i][j] = i;
+
+            } else {
+                // other fields in tables
+
+                shorterChar = shorterText.charAt(i - 1);
+                longerChar = longerText.charAt(j - 1);
+                matchingChar = shorterChar === longerChar;
+
+                // LCS
+                if (matchingChar) {
+                    // for one greater than the upper left
+                    tempUpperLeft = LCS[i - 1][j - 1];
+                    LCS[i][j] = tempUpperLeft + 1;
+                } else {
+                    // greater from upper or left
+                    tempLeft = LCS[i - 1][j];
+                    tempUpper = LCS[i][j - 1];
+                    LCS[i][j] = (tempLeft > tempUpper) ? tempLeft : tempUpper;
+                }
+
+                // MED
+                tempUpperLeft = MED[i - 1][j - 1];
+                tempUpperLeft = (matchingChar) ? tempUpperLeft : tempUpperLeft + 2;
+                tempLeft = MED[i - 1][j] + 1;
+                tempUpper = MED[i][j - 1] + 1;
+                // minimum from this three values
+                MED[i][j] = Math.min(tempUpperLeft, tempLeft, tempUpper);
+
+                // SES
+                tempK = j - i;
+                tempV = (MED[i][j] - tempK) / 2;
+                tempP = (tempK > delta) ? tempV + (tempK - delta) : tempV;
+                SES[i][j] = tempP;
+            }
+        }
+    }
+
+    // end algorithm after 3 seconds
+    var timediff = (new Date() - timestamp) / 1000;
+    if (timediff > 0.02) {
+        break;
+    }
+}
+
+// show table
+showTable(SES, longerText, shorterText);
