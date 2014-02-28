@@ -52,17 +52,20 @@ for (var i = 0; i <= shorterText.length; i++) {
 }
 
 var timestamp = new Date();
-var p = -1;
+
+var wantedValueP = -1;
+var diagonalsValueP = {};
+var tempDiagonal, diagonalValueP;
 
 var shorterChar, longerChar, matchingChar;
 var tempUpperLeft, tempUpper, tempLeft;
-var tempK, tempV, tempP;
+var tempV, tempP;
 
 // fill the tables until the bottom right field is reached
 while (LCS[shorterText.length][longerText.length] == EMPTY) {
 
     // increase P-value
-    p++;
+    wantedValueP++;
 
     // filling the tables as far as the P-value said
     for (var i = 0; i <= shorterText.length; i++) {
@@ -79,6 +82,9 @@ while (LCS[shorterText.length][longerText.length] == EMPTY) {
                 LCS[i][j] = 0;
                 MED[i][j] = j;
                 SES[i][j] = (j > delta) ? j - delta : 0;
+
+                diagonalsValueP[j] = (j > delta) ? j - delta : 0;
+
             } else if (j == 0) {
                 // zero col fileds
 
@@ -86,9 +92,20 @@ while (LCS[shorterText.length][longerText.length] == EMPTY) {
                 MED[i][j] = i;
                 SES[i][j] = i;
 
+                diagonalsValueP[-i] = i;
+
             } else {
                 // other fields in tables
 
+                // checking the diagonal
+                tempDiagonal = j - i;
+                diagonalValueP = diagonalsValueP[tempDiagonal];
+
+                if (diagonalValueP > wantedValueP) {
+                    continue;
+                }
+
+                // chars
                 shorterChar = shorterText.charAt(i - 1);
                 longerChar = longerText.charAt(j - 1);
                 matchingChar = shorterChar === longerChar;
@@ -100,24 +117,35 @@ while (LCS[shorterText.length][longerText.length] == EMPTY) {
                     LCS[i][j] = tempUpperLeft + 1;
                 } else {
                     // greater from upper or left
-                    tempLeft = LCS[i - 1][j];
-                    tempUpper = LCS[i][j - 1];
-                    LCS[i][j] = (tempLeft > tempUpper) ? tempLeft : tempUpper;
+                    tempLeft = LCS[i][j - 1];
+                    tempLeft = (tempLeft == EMPTY) ? 0 : tempLeft;
+                    tempUpper = LCS[i - 1][j];
+                    tempUpper = (tempUpper == EMPTY) ? 0 : tempUpper;
+                    LCS[i][j] = Math.max(tempLeft, tempUpper);
                 }
 
                 // MED
                 tempUpperLeft = MED[i - 1][j - 1];
                 tempUpperLeft = (matchingChar) ? tempUpperLeft : tempUpperLeft + 2;
-                tempLeft = MED[i - 1][j] + 1;
-                tempUpper = MED[i][j - 1] + 1;
-                // minimum from this three values
+                tempLeft = MED[i][j - 1];
+                tempLeft = (tempLeft == EMPTY) ? Number.MAX_VALUE : tempLeft + 1;
+                tempUpper = MED[i - 1][j];
+                tempUpper = (tempUpper == EMPTY) ? Number.MAX_VALUE : tempUpper + 1;
                 MED[i][j] = Math.min(tempUpperLeft, tempLeft, tempUpper);
 
                 // SES
-                tempK = j - i;
-                tempV = (MED[i][j] - tempK) / 2;
-                tempP = (tempK > delta) ? tempV + (tempK - delta) : tempV;
+                tempV = (MED[i][j] - tempDiagonal) / 2;
+                tempP = (tempDiagonal > delta) ? tempV + (tempDiagonal - delta) : tempV;
                 SES[i][j] = tempP;
+
+
+                // correct diagonal max P-value and reset current fields
+                if (tempP > wantedValueP) {
+                    diagonalsValueP[tempDiagonal] = tempP;
+                    LCS[i][j] = EMPTY;
+                    MED[i][j] = EMPTY;
+                    SES[i][j] = EMPTY;
+                }
             }
         }
     }
@@ -130,4 +158,8 @@ while (LCS[shorterText.length][longerText.length] == EMPTY) {
 }
 
 // show table
+showTable(LCS, longerText, shorterText);
+console.log();
+showTable(MED, longerText, shorterText);
+console.log();
 showTable(SES, longerText, shorterText);
