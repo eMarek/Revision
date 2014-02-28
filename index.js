@@ -152,14 +152,82 @@ while (LCS[shorterText.length][longerText.length] == EMPTY) {
 
     // end algorithm after 3 seconds
     var timediff = (new Date() - timestamp) / 1000;
-    if (timediff > 0.02) {
+    if (timediff > 1) {
         break;
     }
 }
 
 // show table
 showTable(LCS, longerText, shorterText);
-console.log();
-showTable(MED, longerText, shorterText);
-console.log();
-showTable(SES, longerText, shorterText);
+
+var timestamp = new Date();
+var changes = [];
+var i = shorterText.length;
+var j = longerText.length;
+var valueC, tempC;
+var insert = "";
+var clear = 0;
+var character;
+
+// find changes in LCS until the top left field is reached
+while (i != 0 && j != 0) {
+
+    valueC = LCS[i][j];
+
+    // try go left
+    tempC = LCS[i][j - 1];
+    if (tempC == valueC) {
+        j--;
+        character = longerText.charAt(j);
+        insert = character + insert;
+        continue;
+    }
+
+    if (insert) {
+        changes.push({
+            a: '+',
+            w: insert,
+            p: i,
+        });
+
+        insert = '';
+    }
+
+    // try go up
+    tempC = LCS[i - 1][j];
+    if (tempC == valueC) {
+        i--;
+        clear++;
+        continue;
+    }
+
+    if (clear) {
+        changes.push({
+            a: '-',
+            f: i + 1,
+            t: i + clear
+        });
+
+        clear = 0;
+    }
+
+    // try go upper left
+    tempC = LCS[i - 1][j - 1];
+    if (tempC == valueC - 1) {
+        i--;
+        j--;
+        continue;
+    }
+
+    // end algorithm after 3 seconds
+    var timediff = (new Date() - timestamp) / 1000;
+    if (timediff > 1) {
+        console.log("nc ni");
+        break;
+    }
+}
+
+changes.reverse();
+
+// show changes
+console.log(changes);
