@@ -30,8 +30,13 @@ function showTable(table, longerText, shorterText) {
     });
 }
 
-var longerText = "Letalonosilka";
-var shorterText = "Ledolomilec";
+var originalText = "Naš Maxi je luškana baraba.";
+var changedText = "Naš pes Maxi je luškan.";
+
+console.log(originalText + ' > ' + changedText);
+
+var longerText = (originalText.length < changedText.length) ? changedText : originalText;
+var shorterText = (originalText.length < changedText.length) ? originalText : changedText;
 var delta = longerText.length - shorterText.length;
 
 var LCS = [];
@@ -159,15 +164,14 @@ while (LCS[shorterText.length][longerText.length] == EMPTY) {
 // show table
 showTable(LCS, longerText, shorterText);
 
-var plus = false;
-var minus = false;
 var i = shorterText.length;
 var j = longerText.length;
+var leftMove = false;
+var upMove = false;
 var currentLCS, nextLCS;
-var changes = [];
 var character = '';
+var changes = [];
 var string = "";
-var from, to;
 var timestamp = new Date();
 
 // find changes in LCS until the top left field is reached
@@ -186,21 +190,23 @@ while (true) {
             j--;
             character = longerText.charAt(j);
             string = character + string;
-            plus = true;
+            leftMove = true;
             continue;
         }
     }
 
-    if (plus) {
+    if (leftMove) {
         changes.push({
-            a: '+',
+            a: (originalText.length < changedText.length) ? '+' : '-',
             s: string,
             l: string.length,
             p: i + 1,
+            f: j + 1,
+            t: j + string.length
         });
 
         string = "";
-        plus = false;
+        leftMove = false;
     }
 
     // try go up
@@ -210,22 +216,23 @@ while (true) {
             i--;
             character = shorterText.charAt(i);
             string = character + string;
-            minus = true;
+            upMove = true;
             continue;
         }
     }
 
-    if (minus) {
+    if (upMove) {
         changes.push({
-            a: '-',
+            a: (originalText.length < changedText.length) ? '-' : '+',
             s: string,
             l: string.length,
+            p: j + 1,
             f: i + 1,
             t: i + string.length
         });
 
         string = "";
-        minus = false;
+        upMove = false;
     }
 
     // try go upper left
