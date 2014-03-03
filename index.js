@@ -159,14 +159,16 @@ while (LCS[shorterText.length][longerText.length] == EMPTY) {
 // show table
 showTable(LCS, longerText, shorterText);
 
-var timestamp = new Date();
-var changes = [];
+var plus = false;
+var minus = false;
 var i = shorterText.length;
 var j = longerText.length;
 var currentLCS, nextLCS;
-var insert = "";
-var clear = 0;
-var character;
+var changes = [];
+var character = '';
+var string = "";
+var from, to;
+var timestamp = new Date();
 
 // find changes in LCS until the top left field is reached
 while (true) {
@@ -183,19 +185,22 @@ while (true) {
         if (nextLCS == currentLCS) {
             j--;
             character = longerText.charAt(j);
-            insert = character + insert;
+            string = character + string;
+            plus = true;
             continue;
         }
     }
 
-    if (insert) {
+    if (plus) {
         changes.push({
             a: '+',
-            w: insert,
+            s: string,
+            l: string.length,
             p: i + 1,
         });
 
-        insert = '';
+        string = "";
+        plus = false;
     }
 
     // try go up
@@ -203,19 +208,24 @@ while (true) {
         nextLCS = LCS[i - 1][j];
         if (nextLCS == currentLCS) {
             i--;
-            clear++;
+            character = shorterText.charAt(i);
+            string = character + string;
+            minus = true;
             continue;
         }
     }
 
-    if (clear) {
+    if (minus) {
         changes.push({
             a: '-',
+            s: string,
+            l: string.length,
             f: i + 1,
-            t: i + clear
+            t: i + string.length
         });
 
-        clear = 0;
+        string = "";
+        minus = false;
     }
 
     // try go upper left
@@ -238,6 +248,7 @@ while (true) {
     }
 }
 
+// reverse changes
 changes.reverse();
 
 // show changes
