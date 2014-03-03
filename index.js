@@ -138,7 +138,6 @@ while (LCS[shorterText.length][longerText.length] == EMPTY) {
                 tempP = (tempDiagonal > delta) ? tempV + (tempDiagonal - delta) : tempV;
                 SES[i][j] = tempP;
 
-
                 // correct diagonal max P-value and reset current fields
                 if (tempP > wantedValueP) {
                     diagonalsValueP[tempDiagonal] = tempP;
@@ -170,17 +169,23 @@ var clear = 0;
 var character;
 
 // find changes in LCS until the top left field is reached
-while (i != 0 && j != 0) {
+while (true) {
 
+    // current location
+    // console.log('(' + i + ',' + j + ')');
+
+    // current LCS value
     currentLCS = LCS[i][j];
 
     // try go left
-    nextLCS = LCS[i][j - 1];
-    if (nextLCS == currentLCS) {
-        j--;
-        character = longerText.charAt(j);
-        insert = character + insert;
-        continue;
+    if (j) {
+        nextLCS = LCS[i][j - 1];
+        if (nextLCS == currentLCS) {
+            j--;
+            character = longerText.charAt(j);
+            insert = character + insert;
+            continue;
+        }
     }
 
     if (insert) {
@@ -194,11 +199,13 @@ while (i != 0 && j != 0) {
     }
 
     // try go up
-    nextLCS = LCS[i - 1][j];
-    if (nextLCS == currentLCS) {
-        i--;
-        clear++;
-        continue;
+    if (i) {
+        nextLCS = LCS[i - 1][j];
+        if (nextLCS == currentLCS) {
+            i--;
+            clear++;
+            continue;
+        }
     }
 
     if (clear) {
@@ -212,11 +219,16 @@ while (i != 0 && j != 0) {
     }
 
     // try go upper left
-    nextLCS = LCS[i - 1][j - 1];
-    if (nextLCS == currentLCS - 1) {
-        i--;
-        j--;
-        continue;
+    if (i && j) {
+        nextLCS = LCS[i - 1][j - 1];
+        if (nextLCS == currentLCS - 1) {
+            i--;
+            j--;
+            continue;
+        }
+    } else {
+        // we are in starting location
+        break;
     }
 
     // end algorithm after 3 seconds
