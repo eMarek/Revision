@@ -164,7 +164,7 @@ var timestamp = new Date();
 var changes = [];
 var i = shorterText.length;
 var j = longerText.length;
-var valueC, tempC;
+var currentLCS, nextLCS;
 var insert = "";
 var clear = 0;
 var character;
@@ -172,11 +172,11 @@ var character;
 // find changes in LCS until the top left field is reached
 while (i != 0 && j != 0) {
 
-    valueC = LCS[i][j];
+    currentLCS = LCS[i][j];
 
     // try go left
-    tempC = LCS[i][j - 1];
-    if (tempC == valueC) {
+    nextLCS = LCS[i][j - 1];
+    if (nextLCS == currentLCS) {
         j--;
         character = longerText.charAt(j);
         insert = character + insert;
@@ -187,15 +187,15 @@ while (i != 0 && j != 0) {
         changes.push({
             a: '+',
             w: insert,
-            p: i,
+            p: i + 1,
         });
 
         insert = '';
     }
 
     // try go up
-    tempC = LCS[i - 1][j];
-    if (tempC == valueC) {
+    nextLCS = LCS[i - 1][j];
+    if (nextLCS == currentLCS) {
         i--;
         clear++;
         continue;
@@ -212,8 +212,8 @@ while (i != 0 && j != 0) {
     }
 
     // try go upper left
-    tempC = LCS[i - 1][j - 1];
-    if (tempC == valueC - 1) {
+    nextLCS = LCS[i - 1][j - 1];
+    if (nextLCS == currentLCS - 1) {
         i--;
         j--;
         continue;
@@ -222,7 +222,6 @@ while (i != 0 && j != 0) {
     // end algorithm after 3 seconds
     var timediff = (new Date() - timestamp) / 1000;
     if (timediff > 1) {
-        console.log("nc ni");
         break;
     }
 }
