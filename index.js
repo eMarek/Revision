@@ -1,39 +1,16 @@
 // index.js
 "use strict";
 
-function showTable(table, longerText, shorterText) {
-    var space = "   ";
+/*
+ *
+ * Part 1: Calculate longest common subsequence (LCS), minimum edit distance (MED) and shortest edit script (SES) matrices.
+ *
+ */
 
-    // show longer text horizontaly
-    var line = space + space;
-    var c = "";
-    for (var i = 0; i < longerText.length; i++) {
-        c = longerText.charAt(i);
-        line = line + (space + c).slice(-space.length);
-    }
-    console.log(line);
+var originalText = "";
+var changedText = "";
 
-    // show shorter text verticaly
-    var line = space;
-    table.forEach(function(tableRow, i) {
-        if (!i) {
-            line = space;
-        } else {
-            c = shorterText.charAt(i - 1);
-            line = (space + c).slice(-space.length);
-        }
-
-        tableRow.forEach(function(tableCol, j) {
-            line = line + (space + tableCol).slice(-space.length);
-        })
-        console.log(line);
-    });
-}
-
-var originalText = "Naš Maxi je luškana baraba.";
-var changedText = "Naš pes Maxi je luškan.";
-
-console.log(originalText + ' > ' + changedText);
+console.log('"' + originalText + '" > "' + changedText + '"');
 
 var longerText = (originalText.length < changedText.length) ? changedText : originalText;
 var shorterText = (originalText.length < changedText.length) ? originalText : changedText;
@@ -161,8 +138,51 @@ while (LCS[shorterText.length][longerText.length] == EMPTY) {
     }
 }
 
+/*
+ *
+ * Part 2: Display calculated metrices for debugging purposes.
+ *
+ */
+
 // show table
-showTable(LCS, longerText, shorterText);
+function showTable(table, longerText, shorterText) {
+    var space = "   ";
+
+    // show longer text horizontaly
+    var line = space + space;
+    var c = "";
+    for (var i = 0; i < longerText.length; i++) {
+        c = longerText.charAt(i);
+        line = line + (space + c).slice(-space.length);
+    }
+    console.log(line);
+
+    // show shorter text verticaly
+    var line = space;
+    table.forEach(function(tableRow, i) {
+        if (!i) {
+            line = space;
+        } else {
+            c = shorterText.charAt(i - 1);
+            line = (space + c).slice(-space.length);
+        }
+
+        tableRow.forEach(function(tableCol, j) {
+            line = line + (space + tableCol).slice(-space.length);
+        })
+        console.log(line);
+    });
+}
+
+// show LCS
+// showTable(LCS, longerText, shorterText);
+
+
+/*
+ *
+ * Part 3: Find a snake from start to finish and return adequate changes.
+ *
+ */
 
 var i = shorterText.length;
 var j = longerText.length;
