@@ -2,8 +2,14 @@
 
 "use strict";
 
-var path = require('path');
-var fs = require('fs');
-var loc = path.dirname(fs.realpathSync(__filename))
+var changes = require('./changes.js');
 
-require(loc + '/index.js');
+var originalText = process.argv[2] || "";
+var changedText = process.argv[3] || "";
+
+if (!originalText && !changedText) {
+    console.log("To calculate changes please enter original text as first argument and changed text as second argument!");
+} else {
+    var patches = changes(originalText, changedText);
+    console.log(patches);
+}
