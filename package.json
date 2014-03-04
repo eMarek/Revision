@@ -1,6 +1,6 @@
 {
-    "name": "revision",
-    "version": "0.0.1",
+    "name": "Revision",
+    "version": "0.1.0",
     "author": "Marko Bregant <marko@bregant.si>",
     "description": "Realtime collaboration tool.",
     "main": "./index.js",
@@ -17,10 +17,12 @@
         "collaboration",
         "protocol",
         "realtime",
-        "editor"
+        "editor",
+        "changes",
+        "diff"
     ],
     "license": "MIT",
     "engines": {
-        "node": ">=0.10.24"
+        "node": "0.10.26"
     }
 }
