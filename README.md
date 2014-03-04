@@ -10,6 +10,7 @@ Right now is still in alpha version. You can calculate changes between two text.
 ```
 npm install -g revision
 ```
+Do not forget `-g` command, otherwise it will not work.  
 Of course you will need node.js and a fluffy unicorn.
 
 ### How to use it
