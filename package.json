@@ -3,7 +3,7 @@
     "version": "0.1.1",
     "author": "Marko Bregant <marko@bregant.si>",
     "description": "Realtime collaboration tool.",
-    "main": "./index.js",
+    "main": "./server.js",
     "bin": {
         "revision": "./revision.js"
     },
