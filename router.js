@@ -41,26 +41,6 @@ module.exports = function(handle, request, response) {
                 response.writeHead(404);
                 response.write("404 Not Found");
                 response.end();
-            } else if (stats.isDirectory()) {
-
-                // show list of files in directory
-                /*
-                var exec = child_process.exec;
-
-                exec("ls -lah " + location, {
-                    timeout: 10000,
-                    maxBuffer: 20000 * 1024
-                }, function(error, stdout, stderr) {
-                    response.writeHead(200, {
-                        "Content-Type": "text/plain"
-                    });
-                    response.write(stdout);
-                    response.end();
-                });
-                */
-                response.writeHead(404);
-                response.write("404 Not Found");
-                response.end();
 
             } else if (stats.isFile()) {
 
