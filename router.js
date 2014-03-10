@@ -11,9 +11,9 @@ module.exports = function(handle, request, response) {
 
     var pathname = url.parse(request.url).pathname;
 
-    if (pathname.substring(0, 5) === "/api/") {
+    if (pathname.slice(0, 5) === "/api/" && pathname.slice(-5) === ".json") {
 
-        // api should response with data
+        // api should response with json data
         pathname = pathname.substring(5);
         if (typeof handle[pathname] === "function") {
             handle[pathname](response);
@@ -21,7 +21,6 @@ module.exports = function(handle, request, response) {
             response.writeHead(404);
             response.write("404 Not Found");
             response.end();
-            return;
         }
 
     } else {
@@ -42,12 +41,10 @@ module.exports = function(handle, request, response) {
                 response.writeHead(404);
                 response.write("404 Not Found");
                 response.end();
-                return;
-            }
+            } else if (stats.isDirectory()) {
 
-            // show list of files in directory
-            if (stats.isDirectory()) {
-
+                // show list of files in directory
+                /*
                 var exec = child_process.exec;
 
                 exec("ls -lah " + location, {
@@ -60,24 +57,31 @@ module.exports = function(handle, request, response) {
                     response.write(stdout);
                     response.end();
                 });
-                return;
-            }
+                */
+                response.writeHead(404);
+                response.write("404 Not Found");
+                response.end();
 
-            // response with wanted file
-            if (stats.isFile()) {
+            } else if (stats.isFile()) {
+
+                // response with wanted file
                 fs.readFile(location, "binary", function(err, file) {
 
                     if (err) {
                         response.writeHead(404);
                         response.write("404 Not Found");
                         response.end();
-                        return;
+                    } else {
+                        response.writeHead(200);
+                        response.write(file, "binary");
+                        response.end();
                     }
-
-                    response.writeHead(200);
-                    response.write(file, "binary");
-                    response.end();
                 });
+
+            } else {
+                response.writeHead(404);
+                response.write("404 Not Found");
+                response.end();
             }
         });
     }
