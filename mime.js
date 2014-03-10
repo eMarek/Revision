@@ -3,6 +3,7 @@
 "use strict";
 
 module.exports = {
+    // application
     "ez": "application/andrew-inset",
     "aw": "application/applixware",
     "atom": "application/atom+xml",
@@ -136,6 +137,7 @@ module.exports = {
     "teicorpus": "application/tei+xml",
     "tfi": "application/thraud+xml",
     "tsd": "application/timestamped-data",
+    // application vnd
     "plb": "application/vnd.3gpp.pic-bw-large",
     "psb": "application/vnd.3gpp.pic-bw-small",
     "pvb": "application/vnd.3gpp.pic-bw-var",
@@ -258,6 +260,13 @@ module.exports = {
     "g2w": "application/vnd.geoplan",
     "g3w": "application/vnd.geospace",
     "gmx": "application/vnd.gmx",
+    "gdoc": "application/vnd.google-apps.document",
+    "gdraw": "application/vnd.google-apps.drawing",
+    "gform": "application/vnd.google-apps.form",
+    "gtable": "application/vnd.google-apps.fusiontable",
+    "gslides": "application/vnd.google-apps.presentation",
+    "gscript": "application/vnd.google-apps.script",
+    "gsheet": "application/vnd.google-apps.spreadsheet",
     "kml": "application/vnd.google-earth.kml+xml",
     "kmz": "application/vnd.google-earth.kmz",
     "gqf": "application/vnd.grafeq",
@@ -559,6 +568,7 @@ module.exports = {
     "hlp": "application/winhlp",
     "wsdl": "application/wsdl+xml",
     "wspolicy": "application/wspolicy+xml",
+    // application x
     "7z": "application/x-7z-compressed",
     "abw": "application/x-abiword",
     "ace": "application/x-ace-compressed",
@@ -726,6 +736,7 @@ module.exports = {
     "yang": "application/yang",
     "yin": "application/yin+xml",
     "zip": "application/zip",
+    // audio
     "adp": "audio/adpcm",
     "au": "audio/basic",
     "snd": "audio/basic",
@@ -773,12 +784,14 @@ module.exports = {
     "rmp": "audio/x-pn-realaudio-plugin",
     "wav": "audio/x-wav",
     "xm": "audio/xm",
+    // chemical
     "cdx": "chemical/x-cdx",
     "cif": "chemical/x-cif",
     "cmdf": "chemical/x-cmdf",
     "cml": "chemical/x-cml",
     "csml": "chemical/x-csml",
     "xyz": "chemical/x-xyz",
+    // image
     "bmp": "image/bmp",
     "cgm": "image/cgm",
     "g3": "image/g3fax",
@@ -837,8 +850,10 @@ module.exports = {
     "xbm": "image/x-xbitmap",
     "xpm": "image/x-xpixmap",
     "xwd": "image/x-xwindowdump",
+    // message
     "eml": "message/rfc822",
     "mime": "message/rfc822",
+    // model
     "igs": "model/iges",
     "iges": "model/iges",
     "msh": "model/mesh",
@@ -858,6 +873,7 @@ module.exports = {
     "x3dvz": "model/x3d+vrml",
     "x3d": "model/x3d+xml",
     "x3dz": "model/x3d+xml",
+    // text
     "appcache": "text/cache-manifest",
     "ics": "text/calendar",
     "ifb": "text/calendar",
@@ -925,6 +941,7 @@ module.exports = {
     "uu": "text/x-uuencode",
     "vcs": "text/x-vcalendar",
     "vcf": "text/x-vcard",
+    // video
     "3gp": "video/3gpp",
     "3g2": "video/3gpp2",
     "h261": "video/h261",
@@ -983,5 +1000,6 @@ module.exports = {
     "avi": "video/x-msvideo",
     "movie": "video/x-sgi-movie",
     "smv": "video/x-smv",
+    // x-conference
     "ice": "x-conference/x-cooltalk"
 };
