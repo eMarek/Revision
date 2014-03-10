@@ -12,15 +12,12 @@ require("fs").readdirSync("./controllers").forEach(function(file) {
 */
 var handle = require("./example/controllers/basic.js");
 
-function run() {
+exports.run = function() {
+
     function onRequest(request, response) {
-        var pathname = url.parse(request.url).pathname;
-        console.log("Request for " + pathname + " received.");
-        router(handle, pathname, response);
+        router(handle, request, response);
     }
 
     http.createServer(onRequest).listen(8888);
     console.log("Server has started.");
-}
-
-exports.run = run;
+};

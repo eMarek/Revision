@@ -5,5 +5,5 @@
 // var changes = require('./changes.js');
 // var patches = changes('Ledolomilec', 'Letalonosilka', true);
 
-var server = require("../server.js");
+var server = require("revision");
 server.run();
