@@ -18,6 +18,10 @@ exports.run = function() {
 
     fs.readdirSync(location).forEach(function(file) {
 
+        if (file.charAt(0) == '.') {
+            return;
+        }
+
         handlers = require(location + "/" + file);
 
         for (pathname in handlers) {
