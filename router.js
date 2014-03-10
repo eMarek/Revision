@@ -5,7 +5,8 @@
 var http = require("http"),
     url = require("url"),
     fs = require("fs"),
-    child_process = require("child_process");
+    child_process = require("child_process"),
+    mime = require("./mime.js");
 
 module.exports = function(api, request, response) {
 
@@ -43,7 +44,7 @@ module.exports = function(api, request, response) {
 
             } else if (stats.isFile()) {
 
-                // response with wanted file
+                // respond with wanted file
                 fs.readFile(location, "binary", function(err, file) {
 
                     if (err) {
@@ -51,7 +52,18 @@ module.exports = function(api, request, response) {
                         response.write("404 Not Found");
                         response.end();
                     } else {
-                        response.writeHead(200);
+
+                        // mime type
+                        if (pathname.split(".").length > 1) {
+                            var extension = pathname.split(".").pop();
+                            var mimeType = mime[extension];
+                        } else {
+                            var mimeType = "text/plain";
+                        }
+
+                        response.writeHead(200, {
+                            "Content-Type": mimeType
+                        });
                         response.write(file, "binary");
                         response.end();
                     }
