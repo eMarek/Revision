@@ -7,16 +7,15 @@ var http = require("http"),
     fs = require("fs"),
     child_process = require("child_process");
 
-module.exports = function(handle, request, response) {
+module.exports = function(api, request, response) {
 
     var pathname = url.parse(request.url).pathname;
 
     if (pathname.slice(0, 5) === "/api/" && pathname.slice(-5) === ".json") {
 
-        // api should response with json data
-        pathname = pathname.substring(5);
-        if (typeof handle[pathname] === "function") {
-            handle[pathname](response);
+        // looking for an api handler in api folder
+        if (typeof api[pathname] === "function") {
+            api[pathname](response);
         } else {
             response.writeHead(404);
             response.write("404 Not Found");
