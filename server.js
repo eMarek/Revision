@@ -10,7 +10,7 @@ require("fs").readdirSync("./controllers").forEach(function(file) {
     require("./controllers/" + file);
 });
 */
-var handle = require("./example/controllers/basic.js");
+var handle = require("../../api/basic.js");
 
 exports.run = function() {
 
