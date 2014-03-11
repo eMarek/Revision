@@ -6,6 +6,7 @@ var http = require("http"),
     url = require("url"),
     fs = require("fs"),
     child_process = require("child_process"),
+    querystring = require("querystring"),
     mime = require("./mime.js");
 
 module.exports = function(api, request, response) {
@@ -29,8 +30,31 @@ module.exports = function(api, request, response) {
 
                 // parse the received payload
                 request.payload = {};
-                if (payload) {
-                    request.payload = JSON.parse(payload);
+
+                if (request.headers["content-type"].slice(0, 16) == "application/json") {
+
+                    try {
+                        request.payload = JSON.parse(payload);
+                    } catch (err) {
+                        request.payload.error = payload;
+                    }
+
+                } else if (request.headers["content-type"].slice(0, 19) == "multipart/form-data") {
+
+                    request.payload = {
+                        'form-data': payload
+                    };
+
+                } else if (request.headers["content-type"].slice(0, 33) == "application/x-www-form-urlencoded") {
+
+                    try {
+                        request.payload = querystring.parse(payload);
+                    } catch (err) {
+                        request.payload.error = payload;
+                    }
+
+                } else {
+                    request.payload = payload;
                 }
 
                 // preparation for sending response
