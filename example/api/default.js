@@ -5,21 +5,15 @@ var api = {};
 
 /* api/example.json
 -------------------------------------------------- */
-api["example.json"] = function example(request, response) {
+api["password.json"] = function example(request, response) {
 
-    var sth = {
-        "status": "okay",
-        "action": "hug me",
-        "when": "right now",
-        "where": "exactly here"
-    };
+    var password = request.payload.password;
 
-    console.log(require("util").inspect(sth, {
-        showHidden: true,
-        colors: true
-    }));
+    var hash = require('crypto').createHash('sha256').update(password).digest("hex");
 
-    response.send(sth);
+    response.send({
+        hash: hash
+    });
 };
 
 /* api/login.json
