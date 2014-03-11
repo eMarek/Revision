@@ -12,11 +12,41 @@ module.exports = function(api, request, response) {
 
     var pathname = url.parse(request.url).pathname;
 
-    if (pathname.slice(0, 5) === "/api/" && pathname.slice(-5) === ".json") {
+    if (pathname.slice(0, 5) === "/api/" && pathname.slice(-5) === ".json" && (request.method === "POST" || request.method === "GET")) {
 
         // looking for an api handler in api folder
         if (typeof api[pathname] === "function") {
-            api[pathname](response);
+
+            // gathering request payload from body
+            var payload = "";
+            request.on('data', function(chunk) {
+                // append the current chunk of data to the payload variable
+                payload += chunk.toString();
+            });
+
+            // received all data
+            request.on('end', function() {
+
+                // parse the received payload
+                request.payload = {};
+                if (payload) {
+                    request.payload = JSON.parse(payload);
+                }
+
+                // preparation for sending response
+                response.send = function(data) {
+
+                    response.writeHead(200, {
+                        "Content-Type": "text/json"
+                    });
+                    response.write(JSON.stringify(data));
+                    response.end();
+                }
+
+                // calling api
+                api[pathname](request, response);
+            });
+
         } else {
             response.writeHead(404);
             response.write("404 Not Found");
