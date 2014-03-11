@@ -9,10 +9,10 @@ api["password.json"] = function example(request, response) {
 
     var password = request.payload.password;
 
-    var hash = require('crypto').createHash('sha256').update(password).digest("hex");
+    var hash = require("crypto").createHash("sha256").update(password).digest("hex");
 
     response.send({
-        hash: hash
+        "hash": hash
     });
 };
 
@@ -24,9 +24,9 @@ api["login.json"] = function login(request, response) {
     var password = request.payload.password;
 
     response.send({
-        username: username,
-        password: password,
-        hello: "user"
+        "username": username,
+        "password": password,
+        "hello": "user"
     });
 };
 

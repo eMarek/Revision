@@ -16,7 +16,7 @@ module.exports = function(originalText, changedText, debug, slower) {
      */
 
     if (debug) {
-        console.log('\n"' + originalText + '" > "' + changedText + '"\n');
+        console.log("\n\"" + originalText + "\" > \"" + changedText + "\"\n");
     }
 
     var longerText = (originalText.length < changedText.length) ? changedText : originalText;
@@ -27,7 +27,7 @@ module.exports = function(originalText, changedText, debug, slower) {
     var MED = [];
     var SES = [];
 
-    var EMPTY = '-';
+    var EMPTY = "-";
     var empties = [];
 
     for (var i = 0; i <= longerText.length; i++) {
@@ -205,7 +205,7 @@ module.exports = function(originalText, changedText, debug, slower) {
     var leftMove = false;
     var upMove = false;
     var currentLCS, nextLCS;
-    var character = '';
+    var character = "";
     var changes = [];
     var string = "";
     var timestamp = new Date();
@@ -215,7 +215,7 @@ module.exports = function(originalText, changedText, debug, slower) {
 
         // current location
         if (debug) {
-            console.log('(' + i + ',' + j + ')');
+            console.log("(" + i + "," + j + ")");
         }
 
         // current LCS value
@@ -235,12 +235,12 @@ module.exports = function(originalText, changedText, debug, slower) {
 
         if (leftMove) {
             changes.push({
-                a: (originalText.length < changedText.length) ? '+' : '-',
-                s: string,
-                l: string.length,
-                p: i + 1,
-                f: j + 1,
-                t: j + string.length
+                "a": (originalText.length < changedText.length) ? "+" : "-",
+                "s": string,
+                "l": string.length,
+                "p": i + 1,
+                "f": j + 1,
+                "t": j + string.length
             });
 
             string = "";
@@ -261,12 +261,12 @@ module.exports = function(originalText, changedText, debug, slower) {
 
         if (upMove) {
             changes.push({
-                a: (originalText.length < changedText.length) ? '-' : '+',
-                s: string,
-                l: string.length,
-                p: j + 1,
-                f: i + 1,
-                t: i + string.length
+                "a": (originalText.length < changedText.length) ? "-" : "+",
+                "s": string,
+                "l": string.length,
+                "p": j + 1,
+                "f": i + 1,
+                "t": i + string.length
             });
 
             string = "";
@@ -297,7 +297,7 @@ module.exports = function(originalText, changedText, debug, slower) {
     changes.reverse();
 
     if (debug) {
-        console.log('\n"' + originalText + '" > "' + changedText + '"\n');
+        console.log("\n\"" + originalText + "\" > \"" + changedText + "\"\n");
         console.log(changes)
         console.log();
     }

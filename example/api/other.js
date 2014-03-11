@@ -14,7 +14,7 @@ api["other/find.json"] = function find(request, response) {
         maxBuffer: 20000 * 1024
     }, function(error, stdout, stderr) {
         response.send({
-            find: stdout
+            "find": stdout
         });
     });
 };
@@ -24,7 +24,7 @@ api["other/find.json"] = function find(request, response) {
 api["other/upload.json"] = function upload(request, response) {
 
     response.send({
-        msg: "One day you could upload some data here."
+        "msg": "One day you could upload some data here."
     });
 };
 

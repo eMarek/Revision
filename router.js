@@ -20,13 +20,13 @@ module.exports = function(api, request, response) {
 
             // gathering request payload from body
             var payload = "";
-            request.on('data', function(chunk) {
+            request.on("data", function(chunk) {
                 // append the current chunk of data to the payload variable
                 payload += chunk.toString();
             });
 
             // received all data
-            request.on('end', function() {
+            request.on("end", function() {
 
                 // parse the received payload
                 request.payload = {};
@@ -42,7 +42,7 @@ module.exports = function(api, request, response) {
                 } else if (request.headers["content-type"].slice(0, 19) == "multipart/form-data") {
 
                     request.payload = {
-                        'form-data': payload
+                        "form-data": payload
                     };
 
                 } else if (request.headers["content-type"].slice(0, 33) == "application/x-www-form-urlencoded") {
