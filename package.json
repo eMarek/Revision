@@ -1,6 +1,6 @@
 {
     "name": "revision",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "author": "Marko Bregant <marko@bregant.si>",
     "description": "Realtime collaboration tool.",
     "main": "./server.js",
