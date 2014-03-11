@@ -63,7 +63,10 @@ module.exports = function(api, request, response) {
                     response.writeHead(200, {
                         "Content-Type": "text/json"
                     });
-                    response.write(JSON.stringify(data));
+
+                    var rsp = (typeof data != "object") ? {} : data;
+
+                    response.write(JSON.stringify(rsp));
                     response.end();
                 }
 
