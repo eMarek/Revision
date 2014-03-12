@@ -10,16 +10,16 @@ var http = require("http"),
 var cwd = process.cwd();
 var location;
 
-function server(data) {
+function appRun(config) {
 
     // config
-    var config = (typeof data != "object") ? {} : data;
+    config = (typeof config != "object") ? {} : config;
 
     // memorize ali api handlers
     var api = {};
     var handlers, pathname;
 
-    var location = cwd + "/api";
+    location = cwd + "/api";
 
     fs.readdirSync(location).forEach(function(file) {
 
@@ -46,17 +46,17 @@ function server(data) {
 exports.run = function() {
 
     // config module
-    var location = cwd + "/config.js";
+    location = cwd + "/config.js";
 
     fs.stat(location, function(err, stats) {
 
         if (err) {
             // start server
-            server();
+            appRun();
         } else {
-            // run config and then start server
+            // load config and then start server
             var config = require(location);
-            config(server);
+            config(appRun);
         }
 
     });
