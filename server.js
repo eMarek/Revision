@@ -7,19 +7,21 @@ var http = require("http"),
     fs = require("fs"),
     router = require("./router.js");
 
-var cwd = process.cwd();
-var location;
+var api = {};
+var config = {};
 
-function appRun(config) {
+/* app run
+-------------------------------------------------- */
+function appRun(userConfig) {
 
     // config
-    config = (typeof config != "object") ? {} : config;
+    config = (typeof userConfig != "object") ? {} : userConfig;
 
     // memorize ali api handlers
-    var api = {};
-    var handlers, pathname;
+    var cwd = process.cwd();
+    var location = cwd + "/api";
 
-    location = cwd + "/api";
+    var handlers, pathname;
 
     fs.readdirSync(location).forEach(function(file) {
 
@@ -34,19 +36,24 @@ function appRun(config) {
         }
     });
 
-    // start server
-    function onRequest(request, response) {
-        router(api, request, response, config);
-    }
-
+    // create http server
     http.createServer(onRequest).listen(8888);
     console.log("http://127.0.0.1:8888");
 }
 
+/* on request
+-------------------------------------------------- */
+function onRequest(request, response) {
+    router(api, request, response, config);
+}
+
+/* exports run
+-------------------------------------------------- */
 exports.run = function() {
 
-    // config module
-    location = cwd + "/config.js";
+    // looks for user config module
+    var cwd = process.cwd();
+    var location = cwd + "/config.js";
 
     fs.stat(location, function(err, stats) {
 
@@ -58,6 +65,5 @@ exports.run = function() {
             var config = require(location);
             config(appRun);
         }
-
     });
 };
