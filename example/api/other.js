@@ -1,6 +1,9 @@
 // other.js
 
 "use strict";
+
+var r = require('rethinkdb');
+
 var api = {};
 
 /* api/other/find.json
@@ -26,6 +29,20 @@ api["other/upload.json"] = function upload(request, response) {
     response.send({
         "msg": "One day you could upload some data here."
     });
+};
+
+/* api/other/users.json
+-------------------------------------------------- */
+api["other/users.json"] = function find(request, response, config) {
+
+    r.db("revision").table("users").run(config.conn, function(err, cursor) {
+        if (err) throw err;
+        cursor.toArray(function(err, result) {
+            if (err) throw err;
+            response.send(result);
+        });
+    });
+
 };
 
 module.exports = api;
