@@ -208,20 +208,20 @@ function handler(request, response, passingData) {
             }
 
             // preparation for sending response
-            response.send = function(data) {
+            response.send = function(passingData) {
 
                 response.writeHead(200, {
                     "Content-Type": "text/json"
                 });
 
-                var rsp = (typeof data != "object") ? {} : data;
+                var rsp = (typeof passingData != "object") ? {} : passingData;
 
                 response.write(JSON.stringify(rsp));
                 response.end();
             }
 
             // calling api
-            api[pathname](request, response, config);
+            api[pathname](request, response, data);
         });
 
     } else {
