@@ -15,6 +15,7 @@ var cwd = process.cwd();
 -------------------------------------------------- */
 var api = {};
 var config = {};
+var controller = false;
 
 /* app run
 -------------------------------------------------- */
@@ -41,6 +42,15 @@ function appRun(userConfig) {
         }
     });
 
+    // looks for user controller module
+    var userController = cwd + "/controller.js";
+
+    if (fs.existsSync(userController)) {
+
+        // require user controller module
+        controller = require(userController);
+    }
+
     // create http server
     http.createServer(onRequest).listen(8888);
     console.log("http://127.0.0.1:8888");
@@ -49,6 +59,17 @@ function appRun(userConfig) {
 /* on request
 -------------------------------------------------- */
 function onRequest(request, response) {
+
+    if (typeof controller === "function") {
+        controller(handler, request, response);
+    } else {
+        handler(request, response);
+    }
+}
+
+/* handle request
+-------------------------------------------------- */
+function handler(request, response) {
 
     var pathname = url.parse(request.url).pathname;
 
@@ -180,16 +201,16 @@ function onRequest(request, response) {
 exports.run = function() {
 
     // looks for user config module
-    var location = cwd + "/config.js";
+    var userConfig = cwd + "/config.js";
 
-    fs.stat(location, function(err, stats) {
+    fs.stat(userConfig, function(err, stats) {
 
         if (err) {
             // start server
             appRun();
         } else {
             // load config and then start server
-            var config = require(location);
+            var config = require(userConfig);
             config(appRun);
         }
     });
