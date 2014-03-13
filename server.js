@@ -9,47 +9,68 @@ var http = require("http"),
     querystring = require("querystring"),
     mime = require("./mime.js");
 
+var config = false;
+var controller = false;
+
 var cwd = process.cwd();
 
 /* variables
 -------------------------------------------------- */
 var api = {};
-var config = {};
-var controller = false;
+var data = {};
+
+/* exports run
+-------------------------------------------------- */
+exports.run = function() {
+
+    // looks for user CONFIG file
+    var configFile = cwd + "/config.js";
+
+    if (fs.existsSync(configFile)) {
+
+        // require user config module and then start server
+        config = require(configFile);
+        config(appRun);
+
+    } else {
+
+        // start server
+        appRun();
+    }
+};
 
 /* app run
 -------------------------------------------------- */
-function appRun(userConfig) {
+function appRun(passingData) {
 
-    // config
-    config = (typeof userConfig != "object") ? {} : userConfig;
+    // passing config data
+    data = (typeof passingData != "object") ? {} : passingData;
 
-    // memorize ali api handlers
-    var location = cwd + "/api";
+    // looks for user CONTROLLER file
+    var controllerFile = cwd + "/controller.js";
 
-    var handlers, pathname;
+    if (fs.existsSync(controllerFile)) {
 
-    fs.readdirSync(location).forEach(function(file) {
+        // require user controller module
+        controller = require(controllerFile);
+    }
+
+    // looks for user API directory
+    var apiDir = cwd + "/api";
+
+    fs.readdirSync(apiDir).forEach(function(file) {
 
         if (file.charAt(0) == ".") {
             return;
         }
 
-        handlers = require(location + "/" + file);
+        // memorize ali api handlers
+        var handlers = require(apiDir + "/" + file);
 
-        for (pathname in handlers) {
+        for (var pathname in handlers) {
             api["/api/" + pathname] = handlers[pathname];
         }
     });
-
-    // looks for user controller module
-    var userController = cwd + "/controller.js";
-
-    if (fs.existsSync(userController)) {
-
-        // require user controller module
-        controller = require(userController);
-    }
 
     // create http server
     http.createServer(onRequest).listen(8888);
@@ -61,18 +82,23 @@ function appRun(userConfig) {
 function onRequest(request, response) {
 
     if (typeof controller === "function") {
-        controller(handler, request, response);
+        controller(request, response, data, handler);
     } else {
-        handler(request, response);
+        handler(request, response, data);
     }
 }
 
 /* handle request
 -------------------------------------------------- */
-function handler(request, response) {
+function handler(request, response, passingData) {
 
+    // passing config and controller data
+    var data = (typeof passingData != "object") ? {} : passingData;
+
+    // pathname
     var pathname = url.parse(request.url).pathname;
 
+    // request direction
     if (pathname.slice(0, 5) === "/api/" && pathname.slice(-5) === ".json" && (request.method === "POST" || request.method === "GET")) {
 
         // looking for an api handler in api folder
@@ -195,23 +221,3 @@ function handler(request, response) {
         });
     }
 }
-
-/* exports run
--------------------------------------------------- */
-exports.run = function() {
-
-    // looks for user config module
-    var userConfig = cwd + "/config.js";
-
-    fs.stat(userConfig, function(err, stats) {
-
-        if (err) {
-            // start server
-            appRun();
-        } else {
-            // load config and then start server
-            var config = require(userConfig);
-            config(appRun);
-        }
-    });
-};
