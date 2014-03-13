@@ -4,21 +4,21 @@
 
 var r = require('rethinkdb');
 
-module.exports = function(request, response, data, handler) {
+module.exports = function(req, rsp, data, handler) {
 
     // example data
     data['goal'] = "Operational Transformation";
 
     // checking authorization
-    if (request.headers.hasOwnProperty("authorization") && request.url != "/api/login.json") {
+    if (req.headers.hasOwnProperty("authorization") && req.url != "/api/login.json") {
 
-        var authorization = request.headers.authorization;
+        var authorization = req.headers.authorization;
 
-        response.send({
+        rsp.send({
             "say": "out"
         });
 
     } else {
-        handler(request, response, data);
+        handler(req, rsp, data);
     }
 };

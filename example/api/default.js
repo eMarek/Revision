@@ -8,24 +8,24 @@ var api = {};
 
 /* api/example.json
 -------------------------------------------------- */
-api["password.json"] = function example(request, response) {
+api["password.json"] = function example(req, rsp) {
 
-    var password = request.payload.password;
+    var password = req.payload.password;
 
     var hash = require("crypto").createHash("sha256").update(password).digest("hex");
 
-    response.send({
+    rsp.send({
         "hash": hash
     });
 };
 
 /* api/login.json
 -------------------------------------------------- */
-api["login.json"] = function login(request, response, data) {
+api["login.json"] = function login(req, rsp, data) {
 
-    var rsp = {};
-    var username = request.payload.username;
-    var password = request.payload.password;
+    var joy = {};
+    var username = req.payload.username;
+    var password = req.payload.password;
 
     var hash = require("crypto").createHash("sha256").update(password).digest("hex");
 
@@ -37,20 +37,20 @@ api["login.json"] = function login(request, response, data) {
         cursor.toArray(function(err, result) {
 
             if (result[0]) {
-                rsp = {
+                joy = {
                     "say": "yay",
                     "msg": "Prijava je uspela!",
                     "user": result[0]["name"] + " " + result[0]["surname"],
                     "session": "m43iafguhal843aefhialerl83i5uhgsauhfliw43uyghserghrkfdg"
                 };
             } else {
-                rsp = {
+                joy = {
                     "say": "noo",
                     "msg": "Prijava ni uspela!"
                 };
             }
 
-            response.send(rsp);
+            rsp.send(joy);
         });
     });
 };
