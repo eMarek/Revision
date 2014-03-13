@@ -6,7 +6,7 @@ var r = require('rethinkdb');
 
 var api = {};
 
-/* api/example.json
+/* api/password.json
 -------------------------------------------------- */
 api["password.json"] = function example(req, rsp) {
 
@@ -15,9 +15,43 @@ api["password.json"] = function example(req, rsp) {
     var hash = require("crypto").createHash("sha256").update(password).digest("hex");
 
     rsp.send({
+        "say": "yay",
         "hash": hash
     });
 };
+
+/* api/crypte.json
+-------------------------------------------------- */
+api["crypte.json"] = function crypte(req, rsp, data) {
+
+    var text = req.payload.text;
+
+    if (!text) {
+        rsp.send({
+            "say": "noo",
+            "msq": "Pošlji nekaj besedila, da ga bom lahko zakriptiral!"
+        });
+        return;
+    }
+
+    var crypto = require("crypto");
+
+    var algorithm = "aes256";
+    var key = data.key;
+
+    var cipher = crypto.createCipher(algorithm, key);
+    var encrypted = cipher.update(text, "utf8", "hex") + cipher.final("hex");
+
+    var decipher = crypto.createDecipher(algorithm, key);
+    var decrypted = decipher.update(encrypted, "hex", "utf8") + decipher.final("utf8");
+
+    rsp.send({
+        "say": "yay",
+        "text": text,
+        "encrypted": encrypted,
+        "decrypted": decrypted
+    });
+}
 
 /* api/login.json
 -------------------------------------------------- */
