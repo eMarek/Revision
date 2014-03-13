@@ -43,7 +43,7 @@ app.factory('authInterceptor', function($rootScope, $q, $window, $location) {
         request: function(config) {
             config.headers = config.headers || {};
             if ($window.sessionStorage.session) {
-                config.headers.Authorization = $window.sessionStorage.session;
+                config.headers.Session = $window.sessionStorage.session;
             }
             return config;
         },
