@@ -3,7 +3,6 @@
 "use strict";
 
 var http = require("http"),
-    url = require("url"),
     fs = require("fs"),
     child_process = require("child_process"),
     querystring = require("querystring"),
@@ -82,10 +81,23 @@ function appRun(passingData) {
 function onRequest(request, response) {
 
     // pathname
-    var pathname = url.parse(request.url).pathname;
+    var pathname = request.url;
 
     // direction every request on basis of pathname
     if (pathname.slice(0, 5) === "/api/" && pathname.slice(-5) === ".json" && (request.method === "POST" || request.method === "GET")) {
+
+        // preparation for sending response
+        response.send = function(passingData) {
+
+            response.writeHead(200, {
+                "Content-Type": "text/json"
+            });
+
+            var rsp = (typeof passingData != "object") ? {} : passingData;
+
+            response.write(JSON.stringify(rsp));
+            response.end();
+        };
 
         if (typeof controller === "function") {
 
@@ -160,7 +172,7 @@ function handler(request, response, passingData) {
     var data = (typeof passingData != "object") ? {} : passingData;
 
     // pathname
-    var pathname = url.parse(request.url).pathname;
+    var pathname = request.url;
 
     // looking for an api handler in api folder
     if (typeof api[pathname] === "function") {
@@ -205,19 +217,6 @@ function handler(request, response, passingData) {
                 } else {
                     request.payload = payload;
                 }
-            }
-
-            // preparation for sending response
-            response.send = function(passingData) {
-
-                response.writeHead(200, {
-                    "Content-Type": "text/json"
-                });
-
-                var rsp = (typeof passingData != "object") ? {} : passingData;
-
-                response.write(JSON.stringify(rsp));
-                response.end();
             }
 
             // calling api
