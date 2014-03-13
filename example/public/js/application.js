@@ -1,5 +1,7 @@
-var app = angular.module("app", ["ngRoute", "ngCookies"]);
+var app = angular.module("app", ["ngRoute"]);
 
+/* app config
+-------------------------------------------------- */
 app.config(function($routeProvider) {
 
     $routeProvider.when("/login", {
@@ -8,7 +10,8 @@ app.config(function($routeProvider) {
     });
 
     $routeProvider.when("/edit", {
-        "templateUrl": "html/editor.html"
+        "templateUrl": "html/editor.html",
+        "controller": "editorController"
     });
 
     $routeProvider.otherwise({
@@ -16,7 +19,46 @@ app.config(function($routeProvider) {
     });
 });
 
+app.config(function($httpProvider) {
+    $httpProvider.interceptors.push('authInterceptor');
+});
 
+/* app run
+-------------------------------------------------- */
+app.run(function($rootScope, $window, $location) {
+
+    $rootScope.$on('$routeChangeStart', function(event, next, current) {
+        if ($location.path() != '/login' && !$window.sessionStorage.session) {
+            $location.path('/login');
+        } else if ($location.path() == '/login' && $window.sessionStorage.session) {
+            delete $window.sessionStorage.session;
+        }
+    });
+});
+
+/* app factory auth interceptor
+-------------------------------------------------- */
+app.factory('authInterceptor', function($rootScope, $q, $window, $location) {
+    return {
+        request: function(config) {
+            config.headers = config.headers || {};
+            if ($window.sessionStorage.session) {
+                config.headers.Authorization = $window.sessionStorage.session;
+            }
+            return config;
+        },
+        response: function(response) {
+            var rsp = response.data;
+            if (rsp.say == "out") {
+                $location.path("/login");
+            }
+            return response || $q.when(response);
+        }
+    };
+});
+
+/* app controller login
+-------------------------------------------------- */
 app.controller("loginController", function($scope, $location, authenticationFactory) {
 
     $scope.credentials = {
@@ -29,17 +71,21 @@ app.controller("loginController", function($scope, $location, authenticationFact
     }
 });
 
-app.factory("authenticationFactory", function($http, $location, $cookies) {
+/* app factory authentication
+-------------------------------------------------- */
+app.factory("authenticationFactory", function($http, $location, $window) {
 
     return {
         login: function(credentials) {
 
-            $http.post("/api/login.json", credentials).success(function(server) {
+            $http.post("/api/login.json", credentials).success(function(rsp) {
 
-                if (server.status == "okay") {
-                    $cookies.__user = server.cookie;
+                if (rsp.say == "yay") {
+                    $window.sessionStorage.session = rsp.session;
                     $location.path("/edit");
                     return;
+                } else {
+                    delete $window.sessionStorage.session;
                 }
             });
         },
@@ -47,11 +93,21 @@ app.factory("authenticationFactory", function($http, $location, $cookies) {
         logout: function() {
             $http.get("/api/logout.json");
             $location.path("/login");
-            delete $cookies.__user
-        },
-
-        isLoggedIn: function() {
-            return $cookies.__user;
         }
     };
+});
+
+/* app controller login
+-------------------------------------------------- */
+app.controller("editorController", function($scope, $http, $location) {
+
+    $scope.users = function() {
+        $http.post("/api/other/users.json").success(function(rsp) {
+
+        });
+    }
+
+    $scope.logout = function() {
+        $location.path("/login");
+    }
 });

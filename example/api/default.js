@@ -38,14 +38,15 @@ api["login.json"] = function login(request, response, data) {
 
             if (result[0]) {
                 rsp = {
-                    "status": "success",
-                    "say": "Prijava je uspela!",
+                    "say": "yay",
+                    "msg": "Prijava je uspela!",
                     "user": result[0]["name"] + " " + result[0]["surname"],
+                    "session": "m43iafguhal843aefhialerl83i5uhgsauhfliw43uyghserghrkfdg"
                 };
             } else {
                 rsp = {
-                    "status": "error",
-                    "say": "Prijava ni uspela!"
+                    "say": "noo",
+                    "msg": "Prijava ni uspela!"
                 };
             }
 

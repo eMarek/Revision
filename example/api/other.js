@@ -39,7 +39,10 @@ api["other/users.json"] = function find(request, response, data) {
         if (err) throw err;
         cursor.toArray(function(err, result) {
             if (err) throw err;
-            response.send(result);
+            response.send({
+                "say": "yay",
+                "users": result
+            });
         });
     });
 
