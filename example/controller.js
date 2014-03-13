@@ -2,9 +2,11 @@
 
 "use strict";
 
-module.exports = function(handler, request, response) {
+var r = require('rethinkdb');
 
-    console.log("CONTROLLER");
+module.exports = function(request, response, data, handler) {
 
-    handler(request, response);
+    data['goal'] = "Operational Transformation";
+
+    handler(request, response, data);
 };

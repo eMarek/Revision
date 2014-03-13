@@ -4,12 +4,12 @@
 
 var r = require('rethinkdb');
 
-module.exports = function(server) {
+module.exports = function(appRun) {
 
-    var config = {};
+    var data = {};
 
     // auhor example
-    config['author'] = "Marko Bregant";
+    data['author'] = "Marko Bregant";
 
     // rethink database connection
     r.connect({
@@ -20,10 +20,10 @@ module.exports = function(server) {
     }, function(err, conn) {
 
         if (err) throw err;
-        config["conn"] = conn;
+        data["conn"] = conn;
 
         // start server
-        server(config);
+        appRun(data);
     })
 
 };

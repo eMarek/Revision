@@ -33,9 +33,9 @@ api["other/upload.json"] = function upload(request, response) {
 
 /* api/other/users.json
 -------------------------------------------------- */
-api["other/users.json"] = function find(request, response, config) {
+api["other/users.json"] = function find(request, response, data) {
 
-    r.db("revision").table("users").run(config.conn, function(err, cursor) {
+    r.db("revision").table("users").run(data.conn, function(err, cursor) {
         if (err) throw err;
         cursor.toArray(function(err, result) {
             if (err) throw err;
