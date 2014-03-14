@@ -45,7 +45,16 @@ api["other/users.json"] = function users(req, rsp, data) {
             });
         });
     });
+};
 
+/* api/other/whoami.json
+-------------------------------------------------- */
+api["other/whoami.json"] = function users(req, rsp, data) {
+
+    rsp.send({
+        "say": "yay",
+        "whoami": data.user
+    });
 };
 
 module.exports = api;

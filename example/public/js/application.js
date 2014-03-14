@@ -107,6 +107,12 @@ app.controller("editorController", function($scope, $http, $location) {
         });
     }
 
+    $scope.whoami = function() {
+        $http.post("/api/other/whoami.json").success(function(rsp) {
+
+        });
+    }
+
     $scope.logout = function() {
         $location.path("/login");
     }
