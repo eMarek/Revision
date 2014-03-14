@@ -84,7 +84,7 @@ function onRequest(request, response) {
     var pathname = request.url;
 
     // direction every request on basis of pathname
-    if (pathname.slice(0, 5) === "/api/" && pathname.slice(-5) === ".json" && (request.method === "POST" || request.method === "GET")) {
+    if (pathname.slice(0, 5) === "/api/" && pathname.slice(-5) === ".json" && request.method === "POST") {
 
         // preparation for sending response
         response.send = function(passingData) {
