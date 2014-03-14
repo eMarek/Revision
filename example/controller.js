@@ -2,12 +2,12 @@
 
 "use strict";
 
-var r = require('rethinkdb');
+var r = require("rethinkdb");
 
 module.exports = function(req, rsp, data, handler) {
 
     // example data
-    data['goal'] = "Operational Transformation";
+    data["thesis"] = "Operational Transformation";
 
     // checking session
     if (!req.headers.hasOwnProperty("session") && req.url != "/api/login.json") {

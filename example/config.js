@@ -2,14 +2,14 @@
 
 "use strict";
 
-var r = require('rethinkdb');
+var r = require("rethinkdb");
 
 module.exports = function(appRun) {
 
     var data = {};
 
     // auhor example
-    data['author'] = "Marko Bregant";
+    data["author"] = "Marko Bregant";
 
     // salt and key
     data["salt"] = "DO NOT USE THIS SALT IN PRODUCTION";

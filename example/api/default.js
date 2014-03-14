@@ -2,7 +2,7 @@
 
 "use strict";
 
-var r = require('rethinkdb');
+var r = require("rethinkdb");
 
 var api = {};
 
