@@ -11,6 +11,10 @@ module.exports = function(appRun) {
     // auhor example
     data['author'] = "Marko Bregant";
 
+    // salt and key
+    data["salt"] = "DO NOT USE THIS SALT IN PRODUCTION";
+    data["key"] = "EITHER THIS KEY";
+
     // rethink database connection
     r.connect({
 
