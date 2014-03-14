@@ -29,10 +29,20 @@ module.exports = function(req, rsp, data, handler) {
 
     // decrypt session
     var decipher = require("crypto").createDecipher("aes256", data.key);
-    var sessionString = decipher.update(session, "hex", "utf8") + decipher.final("utf8");
-    var sessionJSON = JSON.parse(sessionString);
 
-    if (session.length < 500 || !sessionJSON || typeof sessionJSON != "object") {
+    try {
+        var sessionString = decipher.update(session, "hex", "utf8") + decipher.final("utf8");
+        var sessionJSON = JSON.parse(sessionString);
+
+    } catch (err) {
+        rsp.send({
+            "say": "out",
+            "msg": "Seja izgleda pokvarjena."
+        });
+        return;
+    }
+
+    if (!sessionJSON || typeof sessionJSON != "object") {
         rsp.send({
             "say": "out",
             "msg": "Seja je pokvarjena."
