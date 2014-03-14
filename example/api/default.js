@@ -8,9 +8,9 @@ var api = {};
 
 /* api/password.json
 -------------------------------------------------- */
-api["password.json"] = function example(req, rsp) {
+api["password.json"] = function example(req, rsp, data) {
 
-    var password = req.payload.password;
+    var password = req.payload.password + data.salt;
 
     var hash = require("crypto").createHash("sha256").update(password).digest("hex");
 
@@ -59,7 +59,7 @@ api["login.json"] = function login(req, rsp, data) {
 
     var joy = {};
     var username = req.payload.username;
-    var password = req.payload.password;
+    var password = req.payload.password + data.salt;
 
     var hash = require("crypto").createHash("sha256").update(password).digest("hex");
 
@@ -70,13 +70,32 @@ api["login.json"] = function login(req, rsp, data) {
         if (err) throw err;
         cursor.toArray(function(err, result) {
 
-            if (result[0]) {
+            var user = result[0];
+
+            if (user) {
+
+                // cipher
+                var cipher = require("crypto").createCipher("aes256", data.key);
+
+                // session
+                var sessionJSON = {
+                    userId: user.id,
+                    username: user.username,
+                    ip: req.headers.host,
+                    userAgent: req.headers['user-agent'],
+                    key: data.key,
+                    timeStamp: require('moment').utc().format()
+                };
+                var sessionString = JSON.stringify(sessionJSON);
+                var session = cipher.update(sessionString, "utf8", "hex") + cipher.final("hex");
+
                 joy = {
                     "say": "yay",
                     "msg": "Prijava je uspela!",
                     "user": result[0]["name"] + " " + result[0]["surname"],
-                    "session": "m43iafguhal843aefhialerl83i5uhgsauhfliw43uyghserghrkfdg"
+                    "session": session
                 };
+
             } else {
                 joy = {
                     "say": "noo",
