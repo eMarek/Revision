@@ -1,3 +1,45 @@
 body {
 	background-color: #EFEFEF;
+	margin: 0;
+	padding: 0;
+	font-family: Georgia, Times, "Times New Roman", serif;
+	font-size: 14px;
+}
+
+input, textarea, button {
+	font-size: 14px;
+	font-family: Georgia, Times, "Times New Roman", serif;
+}
+
+#title {
+	padding-left: 30px;
+}
+
+#container {
+	width: 600px;
+	padding: 0 30px 30px 30px;
+}
+
+textarea {
+	width: 100%;
+	height: 600px;
+	margin-top: 30px;
+	font-size: 20px;
+	outline: none;
+	resize: none;
+	border: 5px solid #E2E2E2;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	padding: 10px;
+}
+#sidebar {
+	background: #E2E2E2;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin-left: 660px;
+
 }
