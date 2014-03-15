@@ -6,7 +6,7 @@ var r = require("rethinkdb");
 
 module.exports = function(req, rsp, data, handler) {
 
-    // example data
+    // thesis example data
     data["thesis"] = "Operational Transformation";
 
     // public paths

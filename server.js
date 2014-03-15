@@ -29,18 +29,18 @@ exports.run = function() {
 
         // require user config module and then start server
         config = require(configFile);
-        config(appRun);
+        config(data, starter);
 
     } else {
 
         // start server
-        appRun();
+        starter();
     }
 };
 
 /* app run
 -------------------------------------------------- */
-function appRun(passingData) {
+function starter(passingData) {
 
     // passing config data
     data = (typeof passingData != "object") ? {} : passingData;

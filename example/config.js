@@ -4,11 +4,9 @@
 
 var r = require("rethinkdb");
 
-module.exports = function(appRun) {
+module.exports = function(data, starter) {
 
-    var data = {};
-
-    // auhor example
+    // auhor example data
     data["author"] = "Marko Bregant";
 
     // salt and key
@@ -27,7 +25,7 @@ module.exports = function(appRun) {
         data["conn"] = conn;
 
         // start server
-        appRun(data);
+        starter(data);
     })
 
 };

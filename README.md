@@ -90,26 +90,24 @@ You can use it of course. It is easy peasy to use it. Make a `/config.js` file w
 
 "use strict";
 
-module.exports = function(appRun) {
+module.exports = function(data, starter) {
 
-    var data = {};
-
-    // example
-    data["minionColors"] = ["yellow", "purple"];
+    // minions colors example data
+    data["minionsColors"] = ["yellow", "purple"];
 
     // salt and key
     data["salt"] = "DO NOT USE THIS SALT IN PRODUCTION";
     data["key"] = "EITHER THIS KEY";
 
-    appRun(data);
+    starter(data);
 };
 ```
 
-You are probably asking yourself why is `config` usefull. We will show you. Anything you will add to the `data` object will be available in all your API handlers. For example above, we could use `data.minionColors` in our `gru.json` API. As you can see, any date you would like to be available in every API, you should put it in `config` file. It is very handy for database connections.
+You are probably asking yourself why is `config` usefull. We will show you. Anything you will add to the `data` object will be available in all your API handlers. For example above, we could use `data.minionsColors` in our `gru.json` API. As you can see, any date you would like to be available in every API, you should put it in `config` file. It is very handy for database connections.
 
 ### What about controller
 
-Controller is used for very similar matter as config file, passing `data` to API handlers. But it has one significant difference. It is executed for every request and not just once as config. From that perspective is suitable for user authentication. It has following structure.
+Controller is used for very similar matter as config file, passing `data` to API handlers. But it has one significant difference. It is executed for every request and not just once as config is. From that perspective is suitable for user authentication. It has following structure.
 
 ```js
 // controller.js
@@ -118,13 +116,25 @@ Controller is used for very similar matter as config file, passing `data` to API
 
 module.exports = function(req, rsp, data, handler) {
 
-    // do i have session
+    // does user have session
     if (!req.headers.hasOwnProperty("session")) {
         rsp.send({
             "say": "out",
             "msg": "Login required."
         });
         return;
+    }
+
+    // minion type example data
+    var eyes  = req.payload.eyes;
+    if (eyes == 1) {
+        data.minonType = "One-eyed minion!";
+    }
+    else if (eyes == 2) {
+        data.minonType = "Two-eyed minion!";
+    }
+    else {
+        data.minonType = "Unknown minion!";
     }
 
     handler(req, rsp, data);
