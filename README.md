@@ -105,6 +105,8 @@ module.exports = function(data, starter) {
 
 You are probably asking yourself why is `config` usefull. We will show you. Anything you will add to the `data` object will be available in all your API handlers. For example above, we could use `data.minionsColors` in our `gru.json` API. As you can see, any date you would like to be available in every API, you should put it in `config` file. It is very handy for database connections.
 
+Pay attention on `starter(data);` callback!
+
 ### What about controller
 
 Controller is used for very similar matter as config file, passing `data` to API handlers. But it has one significant difference. It is executed for every request and not just once as config is. From that perspective is suitable for user authentication. It has following structure.
@@ -140,6 +142,8 @@ module.exports = function(req, rsp, data, handler) {
     handler(req, rsp, data);
 };
 ```
+
+Pay attention on `handler(req, rsp, data);` callback!
 
 ### What is next
 
