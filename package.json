@@ -1,6 +1,6 @@
 {
     "name": "revision",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "author": "Marko Bregant <marko@bregant.si>",
     "description": "Realtime collaboration tool.",
     "main": "./server.js",
@@ -19,7 +19,9 @@
         "realtime",
         "editor",
         "changes",
-        "diff"
+        "diff",
+        "config",
+        "controller"
     ],
     "license": "MIT",
     "engines": {
