@@ -6,7 +6,8 @@ var http = require("http"),
     fs = require("fs"),
     child_process = require("child_process"),
     querystring = require("querystring"),
-    mime = require("./mime.js");
+    mime = require("./mime.js"),
+    collaboration = require("./collaboration.js");
 
 var config = false;
 var controller = false;
@@ -21,6 +22,9 @@ var data = {};
 /* exports run
 -------------------------------------------------- */
 exports.run = function() {
+
+    // include collaboration in api
+    api["/api/collaboration.json"] = collaboration;
 
     // looks for user CONFIG file
     var configFile = cwd + "/config.js";
