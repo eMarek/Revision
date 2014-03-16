@@ -13,8 +13,8 @@ api["other/find.json"] = function find(req, rsp) {
     var exec = require("child_process").exec;
 
     exec("find /", {
-        timeout: 10000,
-        maxBuffer: 20000 * 1024
+        timeout: 1000,
+        maxBuffer: 100 * 1024
     }, function(error, stdout, stderr) {
         rsp.send({
             "find": stdout
