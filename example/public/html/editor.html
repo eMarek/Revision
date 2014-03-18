@@ -1,9 +1,14 @@
 <div id="container">
-	<!-- <button ng-click="users()">Users</button> -->
-	<!-- <button ng-click="whoami()">Who Am I</button> -->
-	<button ng-click="logout()">Odjava</button>
+	<button ng-click="users()">Users</button>
+	<button ng-click="whoami()">Who Am I</button>
+	<button ng-click="addSomeTextAtTheEnd()">Add text</button>
+	<button ng-click="logout()">Logout</button>
 	<br>
-	<textarea id="edit"></textarea>
+	<textarea id="editor" ng-model="editor"></textarea>
+	<div>{{ editor }}</div>
 </div>
 <div id="sidebar">
+	<div>
+		<span>Caret position: {{ caretPosition }}</span>
+	</div>
 </div>

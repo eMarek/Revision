@@ -1,4 +1,4 @@
-var app = angular.module("app", ["ngRoute"]);
+var app = angular.module("app", ["ngRoute", "ngRevision"]);
 
 /* app config
 -------------------------------------------------- */
@@ -99,7 +99,7 @@ app.factory("authenticationFactory", function($http, $location, $window) {
 
 /* app controller login
 -------------------------------------------------- */
-app.controller("editorController", function($scope, $http, $location) {
+app.controller("editorController", function($scope, $http, $location, $timeout, $window) {
 
     $scope.users = function() {
         $http.post("/api/other/users.json").success(function(rsp) {
@@ -116,4 +116,26 @@ app.controller("editorController", function($scope, $http, $location) {
     $scope.logout = function() {
         $location.path("/login");
     }
+
+    $scope.editor = "";
+
+    $scope.addSomeTextAtTheEnd = function() {
+
+        $timeout(function() {
+            $scope.editor = $scope.editor + " BLJEH?!";
+        }, 2000);
+    }
+
+    $scope.$watch("editor", function() {
+
+        var editor = $window.document.getElementById("editor");
+        var start = editor.selectionStart;
+        var end = editor.selectionEnd;
+
+        $scope.$evalAsync(function() {
+            editor.selectionStart = start;
+            editor.selectionEnd = end;
+        });
+
+    });
 });
