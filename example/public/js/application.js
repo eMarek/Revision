@@ -1,4 +1,4 @@
-var app = angular.module("app", ["ngRoute", "ngRevision"]);
+var app = angular.module("app", ["ngRoute"]);
 
 /* app config
 -------------------------------------------------- */
@@ -116,26 +116,4 @@ app.controller("editorController", function($scope, $http, $location, $timeout, 
     $scope.logout = function() {
         $location.path("/login");
     }
-
-    $scope.editor = "";
-
-    $scope.addSomeTextAtTheEnd = function() {
-
-        $timeout(function() {
-            $scope.editor = $scope.editor + " BLJEH?!";
-        }, 2000);
-    }
-
-    $scope.$watch("editor", function() {
-
-        var editor = $window.document.getElementById("editor");
-        var start = editor.selectionStart;
-        var end = editor.selectionEnd;
-
-        $scope.$evalAsync(function() {
-            editor.selectionStart = start;
-            editor.selectionEnd = end;
-        });
-
-    });
 });
