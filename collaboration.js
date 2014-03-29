@@ -25,10 +25,9 @@ module.exports = function collaboration(req, rsp, data) {
         // respond with initializion data
         rsp.send({
             "say": "yay",
-            "initialize": {
-                "currentDocument": currentDocument,
-                "lastRevision": revisionDiary.length
-            }
+            "initialize": true,
+            "currentDocument": currentDocument,
+            "lastRevision": revisionDiary.length
         });
         return;
     }
@@ -49,6 +48,7 @@ module.exports = function collaboration(req, rsp, data) {
     if (users[data.user.id].acknowledge) {
         respons["say"] = "yay";
         respons["acknowledge"] = users[data.user.id].acknowledge;
+        respons["lastRevision"] = revisionDiary.length
 
         users[data.user.id].acknowledge = false;
     }

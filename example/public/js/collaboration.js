@@ -83,17 +83,18 @@ $(document).ready(function() {
                         // initialized from server
                         if (server.initialize) {
                             // console.log("EDITOR INITIALIZED");
-                            $(editor).removeAttr("disabled").val(server.initialize.currentDocument).focus();
+                            $(editor).removeAttr("disabled").val(server.currentDocument).focus();
                             initialized = true;
-                            lastRevision = server.initialize.lastRevision;
+                            lastRevision = server.lastRevision;
                             waitingChanges = [];
                             sentChanges = false;
-                            currentDocument = server.initialize.currentDocument;
+                            currentDocument = server.currentDocument;
                         }
 
                         // server acknowledged sent changes
                         if (server.acknowledge) {
-                            console.log("ACKNOWLEDGE SENT CHANGES");
+                            lastRevision = server.lastRevision;
+                            sentChanges = false;
                         }
 
                         // new changes from server
@@ -101,9 +102,6 @@ $(document).ready(function() {
                             console.log("NEW CHANGES");
                         }
                     }
-
-                    // checking server
-                    // console.log(server.checking);
                 }
             });
 
