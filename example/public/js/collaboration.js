@@ -5,7 +5,7 @@ var editor = "textarea[data-revision=editor]";
 var initialized = false;
 var lastRevision = 0;
 var waitingChanges = [];
-var sentChanges = [];
+var sentChanges = false;
 var currentDocument = "";
 
 /* document ready
@@ -16,15 +16,26 @@ $(document).ready(function() {
         // does editor exist on page
         if ($(editor).length) {
             if (!initialized) {
+
                 // editor initialize
                 init();
+
             } else {
+
                 // calculate patches
                 var editorDocument = $(editor).val();
                 var patches = changes(currentDocument, editorDocument);
                 if (patches[0]) {
                     $("#sidebar").append("<p>" + JSON.stringify(patches) + "</p>");
                     currentDocument = editorDocument;
+                    for (var pp in patches) {
+                        waitingChanges.push(patches[pp]);
+                    }
+                }
+
+                // check if there is any waiting changes and no sent changes
+                if (waitingChanges[0] && !sentChanges) {
+                    sentChanges = waitingChanges.shift();
                 }
             }
         } else {
@@ -61,7 +72,7 @@ function init() {
         dataType: "json",
         success: function(server) {
             if (server.say === "yay") {
-                $(editor).removeAttr("disabled").val(server.currentDocument);
+                $(editor).removeAttr("disabled").val(server.currentDocument).focus();
                 currentDocument = server.currentDocument;
                 lastRevision = server.lastRevision;
                 initialized = true;
