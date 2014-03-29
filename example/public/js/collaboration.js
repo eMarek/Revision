@@ -1,6 +1,7 @@
 /* global
 -------------------------------------------------- */
 var editor = false;
+var $editor;
 
 /* document ready
 -------------------------------------------------- */
@@ -13,6 +14,7 @@ $(document).ready(function() {
                     "id": "editor"
                 });
             }
+            $editor = $("textarea[data-revision=editor]");
         } else {
             editor = false;
         }
@@ -21,7 +23,7 @@ $(document).ready(function() {
     setInterval(editorInterval, 1000);
 });
 
-/* editor class
+/* collaboartion class
 -------------------------------------------------- */
 function Revision(additionalOptions) {
 
@@ -47,14 +49,16 @@ Revision.prototype = {
             url: "api/collaboration.json",
             type: "post",
             data: {
-                "some": "data"
+                "operation": "init"
             },
             headers: {
                 Session: window.sessionStorage.session
             },
             dataType: "json",
-            success: function(data) {
-                console.info(data);
+            success: function(server) {
+                if (server.say === "yay") {
+                    $editor.val(server.currentDocument);
+                }
             }
         });
 
