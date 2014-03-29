@@ -234,14 +234,22 @@ module.exports = function(originalText, changedText, debug, slower) {
         }
 
         if (leftMove) {
-            changes.push({
-                "a": (originalText.length < changedText.length) ? "+" : "-",
-                "s": string,
-                "l": string.length,
-                "p": i + 1,
-                "f": j + 1,
-                "t": j + string.length
-            });
+            if (originalText.length < changedText.length) {
+                changes.push({
+                    "a": "+",
+                    "s": string,
+                    "l": string.length,
+                    "p": i + 1
+                });
+            } else {
+                changes.push({
+                    "a": "-",
+                    "s": string,
+                    "l": string.length,
+                    "f": j + 1,
+                    "t": j + string.length
+                });
+            }
 
             string = "";
             leftMove = false;
@@ -260,14 +268,22 @@ module.exports = function(originalText, changedText, debug, slower) {
         }
 
         if (upMove) {
-            changes.push({
-                "a": (originalText.length < changedText.length) ? "-" : "+",
-                "s": string,
-                "l": string.length,
-                "p": j + 1,
-                "f": i + 1,
-                "t": i + string.length
-            });
+            if (originalText.length < changedText.length) {
+                changes.push({
+                    "a": "-",
+                    "s": string,
+                    "l": string.length,
+                    "f": i + 1,
+                    "t": i + string.length
+                });
+            } else {
+                changes.push({
+                    "a": "+",
+                    "s": string,
+                    "l": string.length,
+                    "p": j + 1
+                });
+            }
 
             string = "";
             upMove = false;
