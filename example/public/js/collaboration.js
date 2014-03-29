@@ -2,6 +2,10 @@
 -------------------------------------------------- */
 var xhr = {};
 var editor = "textarea[data-revision=editor]";
+var editorDocument, patches;
+var timeout = 2000;
+var lastTimestamp = new Date().getTime() - timeout;
+
 var initialized = false;
 var lastRevision = 0;
 var waitingChanges = [];
@@ -12,19 +16,16 @@ var currentDocument = "";
 -------------------------------------------------- */
 $(document).ready(function() {
 
-    function editorInterval() {
+    function collaboration() {
+
         // does editor exist on page
         if ($(editor).length) {
-            if (!initialized) {
 
-                // editor initialize
-                init();
-
-            } else {
+            if (initialized) {
 
                 // calculate patches
-                var editorDocument = $(editor).val();
-                var patches = changes(currentDocument, editorDocument);
+                editorDocument = $(editor).val();
+                patches = changes(currentDocument, editorDocument);
                 if (patches[0]) {
                     $("#sidebar").append("<p>" + JSON.stringify(patches) + "</p>");
                     currentDocument = editorDocument;
@@ -32,54 +33,99 @@ $(document).ready(function() {
                         waitingChanges.push(patches[pp]);
                     }
                 }
+            }
+
+            // allow collaboration ajax every few seconds
+            timestamp = new Date().getTime();
+            if (timestamp - lastTimestamp < timeout) {
+                return;
+            } else {
+                lastTimestamp = new Date().getTime();
+            }
+
+            // is previous request completed
+            if (xhr.collaboration && xhr.collaboration.readyState != 4) {
+                return;
+            }
+
+            if (!initialized) {
+
+                // editor initialize
+                var data = {
+                    "initialize": true
+                };
+
+            } else if (waitingChanges[0] && !sentChanges) {
 
                 // check if there is any waiting changes and no sent changes
-                if (waitingChanges[0] && !sentChanges) {
-                    sentChanges = waitingChanges.shift();
+                sentChanges = waitingChanges.shift();
+                var data = {
+                    "changes": [sentChanges]
+                };
+
+            } else {
+
+                // no operation, just checking for changes from other users
+                var data = {
+                    "changes": []
+                };
+            }
+
+            // collaboration ajax
+            xhr.collaboration = $.ajax({
+                url: "api/collaboration.json",
+                contentType: 'application/json',
+                type: "post",
+                data: JSON.stringify(data),
+                headers: {
+                    Session: window.sessionStorage.session
+                },
+                dataType: "json",
+                success: function(server) {
+                    if (server.say === "yay") {
+
+                        // initialized from server
+                        if (server.initialize) {
+                            console.log("EDITOR INITIALIZED");
+                            $(editor).removeAttr("disabled").val(server.currentDocument).focus();
+                            initialized = true;
+                            lastRevision = server.lastRevision;
+                            waitingChanges = [];
+                            sentChanges = false;
+                            currentDocument = server.currentDocument;
+                        }
+
+                        // server acknowledged sent changes
+                        if (server.acknowledge) {
+                            console.log("ACKNOWLEDGE SENT CHANGES");
+                        }
+
+                        // new changes from server
+                        if (server.changes) {
+                            console.log("NEW CHANGES");
+                        }
+                    }
                 }
-            }
+            });
+
         } else {
+
             // reset collaboration
-            initialized = false;
-            lastRevision = 0;
-            waitingChanges = [];
-            sentChanges = [];
-            currentDocument = "";
-        }
-    }
-
-    setInterval(editorInterval, 1000);
-});
-
-/* init
--------------------------------------------------- */
-function init() {
-    //xhr
-    if (xhr.collaborationInitializing && xhr.collaborationInitializing.readyState != 4) {
-        return;
-    }
-
-    //ajax
-    xhr.collaborationInitializing = $.ajax({
-        url: "api/collaboration.json",
-        type: "post",
-        data: {
-            "operation": "init"
-        },
-        headers: {
-            Session: window.sessionStorage.session
-        },
-        dataType: "json",
-        success: function(server) {
-            if (server.say === "yay") {
-                $(editor).removeAttr("disabled").val(server.currentDocument).focus();
-                currentDocument = server.currentDocument;
-                lastRevision = server.lastRevision;
-                initialized = true;
+            if (initialized) {
+                initialized = false;
+                lastRevision = 0;
+                waitingChanges = [];
+                sentChanges = false;
+                currentDocument = "";
             }
         }
-    });
-}
+    }
+
+    // recursive calling collaboration
+    setInterval(function() {
+        collaboration();
+    }, 500);
+});
 
 /* changes
 -------------------------------------------------- */
