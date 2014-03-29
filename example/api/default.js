@@ -29,7 +29,7 @@ api["crypte.json"] = function crypte(req, rsp, data) {
     if (!text) {
         rsp.send({
             "say": "noo",
-            "msq": "Pošlji nekaj besedila, da ga bom lahko zakriptiral!"
+            "msg": "Pošlji nekaj besedila, da ga bom lahko zakriptiral!"
         });
         return;
     }
