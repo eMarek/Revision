@@ -2,18 +2,17 @@
 
 "use strict";
 
-var serverData = {
-    "waitingChanges": [],
-    "revisionDiary": [],
-    "currentDocument": ""
-};
+var waitingChanges = [];
+var revisionDiary = [];
+var currentDocument = "";
 
 module.exports = function example(req, rsp, data) {
 
     if (req.payload.operation === "init") {
         rsp.send({
             "say": "yay",
-            "currentDocument": serverData.currentDocument
+            "currentDocument": currentDocument,
+            "lastRevision": revisionDiary.length
         });
         return;
     }

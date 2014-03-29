@@ -62,6 +62,8 @@ function init() {
         success: function(server) {
             if (server.say === "yay") {
                 $(editor).removeAttr("disabled").val(server.currentDocument);
+                currentDocument = server.currentDocument;
+                lastRevision = server.lastRevision;
                 initialized = true;
             }
         }
