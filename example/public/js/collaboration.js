@@ -55,20 +55,16 @@ $(document).ready(function() {
                     "initialize": true
                 };
 
-            } else if (waitingChanges[0] && !sentChanges) {
+            } else if (!sentChanges) {
 
                 // check if there is any waiting changes and no sent changes
-                sentChanges = waitingChanges.shift();
-                var data = {
-                    "changes": [sentChanges]
-                };
-
-            } else {
-
-                // no operation, just checking for changes from other users
-                var data = {
-                    "changes": []
-                };
+                if (waitingChanges[0]) {
+                    sentChanges = waitingChanges.shift();
+                    sentChanges["r"] = lastRevision;
+                    var data = {
+                        "changes": sentChanges
+                    };
+                }
             }
 
             // collaboration ajax
@@ -86,7 +82,7 @@ $(document).ready(function() {
 
                         // initialized from server
                         if (server.initialize) {
-                            console.log("EDITOR INITIALIZED");
+                            // console.log("EDITOR INITIALIZED");
                             $(editor).removeAttr("disabled").val(server.currentDocument).focus();
                             initialized = true;
                             lastRevision = server.lastRevision;
@@ -101,10 +97,13 @@ $(document).ready(function() {
                         }
 
                         // new changes from server
-                        if (server.changes) {
+                        if (server.changes && server.changes[0]) {
                             console.log("NEW CHANGES");
                         }
                     }
+
+                    // checking server
+                    // console.log(server.checking);
                 }
             });
 
