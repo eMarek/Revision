@@ -13,34 +13,22 @@ var users = {};
 -------------------------------------------------- */
 module.exports = function collaboration(req, rsp, data) {
 
-    // checking
-    var checking = {
-        "waitingChanges": waitingChanges,
-        "revisionDiary": revisionDiary,
-        "currentDocument": currentDocument,
-        "users": users
-    };
-
     // initialize
-    if (req.payload.initialize) {
+    if (req.payload.initialize || !users.hasOwnProperty(data.user.id)) {
 
         // remember or reset this user
-        if (!users.hasOwnProperty(data.user.id)) {
-            users[data.user.id] = {
-                acknowledge: false,
-                changes: []
-            };
-        } else {
-            users[data.user.id]["acknowledge"] = false;
-            users[data.user.id]["changes"] = [];
-        }
+        users[data.user.id] = {
+            acknowledge: false,
+            changes: []
+        };
 
         // respond with initializion data
         rsp.send({
             "say": "yay",
-            "initialize": true,
-            "currentDocument": currentDocument,
-            "lastRevision": revisionDiary.length
+            "initialize": {
+                "currentDocument": currentDocument,
+                "lastRevision": revisionDiary.length
+            }
         });
         return;
     }
@@ -54,20 +42,26 @@ module.exports = function collaboration(req, rsp, data) {
 
     // prepare data for respond
     var respons = {
-        "checking": {
-            "waitingChanges": waitingChanges,
-            "revisionDiary": revisionDiary,
-            "currentDocument": currentDocument,
-            "users": users
-        },
-        "say": "yay",
-        "acknowledge": users[data.user.id].acknowledge,
-        "changes": users[data.user.id].changes
+        "say": "noo"
+    };
+
+    // are previous changes already acknowledged
+    if (users[data.user.id].acknowledge) {
+        respons["say"] = "yay";
+        respons["acknowledge"] = users[data.user.id].acknowledge;
+
+        users[data.user.id].acknowledge = false;
     }
 
-    users[data.user.id].acknowledge = false;
-    users[data.user.id].changes = [];
+    // are there any new changes from other users
+    if (users[data.user.id].changes[0]) {
+        respons["say"] = "yay";
+        respons["changes"] = users[data.user.id].changes;
 
+        users[data.user.id].changes = [];
+    }
+
+    // send respons
     rsp.send(respons);
 };
 

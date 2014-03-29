@@ -83,12 +83,12 @@ $(document).ready(function() {
                         // initialized from server
                         if (server.initialize) {
                             // console.log("EDITOR INITIALIZED");
-                            $(editor).removeAttr("disabled").val(server.currentDocument).focus();
+                            $(editor).removeAttr("disabled").val(server.initialize.currentDocument).focus();
                             initialized = true;
-                            lastRevision = server.lastRevision;
+                            lastRevision = server.initialize.lastRevision;
                             waitingChanges = [];
                             sentChanges = false;
-                            currentDocument = server.currentDocument;
+                            currentDocument = server.initialize.currentDocument;
                         }
 
                         // server acknowledged sent changes
