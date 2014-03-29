@@ -42,7 +42,7 @@ exports.run = function() {
     }
 };
 
-/* app run
+/* starter
 -------------------------------------------------- */
 function starter(passingData) {
 
@@ -99,7 +99,22 @@ function onRequest(request, response) {
 
             var rsp = (typeof passingData != "object") ? {} : passingData;
 
-            response.write(JSON.stringify(rsp));
+            try {
+                rsp = JSON.stringify(rsp, function(key, value) {
+                    if (key == "rawSocket") {
+                        return "...";
+                    } else {
+                        return value;
+                    };
+                });
+            } catch (err) {
+                rsp = JSON.stringify({
+                    "say": "noo",
+                    "msg": "Odgovora ti ne morem poslati."
+                });
+            }
+
+            response.write(rsp);
             response.end();
         };
 
@@ -168,7 +183,7 @@ function onRequest(request, response) {
     }
 }
 
-/* handle request
+/* handler
 -------------------------------------------------- */
 function handler(request, response, passingData) {
 
