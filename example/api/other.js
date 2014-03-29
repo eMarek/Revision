@@ -27,6 +27,7 @@ api["other/find.json"] = function find(req, rsp) {
 api["other/upload.json"] = function upload(req, rsp) {
 
     rsp.send({
+        "say": "yay",
         "msg": "One day you could upload some data here."
     });
 };
