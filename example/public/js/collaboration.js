@@ -30,6 +30,7 @@ $(document).ready(function() {
                     $("#sidebar").append("<p>" + JSON.stringify(patches) + "</p>");
                     currentDocument = editorDocument;
                     for (var pp in patches) {
+                        patches[pp]["r"] = lastRevision;
                         waitingChanges.push(patches[pp]);
                     }
                 }
@@ -59,8 +60,8 @@ $(document).ready(function() {
 
                 // check if there is any waiting changes and no sent changes
                 if (waitingChanges[0]) {
-                    sentChanges = waitingChanges.shift();
-                    sentChanges["r"] = lastRevision;
+                    sentChanges = waitingChanges;
+                    waitingChanges = [];
                     var data = {
                         "changes": sentChanges
                     };

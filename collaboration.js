@@ -4,6 +4,8 @@
 
 /* globals
 -------------------------------------------------- */
+var respons, changes, change, author, timestamp;
+
 var waitingChanges = [];
 var revisionDiary = [];
 var currentDocument = "";
@@ -32,15 +34,15 @@ module.exports = function collaboration(req, rsp, data) {
         return;
     }
 
-    // changes
+    // incoming changes
     if (req.payload.changes) {
-        var changes = req.payload.changes;
-        changes["i"] = data.user.id;
-        waitingChanges.push(req.payload.changes);
+        changes = req.payload.changes;
+        changes.unshift(data.user.id);
+        waitingChanges.push(changes);
     }
 
     // prepare data for respond
-    var respons = {
+    respons = {
         "say": "noo"
     };
 
@@ -71,26 +73,42 @@ function revisioning() {
     if (waitingChanges[0]) {
 
         // take first changes from waiting stack
-        var changes = waitingChanges.shift();
+        changes = waitingChanges.shift();
+        author = changes[0];
+        timestamp = new Date().getTime();
 
-        // fix revision number
-        changes.r = revisionDiary.length;
+        // process bundle of changes
+        for (var cc in changes) {
 
-        // prepare feedback for users
-        for (var userID in users) {
-            if (users.hasOwnProperty(userID)) {
+            // single change in bundle
+            change = changes[cc];
 
-                // acknowledge author or push changes to other users
-                if (userID === changes.i) {
-                    users[userID].acknowledge = true;
-                } else {
-                    users[userID].changes.push(changes);
+            // validate change
+            if (typeof change == "object") {
+
+                // upgrade revision and add author and timestamp
+                change.r = revisionDiary.length;
+                change.i = author;
+                change.q = timestamp;
+
+                // update revision diary
+                revisionDiary.push(change);
+
+                // prepare feedback for users
+                for (var userID in users) {
+                    if (users.hasOwnProperty(userID)) {
+
+                        // push change to other users
+                        if (userID !== author) {
+                            users[userID].changes.push(change);
+                        }
+                    }
                 }
             }
         }
 
-        // update revision diary
-        revisionDiary.push(changes);
+        // give author an acknowledge
+        users[author].acknowledge = true;
     }
 }
 
