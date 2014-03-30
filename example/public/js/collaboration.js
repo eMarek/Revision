@@ -5,6 +5,7 @@ var editor = "textarea[data-revision=editor]";
 var editorDocument, patches;
 var timeout = 2000;
 var lastTimestamp = new Date().getTime() - timeout;
+var pause = false;
 
 var initialized = false;
 var lastRevision = 0;
@@ -17,6 +18,10 @@ var currentDocument = "";
 $(document).ready(function() {
 
     function collaboration() {
+
+        if (pause) {
+            return;
+        }
 
         // does editor exist on page
         if ($(editor).length) {
@@ -400,5 +405,18 @@ $(document).on("click", "#forcer", function() {
             $editor[0].selectionEnd = end;
 
         }, 2000);
+    }
+});
+
+/* pauser
+-------------------------------------------------- */
+$(document).on("click", "#pauser", function() {
+
+    if (pause) {
+        pause = false;
+        $(this).text("Pause");
+    } else {
+        pause = true;
+        $(this).text("Continue");
     }
 });
