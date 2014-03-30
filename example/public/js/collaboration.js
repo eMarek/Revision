@@ -1,21 +1,23 @@
 /* globals
 -------------------------------------------------- */
-var xhr = {};
 var editor = "textarea[data-revision=editor]";
 
-var clientLoopInterval = 500;
-var clientLastTimestamp = new Date().getTime() - clientLoopInterval;
-var editorDocument, patches;
+var clientLoopInterval = 500,
+    clientLastTimestamp = new Date().getTime() - clientLoopInterval,
+    editorDocument,
+    patches;
 
-var serverLoopInterval = 2000;
-var serverLastTimestamp = new Date().getTime() - serverLoopInterval;
-var pause = false;
+var serverLoopInterval = 2000,
+    serverLastTimestamp = new Date().getTime() - serverLoopInterval,
+    pause = false,
+    data = false,
+    xhr = {};
 
-var initialized = false;
-var lastRevision = 0;
-var waitingChanges = [];
-var sentChanges = false;
-var currentDocument = "";
+var initialized = false,
+    lastRevision = 0,
+    waitingChanges = [],
+    sentChanges = false,
+    currentDocument = "";
 
 /* document ready
 -------------------------------------------------- */
@@ -63,23 +65,27 @@ $(document).ready(function() {
                 return;
             }
 
+            // prepare date
             if (!initialized) {
 
-                // editor initialize
-                var data = {
+                // editor initializing if not jet
+                data = JSON.stringify({
                     "initialize": true
-                };
+                });
 
-            } else if (!sentChanges) {
+            } else if (!sentChanges && waitingChanges[0]) {
 
-                // check if there is any waiting changes and no sent changes
-                if (waitingChanges[0]) {
-                    sentChanges = waitingChanges;
-                    waitingChanges = [];
-                    var data = {
-                        "changes": sentChanges
-                    };
-                }
+                // if sent changes are released and we there are new waiting changes                
+                sentChanges = waitingChanges;
+                waitingChanges = [];
+                data = JSON.stringify({
+                    "changes": sentChanges
+                });
+
+            } else {
+
+                // no operation, just pinging the server
+                data = false;
             }
 
             // collaboration ajax
@@ -87,7 +93,7 @@ $(document).ready(function() {
                 url: "api/collaboration.json",
                 contentType: 'application/json',
                 type: "post",
-                data: JSON.stringify(data),
+                data: data,
                 headers: {
                     Session: window.sessionStorage.session
                 },
@@ -400,7 +406,7 @@ function changes(originalText, changedText) {
 -------------------------------------------------- */
 $(document).on("click", "#forcer", function() {
 
-    var $editor = $("textarea[data-revision]");
+    var $editor = $(editor);
     if ($editor.length) {
 
         setTimeout(function() {
