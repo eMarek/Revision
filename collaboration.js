@@ -4,7 +4,7 @@
 
 /* globals
 -------------------------------------------------- */
-var respons, changes, change, author, timestamp;
+var respons, changes, change, author, timestamp, editingDocument;
 
 var waitingChanges = [];
 var revisionDiary = [];
@@ -90,6 +90,19 @@ function revisioning() {
                 change.r = revisionDiary.length;
                 change.i = author;
                 change.q = timestamp;
+
+                // operational transformation
+                if (change.a === "+") {
+
+                    editingDocument = currentDocument.substr(0, change.p) + change.s + currentDocument.substr(change.p);
+                    currentDocument = editingDocument;
+                }
+
+                if (change.a === "-") {
+
+                    editingDocument = currentDocument.substr(0, change.f - 1) + currentDocument.substr(change.t);
+                    currentDocument = editingDocument;
+                }
 
                 // update revision diary
                 revisionDiary.push(change);
