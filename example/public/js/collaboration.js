@@ -6,7 +6,7 @@ var loopInterval = 2000,
     pause = false,
     xhr = {},
     data = false,
-    editorDocument, patches;
+    editorDocument, patches, offset, patch;
 
 var initialized = false,
     revision = 0,
@@ -103,7 +103,46 @@ $(document).ready(function() {
 
                         // new patches from server
                         if (server.patches && server.patches[0]) {
-                            console.log("NEW PATCHES");
+
+                            // reset offset
+                            offset = 0;
+
+                            // process bundle of patches
+                            for (var pp in server.patches) {
+
+                                // single patch in server patches
+                                patch = server.patches[pp];
+
+                                // validate patch
+                                if (typeof patch == "object" && patch.hasOwnProperty("a") && patch.hasOwnProperty("s") && (patch.a === "+" && patch.hasOwnProperty("p") || patch.a === "-" && patch.hasOwnProperty("f") && patch.hasOwnProperty("t"))) {
+
+                                    // adding characters
+                                    if (patch.a === "+") {
+
+                                        // operational transformation
+                                        patch.p = patch.p + offset;
+                                        offset = offset + patch.s.length;
+
+                                        // update current document
+                                        currentDocument = currentDocument.substr(0, patch.p - 1) + patch.s + currentDocument.substr(patch.p - 1);
+                                    }
+
+                                    // deleting characters
+                                    if (patch.a === "-") {
+
+                                        // operational transformation
+                                        patch.f = patch.f + offset;
+                                        patch.t = patch.t + offset;
+                                        offset = offset - patch.s.length;
+
+                                        // update current document
+                                        currentDocument = currentDocument.substr(0, patch.f - 1) + currentDocument.substr(patch.t);
+                                    }
+
+                                    // save current document into editor
+                                    $(editor).val(currentDocument);
+                                }
+                            }
                         }
                     }
                 }
