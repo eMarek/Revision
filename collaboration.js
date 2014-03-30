@@ -87,7 +87,7 @@ function revisioning() {
         // process bundle of patches
         for (var pp in bundle.patches) {
 
-            // single patch in bundle
+            // single patch in bundle patches
             patch = bundle.patches[pp];
 
             // validate patch
