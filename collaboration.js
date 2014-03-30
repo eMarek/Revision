@@ -4,7 +4,7 @@
 
 /* globals
 -------------------------------------------------- */
-var respons, bundle, offset, patches, originPatch, transformedPatch;
+var respons, bundle, offset, patch;
 
 var waitingPatches = [];
 var revisionDiary = [];
@@ -80,7 +80,7 @@ module.exports = function collaboration(req, rsp, data) {
 function revisioning() {
     if (waitingPatches[0]) {
 
-        // take first patches from waiting stack
+        // take first patches from waiting stack and reset offset
         bundle = waitingPatches.shift();
         offset = 0;
 
@@ -88,58 +88,33 @@ function revisioning() {
         for (var pp in bundle.patches) {
 
             // single patch in bundle
-            originPatch = bundle.patches[pp];
+            patch = bundle.patches[pp];
 
             // validate patch
-            if (typeof originPatch == "object" && originPatch.hasOwnProperty("a") && originPatch.hasOwnProperty("s") && (originPatch.a === "+" && originPatch.hasOwnProperty("p") || originPatch.a === "-" && originPatch.hasOwnProperty("f") && originPatch.hasOwnProperty("t"))) {
+            if (typeof patch == "object" && patch.hasOwnProperty("a") && patch.hasOwnProperty("s") && (patch.a === "+" && patch.hasOwnProperty("p") || patch.a === "-" && patch.hasOwnProperty("f") && patch.hasOwnProperty("t"))) {
 
                 // adding characters
-                if (originPatch.a === "+") {
+                if (patch.a === "+") {
 
-                    // finally transformed patch
-                    transformedPatch = {
-                        "action": originPatch.a,
-                        "string": originPatch.s,
-                        "length": originPatch.s.length,
-                        "position": originPatch.p + offset,
-                        "revision": revisionDiary.length,
-                        "author": bundle.author,
-                        "timestampClient": bundle.timestamp,
-                        "timestampServer": new Date().getTime()
-                    };
+                    // operational transformation
+                    patch.p = patch.p + offset;
+                    offset = offset + patch.s.length;
 
                     // update current document
-                    currentDocument = currentDocument.substr(0, transformedPatch.position - 1) + transformedPatch.string + currentDocument.substr(transformedPatch.position - 1);
-
-                    // update offset
-                    offset = offset + transformedPatch.length;
+                    currentDocument = currentDocument.substr(0, patch.p - 1) + patch.s + currentDocument.substr(patch.p - 1);
                 }
 
                 // deleting characters
-                if (originPatch.a === "-") {
+                if (patch.a === "-") {
 
-                    // finally transformed patch
-                    transformedPatch = {
-                        "action": originPatch.a,
-                        "string": originPatch.s,
-                        "length": originPatch.s.length,
-                        "from": originPatch.f + offset,
-                        "to": originPatch.t + offset,
-                        "revision": revisionDiary.length,
-                        "author": bundle.author,
-                        "timestampClient": bundle.timestamp,
-                        "timestampServer": new Date().getTime()
-                    };
+                    // operational transformation
+                    patch.f = patch.f + offset;
+                    patch.t = patch.t + offset;
+                    offset = offset - patch.s.length;
 
                     // update current document
-                    currentDocument = currentDocument.substr(0, transformedPatch.from - 1) + currentDocument.substr(transformedPatch.to);
-
-                    // update offset
-                    offset = offset - transformedPatch.length;
+                    currentDocument = currentDocument.substr(0, patch.f - 1) + currentDocument.substr(patch.t);
                 }
-
-                // update revision diary
-                revisionDiary.push(transformedPatch);
 
                 // prepare feedback for users
                 for (var userID in users) {
@@ -147,10 +122,18 @@ function revisioning() {
 
                         // push patch to other users
                         if (userID !== bundle.author) {
-                            users[userID].patches.push(transformedPatch);
+                            users[userID].patches.push(patch);
                         }
                     }
                 }
+
+                // append some extra data to patch
+                patch.u = bundle.author;
+                patch.x = bundle.timestamp;
+                patch.y = new Date().getTime();
+
+                // save patch into the revision diary
+                revisionDiary.push(patch);
             }
         }
 
