@@ -4,7 +4,7 @@
 
 /* globals
 -------------------------------------------------- */
-var respons, bundle, patches, patch;
+var respons, bundle, offset, patches, originPatch, transformedPatch;
 
 var waitingPatches = [];
 var revisionDiary = [];
@@ -82,33 +82,64 @@ function revisioning() {
 
         // take first patches from waiting stack
         bundle = waitingPatches.shift();
+        offset = 0;
 
         // process bundle of patches
         for (var pp in bundle.patches) {
 
             // single patch in bundle
-            patch = bundle.patches[pp];
+            originPatch = bundle.patches[pp];
 
             // validate patch
-            if (typeof patch == "object") {
+            if (typeof originPatch == "object" && originPatch.hasOwnProperty("a") && originPatch.hasOwnProperty("s") && (originPatch.a === "+" && originPatch.hasOwnProperty("p") || originPatch.a === "-" && originPatch.hasOwnProperty("f") && originPatch.hasOwnProperty("t"))) {
 
-                // upgrade revision and add author and timestamp
-                patch["revision"] = revisionDiary.length;
-                patch["author"] = bundle.author;
-                patch["timestampClient"] = bundle.timestamp;
-                patch["timestampServer"] = new Date().getTime();
+                // adding characters
+                if (originPatch.a === "+") {
 
-                // operational transformation
-                if (patch.a === "+") {
-                    currentDocument = currentDocument.substr(0, patch.p) + patch.s + currentDocument.substr(patch.p);
+                    // finally transformed patch
+                    transformedPatch = {
+                        "action": originPatch.a,
+                        "string": originPatch.s,
+                        "length": originPatch.s.length,
+                        "position": originPatch.p + offset,
+                        "revision": revisionDiary.length,
+                        "author": bundle.author,
+                        "timestampClient": bundle.timestamp,
+                        "timestampServer": new Date().getTime()
+                    };
+
+                    // update current document
+                    currentDocument = currentDocument.substr(0, transformedPatch.position - 1) + transformedPatch.string + currentDocument.substr(transformedPatch.position - 1);
+
+                    // update offset
+                    offset = offset + transformedPatch.length;
                 }
 
-                if (patch.a === "-") {
-                    currentDocument = currentDocument.substr(0, patch.f - 1) + currentDocument.substr(patch.t);
+                // deleting characters
+                if (originPatch.a === "-") {
+
+                    // finally transformed patch
+                    transformedPatch = {
+                        "action": originPatch.a,
+                        "string": originPatch.s,
+                        "length": originPatch.s.length,
+                        "from": originPatch.f + offset,
+                        "to": originPatch.t + offset,
+                        "revision": revisionDiary.length,
+                        "author": bundle.author,
+                        "timestampClient": bundle.timestamp,
+                        "timestampServer": new Date().getTime()
+                    };
+
+                    // update current document
+                    currentDocument = currentDocument.substr(0, transformedPatch.from - 1) + currentDocument.substr(transformedPatch.to);
+
+                    // update offset
+                    offset = offset - transformedPatch.length;
                 }
 
                 // update revision diary
-                revisionDiary.push(patch);
+                revisionDiary.push(transformedPatch);
 
                 // prepare feedback for users
                 for (var userID in users) {
@@ -120,6 +151,9 @@ function revisioning() {
                         }
                     }
                 }
+
+                console.log(transformedPatch);
+                console.log(currentDocument);
             }
         }
 
