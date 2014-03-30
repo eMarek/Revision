@@ -2,9 +2,13 @@
 -------------------------------------------------- */
 var xhr = {};
 var editor = "textarea[data-revision=editor]";
+
+var clientLoopInterval = 500;
+var clientLastTimestamp = new Date().getTime() - clientLoopInterval;
 var editorDocument, patches;
-var timeout = 2000;
-var lastTimestamp = new Date().getTime() - timeout;
+
+var serverLoopInterval = 2000;
+var serverLastTimestamp = new Date().getTime() - serverLoopInterval;
 var pause = false;
 
 var initialized = false;
@@ -26,27 +30,32 @@ $(document).ready(function() {
         // does editor exist on page
         if ($(editor).length) {
 
+            // timestamp
+            clientLastTimestamp = new Date().getTime();
+
             if (initialized) {
 
                 // calculate patches
                 editorDocument = $(editor).val();
                 patches = changes(currentDocument, editorDocument);
+
+                // push patches into the waiting changes
                 if (patches[0]) {
                     $("#sidebar").append("<p>" + JSON.stringify(patches) + "</p>");
                     currentDocument = editorDocument;
                     for (var pp in patches) {
                         patches[pp]["r"] = lastRevision;
+                        patches[pp]["x"] = clientLastTimestamp;
                         waitingChanges.push(patches[pp]);
                     }
                 }
             }
 
             // allow collaboration ajax every few seconds
-            timestamp = new Date().getTime();
-            if (timestamp - lastTimestamp < timeout) {
+            if (clientLastTimestamp - serverLastTimestamp < serverLoopInterval) {
                 return;
             } else {
-                lastTimestamp = new Date().getTime();
+                serverLastTimestamp = new Date().getTime();
             }
 
             // is previous request completed
@@ -127,7 +136,7 @@ $(document).ready(function() {
     // recursive calling collaboration
     setInterval(function() {
         collaboration();
-    }, 500);
+    }, clientLoopInterval);
 });
 
 /* changes
