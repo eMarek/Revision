@@ -306,14 +306,12 @@ function changes(originalText, changedText) {
                 changes.push({
                     "a": "+",
                     "s": string,
-                    "l": string.length,
                     "p": i + 1
                 });
             } else {
                 changes.push({
                     "a": "-",
                     "s": string,
-                    "l": string.length,
                     "f": j + 1,
                     "t": j + string.length
                 });
@@ -340,7 +338,6 @@ function changes(originalText, changedText) {
                 changes.push({
                     "a": "-",
                     "s": string,
-                    "l": string.length,
                     "f": i + 1,
                     "t": i + string.length
                 });
@@ -348,7 +345,6 @@ function changes(originalText, changedText) {
                 changes.push({
                     "a": "+",
                     "s": string,
-                    "l": string.length,
                     "p": j + 1
                 });
             }
