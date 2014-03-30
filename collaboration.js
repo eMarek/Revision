@@ -147,13 +147,10 @@ function revisioning() {
 
                         // push patch to other users
                         if (userID !== bundle.author) {
-                            users[userID].patches.push(patch);
+                            users[userID].patches.push(transformedPatch);
                         }
                     }
                 }
-
-                console.log(transformedPatch);
-                console.log(currentDocument);
             }
         }
 
