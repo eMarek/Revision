@@ -86,6 +86,8 @@ $(document).ready(function() {
 
                             // console.log("EDITOR INITIALIZED");
                             $(editor).removeAttr("disabled").val(server.currentDocument).focus();
+                            $(editor)[0].selectionStart = server.currentDocument.length;
+                            $(editor)[0].selectionEnd = server.currentDocument.length;
 
                             initialized = true;
                             revision = server.revision;
