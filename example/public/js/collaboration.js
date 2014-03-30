@@ -2,11 +2,11 @@
 -------------------------------------------------- */
 var editor = "textarea[data-revision=editor]";
 
-var loopInterval = 2000,
+var loopInterval = 500,
     pause = false,
     xhr = {},
     data = false,
-    editorDocument, patches, offset, patch;
+    editorDocument, patches, patch;
 
 var initialized = false,
     revision = 0,
@@ -104,9 +104,6 @@ $(document).ready(function() {
                         // new patches from server
                         if (server.patches && server.patches[0]) {
 
-                            // reset offset
-                            offset = 0;
-
                             // process bundle of patches
                             for (var pp in server.patches) {
 
@@ -119,21 +116,12 @@ $(document).ready(function() {
                                     // adding characters
                                     if (patch.a === "+") {
 
-                                        // operational transformation
-                                        patch.p = patch.p + offset;
-                                        offset = offset + patch.s.length;
-
                                         // update current document
                                         currentDocument = currentDocument.substr(0, patch.p - 1) + patch.s + currentDocument.substr(patch.p - 1);
                                     }
 
                                     // deleting characters
                                     if (patch.a === "-") {
-
-                                        // operational transformation
-                                        patch.f = patch.f + offset;
-                                        patch.t = patch.t + offset;
-                                        offset = offset - patch.s.length;
 
                                         // update current document
                                         currentDocument = currentDocument.substr(0, patch.f - 1) + currentDocument.substr(patch.t);
@@ -321,6 +309,8 @@ function changes(originalText, changedText) {
     var changes = [];
     var string = "";
     var timestamp = new Date();
+    var change = {};
+    var offset = 0;
 
     // find changes in LCS until the top left field is reached
     while (true) {
@@ -414,6 +404,26 @@ function changes(originalText, changedText) {
 
     // reverse changes
     changes.reverse();
+
+    // fix position value and from/to values
+    for (var cc in changes) {
+        change = changes[cc];
+
+        // adding characters
+        if (change.a === "+") {
+
+            change.p = change.p + offset;
+            offset = offset + change.s.length;
+        }
+
+        // deleting characters
+        if (change.a === "-") {
+
+            change.f = change.f + offset;
+            change.t = change.t + offset;
+            offset = offset - change.s.length;
+        }
+    }
 
     // return changes
     return changes;
