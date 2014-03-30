@@ -4,9 +4,9 @@
 
 /* globals
 -------------------------------------------------- */
-var respons, changes, change, author, timestamp, editingDocument;
+var respons, bundle, patches, patch;
 
-var waitingChanges = [];
+var waitingPatches = [];
 var revisionDiary = [];
 var currentDocument = "";
 var users = {};
@@ -21,7 +21,7 @@ module.exports = function collaboration(req, rsp, data) {
         // remember or reset this user
         users[data.user.id] = {
             acknowledge: false,
-            changes: []
+            patches: []
         };
 
         // respond with initializion data
@@ -29,16 +29,9 @@ module.exports = function collaboration(req, rsp, data) {
             "say": "yay",
             "initialize": true,
             "currentDocument": currentDocument,
-            "lastRevision": revisionDiary.length
+            "revision": revisionDiary.length
         });
         return;
-    }
-
-    // incoming changes
-    if (req.payload.changes) {
-        changes = req.payload.changes;
-        changes.unshift(data.user.id);
-        waitingChanges.push(changes);
     }
 
     // prepare data for respond
@@ -46,21 +39,36 @@ module.exports = function collaboration(req, rsp, data) {
         "say": "noo"
     };
 
-    // are previous changes already acknowledged
+    // incoming patches
+    if (req.payload.patches) {
+
+        // add author information
+        req.payload["author"] = data.user.id;
+
+        // push it to waiting patches
+        waitingPatches.push(req.payload);
+
+        // yay respons
+        respons["say"] = "yay";
+        respons["msg"] = "Patches accepted!";
+    }
+
+    // are previous patches already acknowledged
     if (users[data.user.id].acknowledge) {
         respons["say"] = "yay";
         respons["acknowledge"] = users[data.user.id].acknowledge;
-        respons["lastRevision"] = revisionDiary.length
+        respons["revision"] = revisionDiary.length
 
         users[data.user.id].acknowledge = false;
     }
 
-    // are there any new changes from other users
-    if (users[data.user.id].changes[0]) {
+    // are there any new patches from other users
+    if (users[data.user.id].patches[0]) {
         respons["say"] = "yay";
-        respons["changes"] = users[data.user.id].changes;
+        respons["patches"] = users[data.user.id].patches;
+        respons["revision"] = revisionDiary.length
 
-        users[data.user.id].changes = [];
+        users[data.user.id].patches = [];
     }
 
     // send respons
@@ -70,50 +78,45 @@ module.exports = function collaboration(req, rsp, data) {
 /* revisioning
 -------------------------------------------------- */
 function revisioning() {
-    if (waitingChanges[0]) {
+    if (waitingPatches[0]) {
 
-        // take first changes from waiting stack
-        changes = waitingChanges.shift();
-        author = changes[0];
-        timestamp = new Date().getTime();
+        // take first patches from waiting stack
+        bundle = waitingPatches.shift();
 
-        // process bundle of changes
-        for (var cc in changes) {
+        // process bundle of patches
+        for (var pp in bundle.patches) {
 
-            // single change in bundle
-            change = changes[cc];
+            // single patch in bundle
+            patch = bundle.patches[pp];
 
-            // validate change
-            if (typeof change == "object") {
+            // validate patch
+            if (typeof patch == "object") {
 
                 // upgrade revision and add author and timestamp
-                change.r = revisionDiary.length;
-                change.i = author;
-                change.q = timestamp;
+                patch["revision"] = revisionDiary.length;
+                patch["author"] = bundle.author;
+                patch["timestampClient"] = bundle.timestamp;
+                patch["timestampServer"] = new Date().getTime();
 
                 // operational transformation
-                if (change.a === "+") {
-
-                    editingDocument = currentDocument.substr(0, change.p) + change.s + currentDocument.substr(change.p);
-                    currentDocument = editingDocument;
+                if (patch.a === "+") {
+                    currentDocument = currentDocument.substr(0, patch.p) + patch.s + currentDocument.substr(patch.p);
                 }
 
-                if (change.a === "-") {
-
-                    editingDocument = currentDocument.substr(0, change.f - 1) + currentDocument.substr(change.t);
-                    currentDocument = editingDocument;
+                if (patch.a === "-") {
+                    currentDocument = currentDocument.substr(0, patch.f - 1) + currentDocument.substr(patch.t);
                 }
 
                 // update revision diary
-                revisionDiary.push(change);
+                revisionDiary.push(patch);
 
                 // prepare feedback for users
                 for (var userID in users) {
                     if (users.hasOwnProperty(userID)) {
 
-                        // push change to other users
-                        if (userID !== author) {
-                            users[userID].changes.push(change);
+                        // push patch to other users
+                        if (userID !== bundle.author) {
+                            users[userID].patches.push(patch);
                         }
                     }
                 }
@@ -121,7 +124,7 @@ function revisioning() {
         }
 
         // give author an acknowledge
-        users[author].acknowledge = true;
+        users[bundle.author].acknowledge = true;
     }
 }
 

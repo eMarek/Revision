@@ -2,21 +2,15 @@
 -------------------------------------------------- */
 var editor = "textarea[data-revision=editor]";
 
-var clientLoopInterval = 500,
-    clientLastTimestamp = new Date().getTime() - clientLoopInterval,
-    editorDocument,
-    patches;
-
-var serverLoopInterval = 2000,
-    serverLastTimestamp = new Date().getTime() - serverLoopInterval,
+var loopInterval = 2000,
     pause = false,
+    xhr = {},
     data = false,
-    xhr = {};
+    editorDocument, patches;
 
 var initialized = false,
-    lastRevision = 0,
-    waitingChanges = [],
-    sentChanges = false,
+    revision = 0,
+    sentPatches = false,
     currentDocument = "";
 
 /* document ready
@@ -25,39 +19,12 @@ $(document).ready(function() {
 
     function collaboration() {
 
-        if (pause) {
-            return;
-        }
-
         // does editor exist on page
         if ($(editor).length) {
 
-            // timestamp
-            clientLastTimestamp = new Date().getTime();
-
-            if (initialized) {
-
-                // calculate patches
-                editorDocument = $(editor).val();
-                patches = changes(currentDocument, editorDocument);
-
-                // push patches into the waiting changes
-                if (patches[0]) {
-                    $("#sidebar").append("<p>" + JSON.stringify(patches) + "</p>");
-                    currentDocument = editorDocument;
-                    for (var pp in patches) {
-                        patches[pp]["r"] = lastRevision;
-                        patches[pp]["x"] = clientLastTimestamp;
-                        waitingChanges.push(patches[pp]);
-                    }
-                }
-            }
-
-            // allow collaboration ajax every few seconds
-            if (clientLastTimestamp - serverLastTimestamp < serverLoopInterval) {
+            // pause
+            if (pause) {
                 return;
-            } else {
-                serverLastTimestamp = new Date().getTime();
             }
 
             // is previous request completed
@@ -66,6 +33,8 @@ $(document).ready(function() {
             }
 
             // prepare date
+            data = false;
+
             if (!initialized) {
 
                 // editor initializing if not jet
@@ -73,19 +42,30 @@ $(document).ready(function() {
                     "initialize": true
                 });
 
-            } else if (!sentChanges && waitingChanges[0]) {
+            } else if (!sentPatches) {
 
-                // if sent changes are released and we there are new waiting changes                
-                sentChanges = waitingChanges;
-                waitingChanges = [];
-                data = JSON.stringify({
-                    "changes": sentChanges
-                });
+                // calculate patches with changes function
+                editorDocument = $(editor).val();
+                patches = changes(currentDocument, editorDocument);
 
-            } else {
+                // sent patches to server
+                if (patches[0]) {
 
-                // no operation, just pinging the server
-                data = false;
+                    $("#sidebar").append("<p>" + JSON.stringify(patches) + "</p>");
+
+                    // remember current document
+                    currentDocument = editorDocument;
+
+                    // remember sent patches
+                    sentPatches = patches;
+
+                    // sent patches to server
+                    data = JSON.stringify({
+                        "patches": patches,
+                        "revision": revision,
+                        "timestamp": new Date().getTime()
+                    });
+                }
             }
 
             // collaboration ajax
@@ -103,24 +83,25 @@ $(document).ready(function() {
 
                         // initialized from server
                         if (server.initialize) {
+
                             // console.log("EDITOR INITIALIZED");
                             $(editor).removeAttr("disabled").val(server.currentDocument).focus();
+
                             initialized = true;
-                            lastRevision = server.lastRevision;
-                            waitingChanges = [];
-                            sentChanges = false;
+                            revision = server.revision;
+                            sentPatches = false;
                             currentDocument = server.currentDocument;
                         }
 
-                        // server acknowledged sent changes
+                        // server acknowledged sent patches
                         if (server.acknowledge) {
-                            lastRevision = server.lastRevision;
-                            sentChanges = false;
+                            revision = server.revision;
+                            sentPatches = false;
                         }
 
-                        // new changes from server
-                        if (server.changes && server.changes[0]) {
-                            console.log("NEW CHANGES");
+                        // new patches from server
+                        if (server.patches && server.patches[0]) {
+                            console.log("NEW PATCHES");
                         }
                     }
                 }
@@ -130,10 +111,9 @@ $(document).ready(function() {
 
             // reset collaboration
             if (initialized) {
-                initialized = false;
-                lastRevision = 0;
-                waitingChanges = [];
-                sentChanges = false;
+                initialized = false,
+                revision = 0,
+                sentPatches = false,
                 currentDocument = "";
             }
         }
@@ -142,7 +122,7 @@ $(document).ready(function() {
     // recursive calling collaboration
     setInterval(function() {
         collaboration();
-    }, clientLoopInterval);
+    }, loopInterval);
 });
 
 /* changes
