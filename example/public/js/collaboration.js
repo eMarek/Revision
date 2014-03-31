@@ -99,10 +99,10 @@ $(document).ready(function() {
                         if (server.patches && server.patches[0]) {
 
                             // process bundle of patches
-                            for (var pp in server.patches) {
+                            for (var rp in server.patches) {
 
                                 // single patch in server patches
-                                patch = server.patches[pp];
+                                patch = server.patches[rp];
 
                                 // validate patch
                                 if (typeof patch == "object" && patch.hasOwnProperty("a") && patch.hasOwnProperty("s") && (patch.a === "+" && patch.hasOwnProperty("p") || patch.a === "-" && patch.hasOwnProperty("f") && patch.hasOwnProperty("t"))) {
@@ -110,12 +110,34 @@ $(document).ready(function() {
                                     // adding characters
                                     if (patch.a === "+") {
 
+                                        for (var sp in sentPatches) {
+                                            sPatch = sentPatches[sp];
+                                            if (sPatch.a === "+" && sPatch.p >= patch.p) {
+                                                sPatch.p = sPatch.p + patch.s.length;
+                                            }
+                                            if (sPatch.a === "-" && sPatch.f >= patch.p) {
+                                                sPatch.f = sPatch.f + patch.s.length;
+                                                sPatch.t = sPatch.t + patch.s.length;
+                                            }
+                                        }
+
                                         // update current document
                                         currentDocument = currentDocument.substr(0, patch.p - 1) + patch.s + currentDocument.substr(patch.p - 1);
                                     }
 
                                     // deleting characters
                                     if (patch.a === "-") {
+
+                                        for (var sp in sentPatches) {
+                                            sPatch = sentPatches[sp];
+                                            if (sPatch.a === "+" && sPatch.p >= patch.p) {
+                                                sPatch.p = sPatch.p - patch.s.length;
+                                            }
+                                            if (sPatch.a === "-" && sPatch.f >= patch.p) {
+                                                sPatch.f = sPatch.f - patch.s.length;
+                                                sPatch.t = sPatch.t - patch.s.length;
+                                            }
+                                        }
 
                                         // update current document
                                         currentDocument = currentDocument.substr(0, patch.f - 1) + currentDocument.substr(patch.t);
@@ -125,13 +147,20 @@ $(document).ready(function() {
                                     $(editor).val(currentDocument);
                                 }
                             }
+
+                            // update revision value
+                            revision = server.revision;
                         }
 
 
                         // server acknowledged sent patches
                         if (server.acknowledge) {
-                            revision = server.revision;
+
+                            // clear sent patches
                             sentPatches = false;
+
+                            // update revision value
+                            revision = server.revision;
                         }
                     }
                 }
