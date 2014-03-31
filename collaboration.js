@@ -4,7 +4,7 @@
 
 /* globals
 -------------------------------------------------- */
-var respons, bundle, patch;
+var respons, bundle, offset, patch;
 
 var waitingPatches = [];
 var revisionDiary = [];
@@ -83,6 +83,26 @@ function revisioning() {
         // take first patches from waiting stack and reset offset
         bundle = waitingPatches.shift();
 
+        // calculate offset
+        offset = 0;
+        for (var rd in revisionDiary) {
+
+            if (rd < bundle.revision) {
+                // ok
+            } else {
+
+                // some characteres were added
+                if (patch.a === "+") {
+                    offset = offset + revisionDiary[rd].s.length;
+                }
+
+                // some characteres were deleted
+                if (patch.a === "-") {
+                    offset = offset - revisionDiary[rd].s.length;
+                }
+            }
+        }
+
         // process bundle of patches
         for (var pp in bundle.patches) {
 
@@ -95,12 +115,19 @@ function revisioning() {
                 // adding characters
                 if (patch.a === "+") {
 
+                    // take offset into account
+                    patch.p = patch.p + offset;
+
                     // update current document
                     currentDocument = currentDocument.substr(0, patch.p - 1) + patch.s + currentDocument.substr(patch.p - 1);
                 }
 
                 // deleting characters
                 if (patch.a === "-") {
+
+                    // take offset into account
+                    patch.f = patch.f + offset;
+                    patch.t = patch.t + offset;
 
                     // update current document
                     currentDocument = currentDocument.substr(0, patch.f - 1) + currentDocument.substr(patch.t);
