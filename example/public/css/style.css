@@ -42,6 +42,7 @@ textarea {
 #sidebar {
 	background: #E2E2E2;
 	position: fixed;
+	overflow-y: scroll;
 	top: 0;
 	right: 0;
 	bottom: 0;
@@ -50,4 +51,9 @@ textarea {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
+}
+
+#sidebar > #divider {
+	height: 5px;
+	background-color: #D3D3D3;
 }

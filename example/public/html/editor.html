@@ -1,9 +1,13 @@
 <div id="container">
 	<button ng-click="logout()">Logout</button>
+	<button id="sider">Hide sidebar</button>
 	<button id="forcer">Robot mode disabled</button>
 	<button id="pauser">Pause collaboration</button>
-	<button id="sider">Hide sidebar</button>
 	<br>
 	<textarea data-revision="editor" disabled="disabled"></textarea>
 </div>
-<div id="sidebar"></div>
+<div id="sidebar">
+	<div id="revision-diary"></div>
+	<div id="divider"></div>
+	<div id="sent-patches"></div>
+</div>
