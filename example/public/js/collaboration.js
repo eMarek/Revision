@@ -95,12 +95,6 @@ $(document).ready(function() {
                             currentDocument = server.currentDocument;
                         }
 
-                        // server acknowledged sent patches
-                        if (server.acknowledge) {
-                            revision = server.revision;
-                            sentPatches = false;
-                        }
-
                         // new patches from server
                         if (server.patches && server.patches[0]) {
 
@@ -131,6 +125,13 @@ $(document).ready(function() {
                                     $(editor).val(currentDocument);
                                 }
                             }
+                        }
+
+
+                        // server acknowledged sent patches
+                        if (server.acknowledge) {
+                            revision = server.revision;
+                            sentPatches = false;
                         }
                     }
                 }
