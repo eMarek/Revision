@@ -486,9 +486,26 @@ $(document).on("click", "#pauser", function() {
 
     if (pause) {
         pause = false;
-        $(this).text("Pause");
+        $(this).text("Pause collaboration");
     } else {
         pause = true;
-        $(this).text("Continue");
+        $(this).text("Continue collaboration");
+    }
+});
+
+/* sider
+-------------------------------------------------- */
+$(document).on("click", "#sider", function() {
+
+    var sidebarAction = $(this).text();
+
+    if (sidebarAction === "Hide sidebar") {
+        $("#sidebar").hide();
+        $("#container").css("width", "100%");
+        $(this).text("Show sidebar");
+    } else {
+        $("#sidebar").show();
+        $("#container").css("width", "65%");
+        $(this).text("Hide sidebar");
     }
 });

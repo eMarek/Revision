@@ -18,8 +18,11 @@ input, textarea, button {
 }
 
 #container {
-	width: 600px;
+	width: 65%;
 	padding: 0 30px 30px 30px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 textarea {
@@ -38,18 +41,13 @@ textarea {
 
 #sidebar {
 	background: #E2E2E2;
-	width: 100%;
 	position: fixed;
 	top: 0;
-	left: 0;
+	right: 0;
 	bottom: 0;
-	margin-left: 660px;
+	width: 35%;
 	padding: 20px;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
-}
-
-#sidebar > div {
-	padding-bottom: 20px;
 }
