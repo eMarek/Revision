@@ -1,3 +1,5 @@
+/* general
+-------------------------------------------------- */
 body {
 	background-color: #EFEFEF;
 	margin: 0;
@@ -32,6 +34,7 @@ textarea {
 	font-size: 20px;
 	outline: none;
 	resize: none;
+	background-color: white;
 	border: 5px solid #E2E2E2;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -39,21 +42,68 @@ textarea {
 	padding: 10px;
 }
 
+/* sidebar
+-------------------------------------------------- */
 #sidebar {
-	background: #E2E2E2;
+	background: white;
+	border-left: 5px solid #E2E2E2;
 	position: fixed;
 	overflow-y: scroll;
 	top: 0;
 	right: 0;
 	bottom: 0;
 	width: 35%;
-	padding: 20px;
+	padding: 12px 12px 0 12px;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
 
 #sidebar > #divider {
-	height: 5px;
-	background-color: #D3D3D3;
+	height: 1px;
+	background-color: #C2C2C2;
+	margin: 12px 0;
+}
+
+/* bundle
+-------------------------------------------------- */
+#sidebar .bundle {
+	margin-bottom: 12px;
+}
+
+#sidebar .bundle > i.avatar {
+	height: 36px;
+	width: 36px;
+	background-color: #FAFAFA;
+	border: 1px solid #C2C2C2;
+	display: block;
+	background-image: url(../avatars/male.png);
+	background-size: 36px 36px;
+	float: left;
+}
+
+#sidebar .bundle > span {
+	font-size: 16px;
+	display: block;
+	background-color: #C2C2C2;
+	margin-left: 43px;
+	position: relative;
+	padding: 9px;
+	min-height: 20px;
+	line-height: 20px;
+	margin-bottom: 4px;
+}
+
+#sidebar .bundle > span.added {
+	background-color: #D1FFBA;
+}
+
+#sidebar .bundle > span.deleted {
+	background-color: #FFD9C4;
+}
+
+#sidebar .bundle:after {
+    content:'';
+    display:block;
+    clear: both;
 }
