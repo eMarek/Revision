@@ -2,7 +2,7 @@
 -------------------------------------------------- */
 var editor = "textarea[data-revision=editor]";
 
-var loopInterval = 500,
+var loopInterval = 1000,
     pause = false,
     xhr = {},
     data = false,
@@ -51,7 +51,21 @@ $(document).ready(function() {
                 // sent patches to server
                 if (patches[0]) {
 
-                    $("#sidebar").append("<p>" + JSON.stringify(patches) + "</p>");
+                    var prepareSentPatchs = '<div class="bundle"><i class="avatar" style="background-image:url(../avatars/' + window.sessionStorage.userID + '.jpg);"></i>';
+                    for (var pt in patches) {
+                        patch = patches[pt];
+                        if (patch.a === "+") {
+                            prepareSentPatchs = prepareSentPatchs + '<span class="added"><span class="string">' + patch.s + '</span><span class="location">' + patch.p + '</span></span>';
+                        }
+                        if (patch.a === "-") {
+                            prepareSentPatchs = prepareSentPatchs + '<span class="deleted"><span class="string">' + patch.s + '</span><span class="location">' + patch.f + ' - ' + patch.t + '</span></span>';
+                        }
+                    }
+                    prepareSentPatchs = prepareSentPatchs + '</div>';
+
+                    $("#sidebar").append(prepareSentPatchs).animate({
+                        scrollTop: $('#sidebar')[0].scrollHeight
+                    }, 1000);
 
                     // remember current document
                     currentDocument = editorDocument;

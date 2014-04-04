@@ -93,7 +93,8 @@ api["login.json"] = function login(req, rsp, data) {
                     "say": "yay",
                     "msg": "Prijava je uspela!",
                     "user": result[0]["name"] + " " + result[0]["surname"],
-                    "session": session
+                    "session": session,
+                    "userID": result[0]["id"]
                 };
 
             } else {

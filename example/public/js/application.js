@@ -32,6 +32,7 @@ app.run(function($rootScope, $window, $location) {
             $location.path('/login');
         } else if ($location.path() == '/login' && $window.sessionStorage.session) {
             delete $window.sessionStorage.session;
+            delete $window.sessionStorage.userID;
         }
     });
 });
@@ -82,6 +83,7 @@ app.factory("authenticationFactory", function($http, $location, $window) {
 
                 if (rsp.say == "yay") {
                     $window.sessionStorage.session = rsp.session;
+                    $window.sessionStorage.userID = rsp.userID;
                     $location.path("/edit");
                     return;
                 } else {
