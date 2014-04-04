@@ -167,7 +167,8 @@ function onRequest(request, response) {
                         }
 
                         response.writeHead(200, {
-                            "Content-Type": mimeType
+                            "Content-Type": mimeType,
+                            "Cache-Control": "max-age=31536000"
                         });
                         response.write(file, "binary");
                         response.end();
