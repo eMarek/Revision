@@ -6,7 +6,7 @@ var loopInterval = 1000,
     pause = false,
     xhr = {},
     data = false,
-    editorDocument, patches, patch;
+    editorDocument, patches, patch, patchString;
 
 var initialized = false,
     revision = 0,
@@ -52,19 +52,19 @@ $(document).ready(function() {
                 if (patches[0]) {
 
                     var prepareSentPatchs = '<div class="bundle"><i class="avatar" style="background-image:url(../avatars/' + window.sessionStorage.userID + '.jpg);"></i>';
-                    for (var pt in patches) {
-                        patch = patches[pt];
+                    for (var pc in patches) {
+                        patch = patches[pc];
                         if (patch.a === "+") {
-                            prepareSentPatchs = prepareSentPatchs + '<span class="added"><span class="string">' + patch.s + '</span><span class="location">' + patch.p + '</span></span>';
+                            prepareSentPatchs = prepareSentPatchs + '<span class="added"><pre class="string">' + patch.s.replace(/</g, "&lt;").replace(/>/g, "&gt;") + '</pre><span class="location">' + patch.p + '</span></span>';
                         }
                         if (patch.a === "-") {
-                            prepareSentPatchs = prepareSentPatchs + '<span class="deleted"><span class="string">' + patch.s + '</span><span class="location">' + patch.f + ' - ' + patch.t + '</span></span>';
+                            prepareSentPatchs = prepareSentPatchs + '<span class="deleted"><pre class="string">' + patch.s.replace(/</g, "&lt;").replace(/>/g, "&gt;") + '</pre><span class="location">' + patch.f + ' - ' + patch.t + '</span></span>';
                         }
                     }
                     prepareSentPatchs = prepareSentPatchs + '</div>';
 
                     $("#sidebar").append(prepareSentPatchs).animate({
-                        scrollTop: $('#sidebar')[0].scrollHeight
+                        scrollTop: $("#sidebar")[0].scrollHeight
                     }, 1000);
 
                     // remember current document
@@ -85,7 +85,7 @@ $(document).ready(function() {
             // collaboration ajax
             xhr.collaboration = $.ajax({
                 url: "api/collaboration.json",
-                contentType: 'application/json',
+                contentType: "application/json",
                 type: "post",
                 data: data,
                 headers: {
@@ -98,13 +98,20 @@ $(document).ready(function() {
                         // initialized from server
                         if (server.initialize) {
 
-                            // console.log("EDITOR INITIALIZED");
+                            // fill current document
                             $(editor).removeAttr("disabled").val(server.currentDocument).focus();
+
+                            // print out revision diary
+                            // ...
+
+
+                            // caret position
                             $(editor)[0].selectionStart = server.currentDocument.length;
                             $(editor)[0].selectionEnd = server.currentDocument.length;
 
+                            // data
                             initialized = true;
-                            revision = server.revision;
+                            revision = server.revisionDiary.length;
                             sentPatches = false;
                             currentDocument = server.currentDocument;
                         }

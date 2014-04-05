@@ -29,7 +29,7 @@ module.exports = function collaboration(req, rsp, data) {
             "say": "yay",
             "initialize": true,
             "currentDocument": currentDocument,
-            "revision": revisionDiary.length
+            "revisionDiary": revisionDiary
         });
         return;
     }
