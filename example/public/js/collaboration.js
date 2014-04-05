@@ -1,16 +1,18 @@
 /* globals
 -------------------------------------------------- */
-var editor = "textarea[data-revision=editor]";
+var editor = "textarea#editor";
+var sidebar = "div#sidebar";
 
 var loopInterval = 1000,
     pause = false,
     xhr = {},
     data = false,
-    editorDocument, patches, patch, patchString;
+    html, scroll,
+    editorDocument = "",
+    bundle, patches, patch, offset;
 
-var initialized = false,
+var initialization = false,
     revision = 0,
-    sentPatches = false,
     currentDocument = "";
 
 /* document ready
@@ -32,17 +34,14 @@ $(document).ready(function() {
                 return;
             }
 
-            // prepare date
-            data = false;
+            // initialization
+            if (!initialization) {
 
-            if (!initialized) {
+                data = {
+                    "initialization": true
+                };
 
-                // editor initializing if not jet
-                data = JSON.stringify({
-                    "initialize": true
-                });
-
-            } else if (!sentPatches) {
+            } else {
 
                 // calculate patches with changes function
                 editorDocument = $(editor).val();
@@ -51,34 +50,18 @@ $(document).ready(function() {
                 // sent patches to server
                 if (patches[0]) {
 
-                    var prepareSentPatchs = '<div class="bundle"><i class="avatar" style="background-image:url(../avatars/' + window.sessionStorage.userID + '.jpg);"></i>';
-                    for (var pc in patches) {
-                        patch = patches[pc];
-                        if (patch.a === "+") {
-                            prepareSentPatchs = prepareSentPatchs + '<span class="added"><pre class="string">' + patch.s.replace(/</g, "&lt;").replace(/>/g, "&gt;") + '</pre><span class="location">' + patch.p + '</span></span>';
-                        }
-                        if (patch.a === "-") {
-                            prepareSentPatchs = prepareSentPatchs + '<span class="deleted"><pre class="string">' + patch.s.replace(/</g, "&lt;").replace(/>/g, "&gt;") + '</pre><span class="location">' + patch.f + ' - ' + patch.t + '</span></span>';
-                        }
-                    }
-                    prepareSentPatchs = prepareSentPatchs + '</div>';
-
-                    $("#sidebar").append(prepareSentPatchs).animate({
-                        scrollTop: $("#sidebar")[0].scrollHeight
-                    }, 1000);
-
-                    // remember current document
-                    currentDocument = editorDocument;
-
-                    // remember sent patches
-                    sentPatches = patches;
-
-                    // sent patches to server
-                    data = JSON.stringify({
+                    // sent patches, revision and timestamp to the server
+                    data = {
                         "patches": patches,
-                        "revision": revision,
-                        "timestamp": new Date().getTime()
-                    });
+                        "revision": revision
+                    };
+
+                } else {
+
+                    // sent just revision number to the server
+                    data = {
+                        "revision": revision
+                    };
                 }
             }
 
@@ -87,101 +70,174 @@ $(document).ready(function() {
                 url: "api/collaboration.json",
                 contentType: "application/json",
                 type: "post",
-                data: data,
+                data: JSON.stringify(data),
                 headers: {
                     Session: window.sessionStorage.session
                 },
                 dataType: "json",
                 success: function(server) {
-                    if (server.say === "yay") {
 
-                        // initialized from server
-                        if (server.initialize) {
+                    // revision
+                    revision = server.revision;
 
-                            // fill current document
-                            $(editor).removeAttr("disabled").val(server.currentDocument).focus();
+                    // initialization
+                    if (server.hasOwnProperty("currentDocument")) {
 
-                            // print out revision diary
-                            // ...
+                        // update collaboration data
+                        initialization = true;
+                        currentDocument = server.currentDocument;
 
+                        // empty sidebar
+                        $(sidebar).html("");
 
-                            // caret position
-                            $(editor)[0].selectionStart = server.currentDocument.length;
-                            $(editor)[0].selectionEnd = server.currentDocument.length;
+                        // enable and fill out current document
+                        $(editor).removeAttr("disabled").val(server.currentDocument).focus();
 
-                            // data
-                            initialized = true;
-                            revision = server.revisionDiary.length;
-                            sentPatches = false;
-                            currentDocument = server.currentDocument;
+                        // corrent caret position at the end of document
+                        $(editor)[0].selectionStart = server.currentDocument.length;
+                        $(editor)[0].selectionEnd = server.currentDocument.length;
+
+                    } else if (server.revisionDiary) {
+
+                        // ignore author's bundle
+                        if (server.revisionDiary.length == 1 && server.revisionDiary[0].author == window.sessionStorage.userID) {
+
+                            // remember current document
+                            currentDocument = editorDocument;
+
+                        } else {
+
+                            // process revision dairy
+                            for (var rd in server.revisionDiary) {
+                                bundle = server.revisionDiary[rd];
+
+                                // process bundle patches
+                                for (var bc in bundle.patches) {
+                                    patch = bundle.patches[bc];
+
+                                    // validate patch
+                                    if (typeof patch == "object" && patch.hasOwnProperty("a") && patch.hasOwnProperty("s") && (patch.a === "+" && patch.hasOwnProperty("p") || patch.a === "-" && patch.hasOwnProperty("f") && patch.hasOwnProperty("t"))) {
+
+                                        // adding characters
+                                        if (patch.a === "+") {
+
+                                            // take offset into account
+                                            // patch.p = patch.p + offset;
+
+                                            // update current document
+                                            currentDocument = currentDocument.substr(0, patch.p - 1) + patch.s + currentDocument.substr(patch.p - 1);
+                                        }
+
+                                        // deleting characters
+                                        if (patch.a === "-") {
+
+                                            // take offset into account
+                                            // patch.f = patch.f + offset;
+                                            // patch.t = patch.t + offset;
+
+                                            // update current document
+                                            currentDocument = currentDocument.substr(0, patch.f - 1) + currentDocument.substr(patch.t);
+                                        }
+                                    }
+                                }
+
+                                /*
+                                // process patches
+                                for (var pc in bundle.patches) {
+                                    patch = bundle.patches[pc];
+
+                                    // validate patch
+                                    if (typeof patch == "object" && patch.hasOwnProperty("a") && patch.hasOwnProperty("s") && (patch.a === "+" && patch.hasOwnProperty("p") || patch.a === "-" && patch.hasOwnProperty("f") && patch.hasOwnProperty("t"))) {
+
+                                        // adding characters
+                                        if (patch.a === "+") {
+
+                                            // for (var sp in sentPatches) {
+                                            // sPatch = sentPatches[sp];
+                                            // if (sPatch.a === "+" && sPatch.p >= patch.p) {
+                                            // sPatch.p = sPatch.p + patch.s.length;
+                                            // }
+                                            // if (sPatch.a === "-" && sPatch.f >= patch.p) {
+                                            // sPatch.f = sPatch.f + patch.s.length;
+                                            // sPatch.t = sPatch.t + patch.s.length;
+                                            // }
+                                            // }
+
+                                            // update current document
+                                            currentDocument = currentDocument.substr(0, patch.p - 1) + patch.s + currentDocument.substr(patch.p - 1);
+                                        }
+
+                                        // deleting characters
+                                        if (patch.a === "-") {
+
+                                            // for (var sp in sentPatches) {
+                                            // sPatch = sentPatches[sp];
+                                            // if (sPatch.a === "+" && sPatch.p >= patch.p) {
+                                            // sPatch.p = sPatch.p - patch.s.length;
+                                            // }
+                                            // if (sPatch.a === "-" && sPatch.f >= patch.p) {
+                                            // sPatch.f = sPatch.f - patch.s.length;
+                                            // sPatch.t = sPatch.t - patch.s.length;
+                                            // }
+                                            // }                                        
+
+                                            // update current document
+                                            currentDocument = currentDocument.substr(0, patch.f - 1) + currentDocument.substr(patch.t);
+                                        }
+
+                                        // save current document into editor
+                                        $(editor).val(currentDocument);
+                                    }
+                                }
+                                */
+                            }
+
+                            // put current document into the editor
+                            $(editor).val(currentDocument);
                         }
 
-                        // new patches from server
-                        if (server.patches && server.patches[0]) {
+                    }
 
-                            // process bundle of patches
-                            for (var rp in server.patches) {
+                    // revision diary
+                    if (server.revisionDiary) {
 
-                                // single patch in server patches
-                                patch = server.patches[rp];
+                        html = "";
 
-                                // validate patch
-                                if (typeof patch == "object" && patch.hasOwnProperty("a") && patch.hasOwnProperty("s") && (patch.a === "+" && patch.hasOwnProperty("p") || patch.a === "-" && patch.hasOwnProperty("f") && patch.hasOwnProperty("t"))) {
+                        // prepare html layout for revision diary on sidebar
+                        for (var rd in server.revisionDiary) {
+                            bundle = server.revisionDiary[rd];
 
-                                    // adding characters
-                                    if (patch.a === "+") {
+                            html = html + '<div class="bundle"><i class="avatar" style="background-image:url(../avatars/' + bundle.author + '.jpg);"></i>';
 
-                                        for (var sp in sentPatches) {
-                                            sPatch = sentPatches[sp];
-                                            if (sPatch.a === "+" && sPatch.p >= patch.p) {
-                                                sPatch.p = sPatch.p + patch.s.length;
-                                            }
-                                            if (sPatch.a === "-" && sPatch.f >= patch.p) {
-                                                sPatch.f = sPatch.f + patch.s.length;
-                                                sPatch.t = sPatch.t + patch.s.length;
-                                            }
-                                        }
+                            // iterate through all patches in bundle
+                            for (var bp in bundle.patches) {
+                                patch = bundle.patches[bp];
 
-                                        // update current document
-                                        currentDocument = currentDocument.substr(0, patch.p - 1) + patch.s + currentDocument.substr(patch.p - 1);
-                                    }
+                                // some characteres were added
+                                if (patch.a === "+") {
+                                    html = html + '<span class="added"><pre class="string">' + patch.s.replace(/</g, "&lt;").replace(/>/g, "&gt;") + '</pre><span class="location">' + patch.p + '</span></span>';
+                                }
 
-                                    // deleting characters
-                                    if (patch.a === "-") {
-
-                                        for (var sp in sentPatches) {
-                                            sPatch = sentPatches[sp];
-                                            if (sPatch.a === "+" && sPatch.p >= patch.p) {
-                                                sPatch.p = sPatch.p - patch.s.length;
-                                            }
-                                            if (sPatch.a === "-" && sPatch.f >= patch.p) {
-                                                sPatch.f = sPatch.f - patch.s.length;
-                                                sPatch.t = sPatch.t - patch.s.length;
-                                            }
-                                        }
-
-                                        // update current document
-                                        currentDocument = currentDocument.substr(0, patch.f - 1) + currentDocument.substr(patch.t);
-                                    }
-
-                                    // save current document into editor
-                                    $(editor).val(currentDocument);
+                                // some characteres were deleted
+                                if (patch.a === "-") {
+                                    html = html + '<span class="deleted"><pre class="string">' + patch.s.replace(/</g, "&lt;").replace(/>/g, "&gt;") + '</pre><span class="location">' + patch.f + ' - ' + patch.t + '</span></span>';
                                 }
                             }
 
-                            // update revision value
-                            revision = server.revision;
+                            html = html + '</div>';
                         }
 
+                        // check scrolling
+                        scroll = ($(sidebar)[0].scrollHeight - $(sidebar).scrollTop() - $(sidebar).outerHeight() < 200) ? true : false;
 
-                        // server acknowledged sent patches
-                        if (server.acknowledge) {
+                        // append to sidebar
+                        $(sidebar).append(html);
 
-                            // clear sent patches
-                            sentPatches = false;
-
-                            // update revision value
-                            revision = server.revision;
+                        // scroll
+                        if (scroll) {
+                            $(sidebar).animate({
+                                scrollTop: $(sidebar)[0].scrollHeight
+                            }, 500);
                         }
                     }
                 }
@@ -190,12 +246,9 @@ $(document).ready(function() {
         } else {
 
             // reset collaboration
-            if (initialized) {
-                initialized = false,
-                revision = 0,
-                sentPatches = false,
-                currentDocument = "";
-            }
+            initialization = false;
+            revision = 0;
+            currentDocument = "";
         }
     }
 
@@ -211,6 +264,11 @@ function changes(originalText, changedText) {
 
     originalText = originalText || "";
     changedText = changedText || "";
+
+    // precheck
+    if (originalText === changedText) {
+        return [];
+    }
 
     /*
      *
@@ -521,11 +579,11 @@ $(document).on("click", "#sider", function() {
     var sidebarAction = $(this).text();
 
     if (sidebarAction === "Hide sidebar") {
-        $("#sidebar").hide();
+        $(sidebar).hide();
         $("#container").css("width", "100%");
         $(this).text("Show sidebar");
     } else {
-        $("#sidebar").show();
+        $(sidebar).show();
         $("#container").css("width", "65%");
         $(this).text("Hide sidebar");
     }
