@@ -20,6 +20,11 @@ var revision = -1,
 -------------------------------------------------- */
 function collaboration() {
 
+    // recursive calling collaboration
+    setTimeout(function() {
+        collaboration();
+    }, loopInterval);
+
     // does editor exist on page
     if ($(editor).length) {
 
@@ -33,8 +38,6 @@ function collaboration() {
             return;
         }
 
-        // do we have sent patch
-
         // calculate waiting patches with changes function if there is non
         if (!waitingPetches[0]) {
             editorDocument = $(editor).val();
@@ -46,9 +49,6 @@ function collaboration() {
 
             // take on petch from waiting patches
             pitch = waitingPetches.shift();
-
-            // put it in the sent patches
-            // acknowledgedPetches.push(pitch);
 
             // sent patch with expected revision number
             data = {
@@ -76,11 +76,15 @@ function collaboration() {
             dataType: "json",
             success: function(server) {
 
-                // revision
-                revision = server.revision;
-
                 // handling current document
                 if (server.hasOwnProperty("currentDocument")) {
+
+                    // reset collaboration
+                    revision = -1;
+                    waitingPetches = [];
+                    acknowledgedPetches = [];
+                    editorDocument = "";
+                    currentDocument = "";
 
                     // initialization
                     currentDocument = server.currentDocument;
@@ -225,6 +229,9 @@ function collaboration() {
                         }, 500);
                     }
                 }
+
+                // revision
+                revision = server.revision;
             }
         });
 
@@ -239,11 +246,9 @@ function collaboration() {
     }
 }
 
-/* recursitve calling collaboration
+/* init collaboration
 -------------------------------------------------- */
-setInterval(function() {
-    collaboration();
-}, loopInterval);
+collaboration();
 
 /* changes
 -------------------------------------------------- */
@@ -334,10 +339,6 @@ function changes(originalText, changedText) {
                     tempDiagonal = j - i;
                     diagonalValueP = diagonalsValueP[tempDiagonal];
 
-                    if (diagonalValueP > wantedValueP) {
-                        continue;
-                    }
-
                     // chars
                     shorterChar = shorterText.charAt(i - 1);
                     longerChar = longerText.charAt(j - 1);
@@ -374,10 +375,6 @@ function changes(originalText, changedText) {
                     // correct diagonal max P-value and reset current fields
                     if (tempP > wantedValueP) {
                         diagonalsValueP[tempDiagonal] = tempP;
-
-                        LCS[i][j] = EMPTY;
-                        MED[i][j] = EMPTY;
-                        SES[i][j] = EMPTY;
                     }
                 }
             }
