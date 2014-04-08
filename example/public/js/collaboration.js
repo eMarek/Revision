@@ -8,14 +8,13 @@ var loopInterval = 5000,
     xhr = {},
     data = false,
     html, scroll,
-    bundle, patches, patch, offset;
+    bundle, patch;
 
 var revision = -1,
     waitingPetches = [],
-    sentPetch = false,
+    acknowledgedPetches = [],
     editorDocument = "",
-    currentDocument = "",
-    revisionDiary = [];
+    currentDocument = "";
 
 /* collaboration
 -------------------------------------------------- */
@@ -47,6 +46,9 @@ function collaboration() {
 
             // take on petch from waiting patches
             pitch = waitingPetches.shift();
+
+            // put it in the sent patches
+            // acknowledgedPetches.push(pitch);
 
             // sent patch with expected revision number
             data = {
@@ -82,7 +84,6 @@ function collaboration() {
 
                     // initialization
                     currentDocument = server.currentDocument;
-                    revisionDiary = server.revisionDiary;
 
                     // empty sidebar, will be filled up in next if
                     $(sidebar).html("");
@@ -96,36 +97,90 @@ function collaboration() {
 
                 } else if (server.revisionDiary) {
 
-                    if (server.revisionDiary.length == 1 && server.revisionDiary[0].author == window.sessionStorage.userID) {
+                    // remember acknowledged patches
+                    acknowledgedPetches = acknowledgedPetches.concat(server.revisionDiary);
 
-                        // only acknowledge from server
-                        currentDocument = editorDocument;
+                    // prepare editor document from current document
+                    editorDocument = currentDocument;
 
-                    } else {
+                    // build temporary editor document from acknowledged patches
+                    for (var cp in acknowledgedPetches) {
 
-                        // process revision dairy
-                        for (var rd in server.revisionDiary) {
+                        // single acknowledged patch
+                        patch = acknowledgedPetches[cp].patch;
 
-                            // single revision diary bundle
-                            bundle = server.revisionDiary[rd];
+                        // some characteres were added in previous revision
+                        if (patch.a === "+") {
 
-                            // some characteres were added in previous revision
-                            if (bundle.patch.a === "+") {
-
-                                // update current document
-                                currentDocument = currentDocument.substr(0, bundle.patch.p - 1) + bundle.patch.s + currentDocument.substr(bundle.patch.p - 1);
-                            }
-
-                            // some characteres were deleted in previous revision
-                            if (bundle.patch.a === "-") {
-
-                                // update current document
-                                currentDocument = currentDocument.substr(0, bundle.patch.f - 1) + currentDocument.substr(bundle.patch.t);
-                            }
-
-                            // put current document into the editor
-                            $(editor).val(currentDocument);
+                            // update current document
+                            editorDocument = editorDocument.substr(0, patch.p - 1) + patch.s + editorDocument.substr(patch.p - 1);
                         }
+
+                        // some characteres were deleted in previous revision
+                        if (patch.a === "-") {
+
+                            // update current document
+                            editorDocument = editorDocument.substr(0, patch.f - 1) + editorDocument.substr(patch.t);
+                        }
+
+                        // correct waiting patches position or from/to values
+                        if (acknowledgedPetches[cp].author !== window.sessionStorage.userID) {
+
+                            for (var wp in waitingPetches) {
+
+                                // some characteres were added in previous revision
+                                if (patch.a === "+") {
+                                    if (waitingPetches[wp].a === "+" && waitingPetches[wp].p >= patch.p) {
+                                        waitingPetches[wp].p = waitingPetches[wp].p + patch.s.length;
+                                    }
+                                    if (waitingPetches[wp].a === "-" && waitingPetches[wp].f >= patch.p) {
+                                        waitingPetches[wp].t = waitingPetches[wp].t + patch.s.length;
+                                        waitingPetches[wp].f = waitingPetches[wp].f + patch.s.length;
+                                    }
+                                }
+
+                                // some characteres were deleted in previous revision
+                                if (patch.a === "-") {
+                                    if (waitingPetches[wp].a === "+" && waitingPetches[wp].p >= patch.f) {
+                                        waitingPetches[wp].p = waitingPetches[wp].p - patch.s.length;
+                                    }
+                                    if (waitingPetches[wp].a === "-" && waitingPetches[wp].f >= patch.f) {
+                                        waitingPetches[wp].t = waitingPetches[wp].t - patch.s.length;
+                                        waitingPetches[wp].f = waitingPetches[wp].f - patch.s.length;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // build temporary editor document from waiting patches
+                    for (var wp in waitingPetches) {
+
+                        // adding characters
+                        if (waitingPetches[wp].a === "+") {
+
+                            // update current document
+                            editorDocument = editorDocument.substr(0, waitingPetches[wp].p - 1) + waitingPetches[wp].s + editorDocument.substr(waitingPetches[wp].p - 1);
+                        }
+
+                        // deleting characters
+                        if (waitingPetches[wp].a === "-") {
+
+                            // update patch string just in case
+                            waitingPetches[wp].s = editorDocument.substring(waitingPetches[wp].f - 1, waitingPetches[wp].t);
+
+                            // update current document
+                            editorDocument = editorDocument.substr(0, waitingPetches[wp].f - 1) + editorDocument.substr(waitingPetches[wp].t);
+                        }
+                    }
+
+                    // put editor document into the editor
+                    $(editor).val(editorDocument);
+
+                    // patches were proccessed
+                    if (!waitingPetches[0]) {
+                        currentDocument = editorDocument;
+                        acknowledgedPetches = [];
                     }
                 }
 
@@ -176,11 +231,11 @@ function collaboration() {
     } else {
 
         // reset collaboration
-        revision = -1,
-        waitingPetches = [],
-        sentPetch = false,
+        revision = -1;
+        waitingPetches = [];
+        acknowledgedPetches = [];
+        editorDocument = "";
         currentDocument = "";
-        revisionDiary = [];
     }
 }
 
