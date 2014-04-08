@@ -3,260 +3,192 @@
 var editor = "textarea#editor";
 var sidebar = "div#sidebar";
 
-var loopInterval = 1000,
+var loopInterval = 5000,
     pause = false,
     xhr = {},
     data = false,
     html, scroll,
-    editorDocument = "",
     bundle, patches, patch, offset;
 
-var initialization = false,
-    revision = 0,
-    currentDocument = "";
+var revision = -1,
+    waitingPetches = [],
+    sentPetch = false,
+    editorDocument = "",
+    currentDocument = "",
+    revisionDiary = [];
 
-/* document ready
+/* collaboration
 -------------------------------------------------- */
-$(document).ready(function() {
+function collaboration() {
 
-    function collaboration() {
+    // does editor exist on page
+    if ($(editor).length) {
 
-        // does editor exist on page
-        if ($(editor).length) {
+        // pause
+        if (pause) {
+            return;
+        }
 
-            // pause
-            if (pause) {
-                return;
-            }
+        // is previous request completed
+        if (xhr.collaboration && xhr.collaboration.readyState != 4) {
+            return;
+        }
 
-            // is previous request completed
-            if (xhr.collaboration && xhr.collaboration.readyState != 4) {
-                return;
-            }
+        // do we have sent patch
 
-            // initialization
-            if (!initialization) {
+        // calculate waiting patches with changes function if there is non
+        if (!waitingPetches[0]) {
+            editorDocument = $(editor).val();
+            waitingPetches = changes(currentDocument, editorDocument);
+        }
 
-                data = {
-                    "initialization": true
-                };
+        // sent patch to server if there is any
+        if (waitingPetches[0]) {
 
-            } else {
+            // take on petch from waiting patches
+            pitch = waitingPetches.shift();
 
-                // calculate patches with changes function
-                editorDocument = $(editor).val();
-                patches = changes(currentDocument, editorDocument);
+            // sent patch with expected revision number
+            data = {
+                "patch": pitch,
+                "revision": revision
+            };
 
-                // sent patches to server
-                if (patches[0]) {
+        } else {
 
-                    // sent patches, revision and timestamp to the server
-                    data = {
-                        "patches": patches,
-                        "revision": revision
-                    };
+            // sent just revision number to the server
+            data = {
+                "revision": revision
+            };
+        }
 
-                } else {
+        // collaboration ajax
+        xhr.collaboration = $.ajax({
+            url: "api/collaboration.json",
+            contentType: "application/json",
+            type: "post",
+            data: JSON.stringify(data),
+            headers: {
+                Session: window.sessionStorage.session
+            },
+            dataType: "json",
+            success: function(server) {
 
-                    // sent just revision number to the server
-                    data = {
-                        "revision": revision
-                    };
-                }
-            }
+                // revision
+                revision = server.revision;
 
-            // collaboration ajax
-            xhr.collaboration = $.ajax({
-                url: "api/collaboration.json",
-                contentType: "application/json",
-                type: "post",
-                data: JSON.stringify(data),
-                headers: {
-                    Session: window.sessionStorage.session
-                },
-                dataType: "json",
-                success: function(server) {
-
-                    // revision
-                    revision = server.revision;
+                // handling current document
+                if (server.hasOwnProperty("currentDocument")) {
 
                     // initialization
-                    if (server.hasOwnProperty("currentDocument")) {
+                    currentDocument = server.currentDocument;
+                    revisionDiary = server.revisionDiary;
 
-                        // update collaboration data
-                        initialization = true;
-                        currentDocument = server.currentDocument;
+                    // empty sidebar, will be filled up in next if
+                    $(sidebar).html("");
 
-                        // empty sidebar
-                        $(sidebar).html("");
+                    // enable and fill out current document
+                    $(editor).removeAttr("disabled").val(server.currentDocument).focus();
 
-                        // enable and fill out current document
-                        $(editor).removeAttr("disabled").val(server.currentDocument).focus();
+                    // corrent caret position at the end of document
+                    $(editor)[0].selectionStart = server.currentDocument.length;
+                    $(editor)[0].selectionEnd = server.currentDocument.length;
 
-                        // corrent caret position at the end of document
-                        $(editor)[0].selectionStart = server.currentDocument.length;
-                        $(editor)[0].selectionEnd = server.currentDocument.length;
+                } else if (server.revisionDiary) {
 
-                    } else if (server.revisionDiary) {
+                    if (server.revisionDiary.length == 1 && server.revisionDiary[0].author == window.sessionStorage.userID) {
 
-                        // ignore author's bundle
-                        if (server.revisionDiary.length == 1 && server.revisionDiary[0].author == window.sessionStorage.userID) {
+                        // only acknowledge from server
+                        currentDocument = editorDocument;
 
-                            // remember current document
-                            currentDocument = editorDocument;
+                    } else {
 
-                        } else {
+                        // process revision dairy
+                        for (var rd in server.revisionDiary) {
 
-                            // process revision dairy
-                            for (var rd in server.revisionDiary) {
-                                bundle = server.revisionDiary[rd];
+                            // single revision diary bundle
+                            bundle = server.revisionDiary[rd];
 
-                                // process bundle patches
-                                for (var bc in bundle.patches) {
-                                    patch = bundle.patches[bc];
+                            // some characteres were added in previous revision
+                            if (bundle.patch.a === "+") {
 
-                                    // validate patch
-                                    if (typeof patch == "object" && patch.hasOwnProperty("a") && patch.hasOwnProperty("s") && (patch.a === "+" && patch.hasOwnProperty("p") || patch.a === "-" && patch.hasOwnProperty("f") && patch.hasOwnProperty("t"))) {
+                                // update current document
+                                currentDocument = currentDocument.substr(0, bundle.patch.p - 1) + bundle.patch.s + currentDocument.substr(bundle.patch.p - 1);
+                            }
 
-                                        // adding characters
-                                        if (patch.a === "+") {
+                            // some characteres were deleted in previous revision
+                            if (bundle.patch.a === "-") {
 
-                                            // take offset into account
-                                            // patch.p = patch.p + offset;
-
-                                            // update current document
-                                            currentDocument = currentDocument.substr(0, patch.p - 1) + patch.s + currentDocument.substr(patch.p - 1);
-                                        }
-
-                                        // deleting characters
-                                        if (patch.a === "-") {
-
-                                            // take offset into account
-                                            // patch.f = patch.f + offset;
-                                            // patch.t = patch.t + offset;
-
-                                            // update current document
-                                            currentDocument = currentDocument.substr(0, patch.f - 1) + currentDocument.substr(patch.t);
-                                        }
-                                    }
-                                }
-
-                                /*
-                                // process patches
-                                for (var pc in bundle.patches) {
-                                    patch = bundle.patches[pc];
-
-                                    // validate patch
-                                    if (typeof patch == "object" && patch.hasOwnProperty("a") && patch.hasOwnProperty("s") && (patch.a === "+" && patch.hasOwnProperty("p") || patch.a === "-" && patch.hasOwnProperty("f") && patch.hasOwnProperty("t"))) {
-
-                                        // adding characters
-                                        if (patch.a === "+") {
-
-                                            // for (var sp in sentPatches) {
-                                            // sPatch = sentPatches[sp];
-                                            // if (sPatch.a === "+" && sPatch.p >= patch.p) {
-                                            // sPatch.p = sPatch.p + patch.s.length;
-                                            // }
-                                            // if (sPatch.a === "-" && sPatch.f >= patch.p) {
-                                            // sPatch.f = sPatch.f + patch.s.length;
-                                            // sPatch.t = sPatch.t + patch.s.length;
-                                            // }
-                                            // }
-
-                                            // update current document
-                                            currentDocument = currentDocument.substr(0, patch.p - 1) + patch.s + currentDocument.substr(patch.p - 1);
-                                        }
-
-                                        // deleting characters
-                                        if (patch.a === "-") {
-
-                                            // for (var sp in sentPatches) {
-                                            // sPatch = sentPatches[sp];
-                                            // if (sPatch.a === "+" && sPatch.p >= patch.p) {
-                                            // sPatch.p = sPatch.p - patch.s.length;
-                                            // }
-                                            // if (sPatch.a === "-" && sPatch.f >= patch.p) {
-                                            // sPatch.f = sPatch.f - patch.s.length;
-                                            // sPatch.t = sPatch.t - patch.s.length;
-                                            // }
-                                            // }                                        
-
-                                            // update current document
-                                            currentDocument = currentDocument.substr(0, patch.f - 1) + currentDocument.substr(patch.t);
-                                        }
-
-                                        // save current document into editor
-                                        $(editor).val(currentDocument);
-                                    }
-                                }
-                                */
+                                // update current document
+                                currentDocument = currentDocument.substr(0, bundle.patch.f - 1) + currentDocument.substr(bundle.patch.t);
                             }
 
                             // put current document into the editor
                             $(editor).val(currentDocument);
                         }
-
-                    }
-
-                    // revision diary
-                    if (server.revisionDiary) {
-
-                        html = "";
-
-                        // prepare html layout for revision diary on sidebar
-                        for (var rd in server.revisionDiary) {
-                            bundle = server.revisionDiary[rd];
-
-                            html = html + '<div class="bundle"><i class="avatar" style="background-image:url(../avatars/' + bundle.author + '.jpg);"></i>';
-
-                            // iterate through all patches in bundle
-                            for (var bp in bundle.patches) {
-                                patch = bundle.patches[bp];
-
-                                // some characteres were added
-                                if (patch.a === "+") {
-                                    html = html + '<span class="added"><pre class="string">' + patch.s.replace(/</g, "&lt;").replace(/>/g, "&gt;") + '</pre><span class="location">' + patch.p + '</span></span>';
-                                }
-
-                                // some characteres were deleted
-                                if (patch.a === "-") {
-                                    html = html + '<span class="deleted"><pre class="string">' + patch.s.replace(/</g, "&lt;").replace(/>/g, "&gt;") + '</pre><span class="location">' + patch.f + ' - ' + patch.t + '</span></span>';
-                                }
-                            }
-
-                            html = html + '</div>';
-                        }
-
-                        // check scrolling
-                        scroll = ($(sidebar)[0].scrollHeight - $(sidebar).scrollTop() - $(sidebar).outerHeight() < 200) ? true : false;
-
-                        // append to sidebar
-                        $(sidebar).append(html);
-
-                        // scroll
-                        if (scroll) {
-                            $(sidebar).animate({
-                                scrollTop: $(sidebar)[0].scrollHeight
-                            }, 500);
-                        }
                     }
                 }
-            });
 
-        } else {
+                // show revision diary in sidebar
+                if (server.revisionDiary) {
 
-            // reset collaboration
-            initialization = false;
-            revision = 0;
-            currentDocument = "";
-        }
+                    html = "";
+
+                    // prepare html layout for revision diary on sidebar
+                    for (var rd in server.revisionDiary) {
+
+                        // single revision diary bundle
+                        bundle = server.revisionDiary[rd];
+
+                        // prepare html bundle wrapper with avatar
+                        html = html + '<div class="bundle"><i class="avatar" style="background-image:url(../avatars/' + bundle.author + '.jpg);"></i>';
+
+                        // some characteres were added in this particular revision
+                        if (bundle.patch.a === "+") {
+                            html = html + '<span class="added"><pre class="string">' + bundle.patch.s.replace(/</g, "&lt;").replace(/>/g, "&gt;") + '</pre><span class="location">' + bundle.patch.p + '</span></span>';
+                        }
+
+                        // some characteres were deleted in this particular revision
+                        if (bundle.patch.a === "-") {
+                            html = html + '<span class="deleted"><pre class="string">' + bundle.patch.s.replace(/</g, "&lt;").replace(/>/g, "&gt;") + '</pre><span class="location">' + bundle.patch.f + ' - ' + bundle.patch.t + '</span></span>';
+                        }
+
+                        // end html bundle wrapper
+                        html = html + '</div>';
+                    }
+
+                    // check scrolling
+                    scroll = ($(sidebar)[0].scrollHeight - $(sidebar).scrollTop() - $(sidebar).outerHeight() < 200) ? true : false;
+
+                    // append to sidebar
+                    $(sidebar).append(html);
+
+                    // scroll
+                    if (scroll) {
+                        $(sidebar).animate({
+                            scrollTop: $(sidebar)[0].scrollHeight
+                        }, 500);
+                    }
+                }
+            }
+        });
+
+    } else {
+
+        // reset collaboration
+        revision = -1,
+        waitingPetches = [],
+        sentPetch = false,
+        currentDocument = "";
+        revisionDiary = [];
     }
+}
 
-    // recursive calling collaboration
-    setInterval(function() {
-        collaboration();
-    }, loopInterval);
-});
+/* recursitve calling collaboration
+-------------------------------------------------- */
+setInterval(function() {
+    collaboration();
+}, loopInterval);
 
 /* changes
 -------------------------------------------------- */
@@ -537,27 +469,6 @@ function changes(originalText, changedText) {
     // return changes
     return changes;
 }
-
-/* forcer
--------------------------------------------------- */
-$(document).on("click", "#forcer", function() {
-
-    var $editor = $(editor);
-    if ($editor.length) {
-
-        setTimeout(function() {
-            var start = $editor[0].selectionStart;
-            var end = $editor[0].selectionEnd;
-
-            var text = $editor.val();
-            $editor.val(text + " BLJEH?!");
-
-            $editor[0].selectionStart = start;
-            $editor[0].selectionEnd = end;
-
-        }, 2000);
-    }
-});
 
 /* pauser
 -------------------------------------------------- */
