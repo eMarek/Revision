@@ -13,8 +13,9 @@ var loopInterval = 5000,
 var revision = -1,
     waitingPetches = [],
     acknowledgedPetches = [],
-    editorDocument = "",
-    currentDocument = "";
+    oldDocument = "",
+    currentDocument = "",
+    newDocument = "";
 
 /* collaboration
 -------------------------------------------------- */
@@ -40,8 +41,8 @@ function collaboration() {
 
         // calculate waiting patches with changes function if there is non
         if (!waitingPetches[0]) {
-            editorDocument = $(editor).val();
-            waitingPetches = changes(currentDocument, editorDocument);
+            newDocument = $(editor).val();
+            waitingPetches = changes(oldDocument, newDocument);
         }
 
         // sent patch to server if there is any
@@ -83,31 +84,32 @@ function collaboration() {
                     revision = -1;
                     waitingPetches = [];
                     acknowledgedPetches = [];
-                    editorDocument = "";
+                    oldDocument = "";
                     currentDocument = "";
+                    newDocument = "";
 
                     // initialization
-                    currentDocument = server.currentDocument;
+                    oldDocument = server.currentDocument;
 
                     // empty sidebar, will be filled up in next if
                     $(sidebar).html("");
 
-                    // enable and fill out current document
-                    $(editor).removeAttr("disabled").val(server.currentDocument).focus();
+                    // enable and fill out the textarea with existing document
+                    $(editor).removeAttr("disabled").val(oldDocument).focus();
 
                     // corrent caret position at the end of document
-                    $(editor)[0].selectionStart = server.currentDocument.length;
-                    $(editor)[0].selectionEnd = server.currentDocument.length;
+                    $(editor)[0].selectionStart = oldDocument.length;
+                    $(editor)[0].selectionEnd = oldDocument.length;
 
                 } else if (server.revisionDiary) {
 
                     // remember acknowledged patches
                     acknowledgedPetches = acknowledgedPetches.concat(server.revisionDiary);
 
-                    // prepare editor document from current document
-                    editorDocument = currentDocument;
+                    // prepare current document from old document
+                    currentDocument = oldDocument;
 
-                    // build temporary editor document from acknowledged patches
+                    // upbuild temporary current document with acknowledged patches
                     for (var cp in acknowledgedPetches) {
 
                         // single acknowledged patch
@@ -117,14 +119,14 @@ function collaboration() {
                         if (patch.a === "+") {
 
                             // update current document
-                            editorDocument = editorDocument.substr(0, patch.p - 1) + patch.s + editorDocument.substr(patch.p - 1);
+                            currentDocument = currentDocument.substr(0, patch.p - 1) + patch.s + currentDocument.substr(patch.p - 1);
                         }
 
                         // some characteres were deleted in previous revision
                         if (patch.a === "-") {
 
                             // update current document
-                            editorDocument = editorDocument.substr(0, patch.f - 1) + editorDocument.substr(patch.t);
+                            currentDocument = currentDocument.substr(0, patch.f - 1) + currentDocument.substr(patch.t);
                         }
 
                         // correct waiting patches position or from/to values
@@ -157,33 +159,33 @@ function collaboration() {
                         }
                     }
 
-                    // build temporary editor document from waiting patches
+                    // upbuild temporary current document with waiting patches
                     for (var wp in waitingPetches) {
 
                         // adding characters
                         if (waitingPetches[wp].a === "+") {
 
                             // update current document
-                            editorDocument = editorDocument.substr(0, waitingPetches[wp].p - 1) + waitingPetches[wp].s + editorDocument.substr(waitingPetches[wp].p - 1);
+                            currentDocument = currentDocument.substr(0, waitingPetches[wp].p - 1) + waitingPetches[wp].s + currentDocument.substr(waitingPetches[wp].p - 1);
                         }
 
                         // deleting characters
                         if (waitingPetches[wp].a === "-") {
 
                             // update patch string just in case
-                            waitingPetches[wp].s = editorDocument.substring(waitingPetches[wp].f - 1, waitingPetches[wp].t);
+                            waitingPetches[wp].s = currentDocument.substring(waitingPetches[wp].f - 1, waitingPetches[wp].t);
 
                             // update current document
-                            editorDocument = editorDocument.substr(0, waitingPetches[wp].f - 1) + editorDocument.substr(waitingPetches[wp].t);
+                            currentDocument = currentDocument.substr(0, waitingPetches[wp].f - 1) + currentDocument.substr(waitingPetches[wp].t);
                         }
                     }
 
-                    // put editor document into the editor
-                    $(editor).val(editorDocument);
+                    // put current document into the editor
+                    $(editor).val(currentDocument);
 
                     // patches were proccessed
                     if (!waitingPetches[0]) {
-                        currentDocument = editorDocument;
+                        oldDocument = currentDocument;
                         acknowledgedPetches = [];
                     }
                 }
@@ -241,8 +243,9 @@ function collaboration() {
         revision = -1;
         waitingPetches = [];
         acknowledgedPetches = [];
-        editorDocument = "";
+        oldDocument = "";
         currentDocument = "";
+        newDocument = "";
     }
 }
 
