@@ -350,10 +350,14 @@ function collaboration() {
 setInterval(function() {
 
     // does editor exist on page
-    if ($(editor).length && !pause && !waitingPatches[0]) {
+    if ($(editor).length) {
 
-        // fire collaboration
-        collaboration();
+        // in case of waiting patches collaboration will call it self recursively
+        if (!waitingPatches[0]) {
+
+            // fire collaboration
+            collaboration();
+        }
 
     } else {
 
