@@ -291,6 +291,9 @@ function collaboration() {
                     $(editor)[0].selectionEnd = caretEnd + caretOffsetEnd;
                 }
 
+                // revision
+                revision = server.revision;
+
                 // show revision diary in sidebar
                 if (server.revisionDiary) {
 
@@ -332,9 +335,6 @@ function collaboration() {
                         }, 500);
                     }
                 }
-
-                // revision
-                revision = server.revision;
             }
         });
 
