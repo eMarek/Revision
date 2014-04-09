@@ -1,9 +1,9 @@
-/* globals
+/* collaboration globals
 -------------------------------------------------- */
 var editor = "textarea#editor";
 var sidebar = "div#sidebar";
 
-var loopInterval = 5000,
+var loopInterval = 2500,
     pause = false,
     xhr = {},
     data = false,
@@ -370,6 +370,32 @@ setInterval(function() {
 
 }, loopInterval);
 
+/* changes globals
+-------------------------------------------------- */
+var longerText, shorterText, delta;
+var LCS, MED, SES;
+var EMPTY, empties;
+
+var timestamp;
+
+var wantedValueP,
+    diagonalsValueP,
+    tempDiagonal, diagonalValueP;
+
+var shorterChar, longerChar, matchingChar,
+    tempUpperLeft, tempUpper, tempLeft,
+    tempV, tempP;
+
+var i, j,
+    leftMove,
+    upMove,
+    currentLCS, nextLCS,
+    character,
+    changesPatches,
+    string,
+    change,
+    offset;
+
 /* changes
 -------------------------------------------------- */
 function changes(originalText, changedText) {
@@ -388,16 +414,16 @@ function changes(originalText, changedText) {
      *
      */
 
-    var longerText = (originalText.length < changedText.length) ? changedText : originalText;
-    var shorterText = (originalText.length < changedText.length) ? originalText : changedText;
-    var delta = longerText.length - shorterText.length;
+    longerText = (originalText.length < changedText.length) ? changedText : originalText;
+    shorterText = (originalText.length < changedText.length) ? originalText : changedText;
+    delta = longerText.length - shorterText.length;
 
-    var LCS = [];
-    var MED = [];
-    var SES = [];
+    LCS = [];
+    MED = [];
+    SES = [];
 
-    var EMPTY = "-";
-    var empties = [];
+    EMPTY = "-";
+    empties = [];
 
     for (var i = 0; i <= longerText.length; i++) {
         empties.push(EMPTY);
@@ -409,15 +435,15 @@ function changes(originalText, changedText) {
         SES.push(empties.slice());
     }
 
-    var timestamp = new Date();
+    timestamp = new Date();
 
-    var wantedValueP = -1;
-    var diagonalsValueP = {};
-    var tempDiagonal, diagonalValueP;
+    wantedValueP = -1;
+    diagonalsValueP = {};
+    tempDiagonal, diagonalValueP;
 
-    var shorterChar, longerChar, matchingChar;
-    var tempUpperLeft, tempUpper, tempLeft;
-    var tempV, tempP;
+    shorterChar, longerChar, matchingChar;
+    tempUpperLeft, tempUpper, tempLeft;
+    tempV, tempP;
 
     // fill the tables until the bottom right field is reached
     while (LCS[shorterText.length][longerText.length] == EMPTY) {
@@ -513,17 +539,18 @@ function changes(originalText, changedText) {
      *
      */
 
-    var i = shorterText.length;
-    var j = longerText.length;
-    var leftMove = false;
-    var upMove = false;
-    var currentLCS, nextLCS;
-    var character = "";
-    var changes = [];
-    var string = "";
-    var timestamp = new Date();
-    var change = {};
-    var offset = 0;
+    i = shorterText.length;
+    j = longerText.length;
+    leftMove = false;
+    upMove = false;
+    currentLCS, nextLCS;
+    character = "";
+    changesPatches = [];
+    string = "";
+    timestamp = new Date();
+    change = {};
+    offset = 0;
+
 
     // find changes in LCS until the top left field is reached
     while (true) {
@@ -545,13 +572,13 @@ function changes(originalText, changedText) {
 
         if (leftMove) {
             if (originalText.length < changedText.length) {
-                changes.push({
+                changesPatches.push({
                     "a": "+",
                     "s": string,
                     "p": i + 1
                 });
             } else {
-                changes.push({
+                changesPatches.push({
                     "a": "-",
                     "s": string,
                     "f": j + 1,
@@ -577,14 +604,14 @@ function changes(originalText, changedText) {
 
         if (upMove) {
             if (originalText.length < changedText.length) {
-                changes.push({
+                changesPatches.push({
                     "a": "-",
                     "s": string,
                     "f": i + 1,
                     "t": i + string.length
                 });
             } else {
-                changes.push({
+                changesPatches.push({
                     "a": "+",
                     "s": string,
                     "p": j + 1
@@ -616,11 +643,11 @@ function changes(originalText, changedText) {
     }
 
     // reverse changes
-    changes.reverse();
+    changesPatches.reverse();
 
     // fix position value and from/to values
-    for (var cc in changes) {
-        change = changes[cc];
+    for (var cc in changesPatches) {
+        change = changesPatches[cc];
 
         // adding characters
         if (change.a === "+") {
@@ -639,7 +666,7 @@ function changes(originalText, changedText) {
     }
 
     // return changes
-    return changes;
+    return changesPatches;
 }
 
 /* pauser
