@@ -10,8 +10,15 @@ var loopInterval = 5000,
     html, scroll,
     bundle, patch;
 
+var caretStart,
+    caretEnd,
+    caretOffsetStart,
+    caretOffsetEnd;
+
 var revision = -1,
     waitingPetches = [],
+    writtenPetches = [],
+    clientPetches = [],
     acknowledgedPetches = [],
     oldDocument = "",
     currentDocument = "",
@@ -97,7 +104,7 @@ function collaboration() {
                     // enable and fill out the textarea with existing document
                     $(editor).removeAttr("disabled").val(oldDocument).focus();
 
-                    // corrent caret position at the end of document
+                    // correct caret position at the end of document
                     $(editor)[0].selectionStart = oldDocument.length;
                     $(editor)[0].selectionEnd = oldDocument.length;
 
@@ -114,6 +121,12 @@ function collaboration() {
 
                     // concat waiting patches and written patches because operational transformation needs to be done on all of them
                     clientPetches = waitingPetches.concat(writtenPetches);
+
+                    // prepare caret position for calculating
+                    caretStart = $(editor)[0].selectionStart;
+                    caretEnd = $(editor)[0].selectionEnd;
+                    caretOffsetStart = 0;
+                    caretOffsetEnd = 0;
 
                     // upbuild temporary current document with acknowledged patches
                     for (var lp in acknowledgedPetches) {
@@ -135,7 +148,7 @@ function collaboration() {
                             currentDocument = currentDocument.substr(0, patch.f - 1) + currentDocument.substr(patch.t);
                         }
 
-                        // correct waiting patches position or from/to values
+                        // correct waiting patches position or from/to values - OPERATIONAL TRANSFORMATION
                         if (acknowledgedPetches[lp].author !== window.sessionStorage.userID) {
 
                             for (var cp in clientPetches) {
@@ -159,6 +172,73 @@ function collaboration() {
                                     if (clientPetches[cp].a === "-" && clientPetches[cp].f >= patch.f) {
                                         clientPetches[cp].t = clientPetches[cp].t - patch.s.length;
                                         clientPetches[cp].f = clientPetches[cp].f - patch.s.length;
+                                    }
+                                }
+                            }
+
+                            // caret positioning when characteres were added in previous revision
+                            if (patch.a === "+") {
+                                if (caretStart >= patch.p) {
+                                    caretOffsetStart = caretOffsetStart + patch.s.length;
+                                }
+                                if (caretEnd >= patch.p) {
+                                    caretOffsetEnd = caretOffsetEnd + patch.s.length;
+                                }
+                            }
+
+                            // caret positioning when characteres were deleted in previous revision
+                            if (patch.a === "-") {
+                                if (caretStart <= caretEnd) {
+                                    // ...----...[..........]..........
+                                    if (patch.f <= caretStart && patch.f <= caretEnd && patch.t <= caretStart && patch.t <= caretEnd) {
+                                        caretOffsetStart = caretOffsetStart - patch.s.length;
+                                        caretOffsetEnd = caretOffsetEnd - patch.s.length;
+                                    }
+                                    // ........--[--........]..........
+                                    if (patch.f <= caretStart && patch.f <= caretEnd && patch.t > caretStart && patch.t <= caretEnd) {
+                                        caretOffsetStart = caretOffsetStart - (caretStart - patch.f);
+                                        caretOffsetEnd = caretOffsetEnd - patch.s.length;
+                                    }
+                                    // ..........[...----...]..........
+                                    if (patch.f > caretStart && patch.f <= caretEnd && patch.t > caretStart && patch.t <= caretEnd) {
+                                        caretOffsetStart = caretOffsetStart;
+                                        caretOffsetEnd = caretOffsetEnd - patch.s.length;
+                                    }
+                                    // ..........[........--]--........
+                                    if (patch.f > caretStart && patch.f <= caretEnd && patch.t > caretStart && patch.t > caretEnd) {
+                                        caretOffsetStart = caretOffsetStart;
+                                        caretOffsetEnd = caretOffsetEnd - (caretEnd - patch.f) - 1;
+                                    }
+                                    // ..........[..........]...----...
+                                    if (patch.f > caretStart && patch.f > caretEnd && patch.t > caretStart && patch.t > caretEnd) {
+                                        caretOffsetStart = caretOffsetStart;
+                                        caretOffsetEnd = caretOffsetEnd;
+                                    }
+                                } else {
+                                    // ...----...]..........[..........
+                                    if (patch.f <= caretEnd && patch.f <= caretStart && patch.t <= caretEnd && patch.t <= caretStart) {
+                                        caretOffsetStart = caretOffsetStart - patch.s.length;
+                                        caretOffsetEnd = caretOffsetEnd - patch.s.length;
+                                    }
+                                    // ........--]--........[..........
+                                    if (patch.f <= caretEnd && patch.f <= caretStart && patch.t > caretEnd && patch.t <= caretStart) {
+                                        caretOffsetStart = caretOffsetStart - patch.s.length;
+                                        caretOffsetEnd = caretOffsetEnd - (caretEnd - patch.f);
+                                    }
+                                    // ..........]...----...[..........
+                                    if (patch.f > caretEnd && patch.f <= caretStart && patch.t > caretEnd && patch.t <= caretStart) {
+                                        caretOffsetStart = caretOffsetStart - patch.s.length;
+                                        caretOffsetEnd = caretOffsetEnd;
+                                    }
+                                    // ..........]........--[--........
+                                    if (patch.f > caretEnd && patch.f <= caretStart && patch.t > caretEnd && patch.t > caretStart) {
+                                        caretOffsetStart = caretOffsetStart - (caretEnd - patch.f);
+                                        caretOffsetEnd = caretOffsetEnd;
+                                    }
+                                    // ..........]..........[...----...
+                                    if (patch.f > caretEnd && patch.f > caretStart && patch.t > caretEnd && patch.t > caretStart) {
+                                        caretOffsetStart = caretOffsetStart;
+                                        caretOffsetEnd = caretOffsetEnd;
                                     }
                                 }
                             }
@@ -194,6 +274,10 @@ function collaboration() {
 
                     // put current document into the editor
                     $(editor).val(currentDocument);
+
+                    // correct caret position with offset
+                    $(editor)[0].selectionStart = caretStart + caretOffsetStart;
+                    $(editor)[0].selectionEnd = caretEnd + caretOffsetEnd;
                 }
 
                 // show revision diary in sidebar

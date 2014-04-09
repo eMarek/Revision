@@ -42,7 +42,7 @@ module.exports = function collaboration(req, rsp, data) {
             // validate patch
             if (typeof bundle.patch == "object" && bundle.patch.hasOwnProperty("a") && bundle.patch.hasOwnProperty("s") && (bundle.patch.a === "+" && bundle.patch.hasOwnProperty("p") || bundle.patch.a === "-" && bundle.patch.hasOwnProperty("f") && bundle.patch.hasOwnProperty("t"))) {
 
-                // calculate offset for incoming patches
+                // calculate offset for incoming patches - OPERATIONAL TRANSFORMATION
                 offset = 0;
                 for (var rd in revisionDiary) {
                     if (rd >= req.payload.revision) {
