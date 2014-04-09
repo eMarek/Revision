@@ -17,10 +17,10 @@ var caretStart,
     caretOffsetEnd;
 
 var revision = -1,
-    waitingPetches = [],
-    writtenPetches = [],
-    clientPetches = [],
-    acknowledgedPetches = [],
+    waitingPatches = [],
+    writtenPatches = [],
+    clientPatches = [],
+    acknowledgedPatches = [],
     oldDocument = "",
     currentDocument = "",
     newDocument = "";
@@ -40,16 +40,16 @@ function collaboration() {
     }
 
     // calculate waiting patches with changes function if there is non
-    if (!waitingPetches[0]) {
+    if (!waitingPatches[0]) {
         newDocument = $(editor).val();
-        waitingPetches = changes(oldDocument, newDocument);
+        waitingPatches = changes(oldDocument, newDocument);
     }
 
     // sent patch to server if there is any
-    if (waitingPetches[0]) {
+    if (waitingPatches[0]) {
 
         // take on petch from waiting patches
-        pitch = waitingPetches.shift();
+        pitch = waitingPatches.shift();
 
         // sent patch with expected revision number
         data = {
@@ -90,10 +90,10 @@ function collaboration() {
 
                 // reset collaboration
                 revision = -1;
-                waitingPetches = [];
-                writtenPetches = [];
-                clientPetches = [];
-                acknowledgedPetches = [];
+                waitingPatches = [];
+                writtenPatches = [];
+                clientPatches = [];
+                acknowledgedPatches = [];
                 oldDocument = "";
                 currentDocument = "";
                 newDocument = "";
@@ -114,16 +114,16 @@ function collaboration() {
             } else if (server.revisionDiary) {
 
                 // remember acknowledged patches
-                acknowledgedPetches = acknowledgedPetches.concat(server.revisionDiary);
+                acknowledgedPatches = acknowledgedPatches.concat(server.revisionDiary);
 
                 // prepare current document from old document
                 currentDocument = oldDocument;
 
                 // calculate written patches with changes function
-                writtenPetches = changes(newDocument, $(editor).val());
+                writtenPatches = changes(newDocument, $(editor).val());
 
                 // concat waiting patches and written patches because operational transformation needs to be done on all of them
-                clientPetches = waitingPetches.concat(writtenPetches);
+                clientPatches = waitingPatches.concat(writtenPatches);
 
                 // prepare caret position for calculating
                 caretStart = $(editor)[0].selectionStart;
@@ -132,10 +132,10 @@ function collaboration() {
                 caretOffsetEnd = 0;
 
                 // upbuild temporary current document with acknowledged patches
-                for (var lp in acknowledgedPetches) {
+                for (var lp in acknowledgedPatches) {
 
                     // single acknowledged patch
-                    patch = acknowledgedPetches[lp].patch;
+                    patch = acknowledgedPatches[lp].patch;
 
                     // some characteres were added in previous revision
                     if (patch.a === "+") {
@@ -152,29 +152,29 @@ function collaboration() {
                     }
 
                     // correct waiting patches position or from/to values - OPERATIONAL TRANSFORMATION
-                    if (acknowledgedPetches[lp].author !== window.sessionStorage.userID) {
+                    if (acknowledgedPatches[lp].author !== window.sessionStorage.userID) {
 
-                        for (var cp in clientPetches) {
+                        for (var cp in clientPatches) {
 
                             // some characteres were added in previous revision
                             if (patch.a === "+") {
-                                if (clientPetches[cp].a === "+" && clientPetches[cp].p >= patch.p) {
-                                    clientPetches[cp].p = clientPetches[cp].p + patch.s.length;
+                                if (clientPatches[cp].a === "+" && clientPatches[cp].p >= patch.p) {
+                                    clientPatches[cp].p = clientPatches[cp].p + patch.s.length;
                                 }
-                                if (clientPetches[cp].a === "-" && clientPetches[cp].f >= patch.p) {
-                                    clientPetches[cp].t = clientPetches[cp].t + patch.s.length;
-                                    clientPetches[cp].f = clientPetches[cp].f + patch.s.length;
+                                if (clientPatches[cp].a === "-" && clientPatches[cp].f >= patch.p) {
+                                    clientPatches[cp].t = clientPatches[cp].t + patch.s.length;
+                                    clientPatches[cp].f = clientPatches[cp].f + patch.s.length;
                                 }
                             }
 
                             // some characteres were deleted in previous revision
                             if (patch.a === "-") {
-                                if (clientPetches[cp].a === "+" && clientPetches[cp].p >= patch.f) {
-                                    clientPetches[cp].p = clientPetches[cp].p - patch.s.length;
+                                if (clientPatches[cp].a === "+" && clientPatches[cp].p >= patch.f) {
+                                    clientPatches[cp].p = clientPatches[cp].p - patch.s.length;
                                 }
-                                if (clientPetches[cp].a === "-" && clientPetches[cp].f >= patch.f) {
-                                    clientPetches[cp].t = clientPetches[cp].t - patch.s.length;
-                                    clientPetches[cp].f = clientPetches[cp].f - patch.s.length;
+                                if (clientPatches[cp].a === "-" && clientPatches[cp].f >= patch.f) {
+                                    clientPatches[cp].t = clientPatches[cp].t - patch.s.length;
+                                    clientPatches[cp].f = clientPatches[cp].f - patch.s.length;
                                 }
                             }
                         }
@@ -249,29 +249,29 @@ function collaboration() {
                 }
 
                 // if all waiting patches were proccessed save current document as old document
-                if (!waitingPetches[0]) {
+                if (!waitingPatches[0]) {
                     oldDocument = currentDocument;
-                    acknowledgedPetches = [];
+                    acknowledgedPatches = [];
                 }
 
                 // upbuild temporary current document with waiting patches
-                for (var cp in clientPetches) {
+                for (var cp in clientPatches) {
 
                     // adding characters
-                    if (clientPetches[cp].a === "+") {
+                    if (clientPatches[cp].a === "+") {
 
                         // update current document
-                        currentDocument = currentDocument.substr(0, clientPetches[cp].p - 1) + clientPetches[cp].s + currentDocument.substr(clientPetches[cp].p - 1);
+                        currentDocument = currentDocument.substr(0, clientPatches[cp].p - 1) + clientPatches[cp].s + currentDocument.substr(clientPatches[cp].p - 1);
                     }
 
                     // deleting characters
-                    if (clientPetches[cp].a === "-") {
+                    if (clientPatches[cp].a === "-") {
 
                         // update patch string just in case
-                        clientPetches[cp].s = currentDocument.substring(clientPetches[cp].f - 1, clientPetches[cp].t);
+                        clientPatches[cp].s = currentDocument.substring(clientPatches[cp].f - 1, clientPatches[cp].t);
 
                         // update current document
-                        currentDocument = currentDocument.substr(0, clientPetches[cp].f - 1) + currentDocument.substr(clientPetches[cp].t);
+                        currentDocument = currentDocument.substr(0, clientPatches[cp].f - 1) + currentDocument.substr(clientPatches[cp].t);
                     }
                 }
 
@@ -321,7 +321,7 @@ function collaboration() {
                 $(sidebar).append(html);
 
                 // move sidebar content to show last patches and do the callback if necessary
-                if (waitingPetches[0]) {
+                if (waitingPatches[0]) {
 
                     // immediate recursive collaboration !IMPORTANT
                     collaboration();
@@ -350,7 +350,7 @@ function collaboration() {
 setInterval(function() {
 
     // does editor exist on page
-    if ($(editor).length && !pause && !waitingPetches[0]) {
+    if ($(editor).length && !pause && !waitingPatches[0]) {
 
         // fire collaboration
         collaboration();
@@ -359,10 +359,10 @@ setInterval(function() {
 
         // reset collaboration
         revision = -1;
-        waitingPetches = [];
-        writtenPetches = [];
-        clientPetches = [];
-        acknowledgedPetches = [];
+        waitingPatches = [];
+        writtenPatches = [];
+        clientPatches = [];
+        acknowledgedPatches = [];
         oldDocument = "";
         currentDocument = "";
         newDocument = "";
@@ -708,10 +708,10 @@ $(document).on("click", "#reset", function() {
 
     // reset collaboration
     revision = -1;
-    waitingPetches = [];
-    writtenPetches = [];
-    clientPetches = [];
-    acknowledgedPetches = [];
+    waitingPatches = [];
+    writtenPatches = [];
+    clientPatches = [];
+    acknowledgedPatches = [];
     oldDocument = "";
     currentDocument = "";
     newDocument = "";
