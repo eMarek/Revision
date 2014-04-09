@@ -7,6 +7,7 @@ var loopInterval = 5000,
     pause = false,
     xhr = {},
     data = false,
+    reset = false,
     html, scroll,
     bundle, patch;
 
@@ -72,6 +73,14 @@ function collaboration() {
             };
         }
 
+        // reset editor
+        if (reset) {
+            data = {
+                "revision": -2
+            }
+            reset = false;
+        }
+
         // collaboration ajax
         xhr.collaboration = $.ajax({
             url: "api/collaboration.json",
@@ -90,6 +99,8 @@ function collaboration() {
                     // reset collaboration
                     revision = -1;
                     waitingPetches = [];
+                    writtenPetches = [];
+                    clientPetches = [];
                     acknowledgedPetches = [];
                     oldDocument = "";
                     currentDocument = "";
@@ -332,6 +343,8 @@ function collaboration() {
         // reset collaboration
         revision = -1;
         waitingPetches = [];
+        writtenPetches = [];
+        clientPetches = [];
         acknowledgedPetches = [];
         oldDocument = "";
         currentDocument = "";
@@ -643,4 +656,28 @@ $(document).on("click", "#sider", function() {
         $("#container").css("width", "65%");
         $(this).text("Hide sidebar");
     }
+});
+
+/* pauser
+-------------------------------------------------- */
+$(document).on("click", "#reset", function() {
+
+    // set flag
+    reset = true;
+
+    // reset collaboration
+    revision = -1;
+    waitingPetches = [];
+    writtenPetches = [];
+    clientPetches = [];
+    acknowledgedPetches = [];
+    oldDocument = "";
+    currentDocument = "";
+    newDocument = "";
+
+    // empty sidebar, will be filled up in next if
+    $(sidebar).html("");
+
+    // disable and empty textarea
+    $(editor).val("").attr("disabled", "disabled");
 });

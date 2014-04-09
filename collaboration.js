@@ -14,6 +14,13 @@ var users = {};
 -------------------------------------------------- */
 module.exports = function collaboration(req, rsp, data) {
 
+    // reset editor
+    if (req.payload.revision == -2) {
+        revisionDiary = [];
+        currentDocument = "";
+        users = {};
+    }
+
     // forced initialization or new user
     if (req.payload.revision == -1 || !users.hasOwnProperty(data.user.id)) {
 
