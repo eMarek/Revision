@@ -8,7 +8,7 @@ var loopInterval = 5000,
     xhr = {},
     data = false,
     reset = false,
-    html, scroll,
+    html, showLast,
     bundle, patch;
 
 var caretStart,
@@ -29,314 +29,331 @@ var revision = -1,
 -------------------------------------------------- */
 function collaboration() {
 
-    // recursive calling collaboration
-    setTimeout(function() {
-        collaboration();
-    }, loopInterval);
+    // pause
+    if (pause) {
+        return;
+    }
 
-    // does editor exist on page
-    if ($(editor).length) {
+    // is previous request completed
+    if (xhr.collaboration && xhr.collaboration.readyState != 4) {
+        return;
+    }
 
-        // pause
-        if (pause) {
-            return;
+    // calculate waiting patches with changes function if there is non
+    if (!waitingPetches[0]) {
+        newDocument = $(editor).val();
+        waitingPetches = changes(oldDocument, newDocument);
+    }
+
+    // sent patch to server if there is any
+    if (waitingPetches[0]) {
+
+        // take on petch from waiting patches
+        pitch = waitingPetches.shift();
+
+        // sent patch with expected revision number
+        data = {
+            "patch": pitch,
+            "revision": revision
+        };
+
+    } else {
+
+        // sent just revision number to the server
+        data = {
+            "revision": revision
+        };
+    }
+
+    // reset editor
+    if (reset) {
+        data = {
+            "revision": -2
         }
+        reset = false;
+    }
 
-        // is previous request completed
-        if (xhr.collaboration && xhr.collaboration.readyState != 4) {
-            return;
-        }
+    // collaboration ajax
+    xhr.collaboration = $.ajax({
+        url: "api/collaboration.json",
+        contentType: "application/json",
+        type: "post",
+        data: JSON.stringify(data),
+        headers: {
+            Session: window.sessionStorage.session
+        },
+        dataType: "json",
+        success: function(server) {
 
-        // calculate waiting patches with changes function if there is non
-        if (!waitingPetches[0]) {
-            newDocument = $(editor).val();
-            waitingPetches = changes(oldDocument, newDocument);
-        }
+            // handling current document
+            if (server.hasOwnProperty("currentDocument")) {
 
-        // sent patch to server if there is any
-        if (waitingPetches[0]) {
+                // reset collaboration
+                revision = -1;
+                waitingPetches = [];
+                writtenPetches = [];
+                clientPetches = [];
+                acknowledgedPetches = [];
+                oldDocument = "";
+                currentDocument = "";
+                newDocument = "";
 
-            // take on petch from waiting patches
-            pitch = waitingPetches.shift();
+                // initialization
+                oldDocument = server.currentDocument;
 
-            // sent patch with expected revision number
-            data = {
-                "patch": pitch,
-                "revision": revision
-            };
+                // empty sidebar, will be filled up in next if
+                $(sidebar).html("");
 
-        } else {
+                // enable and fill out the textarea with existing document
+                $(editor).removeAttr("disabled").val(oldDocument).focus();
 
-            // sent just revision number to the server
-            data = {
-                "revision": revision
-            };
-        }
+                // correct caret position at the end of document
+                $(editor)[0].selectionStart = oldDocument.length;
+                $(editor)[0].selectionEnd = oldDocument.length;
 
-        // reset editor
-        if (reset) {
-            data = {
-                "revision": -2
-            }
-            reset = false;
-        }
+            } else if (server.revisionDiary) {
 
-        // collaboration ajax
-        xhr.collaboration = $.ajax({
-            url: "api/collaboration.json",
-            contentType: "application/json",
-            type: "post",
-            data: JSON.stringify(data),
-            headers: {
-                Session: window.sessionStorage.session
-            },
-            dataType: "json",
-            success: function(server) {
+                // remember acknowledged patches
+                acknowledgedPetches = acknowledgedPetches.concat(server.revisionDiary);
 
-                // handling current document
-                if (server.hasOwnProperty("currentDocument")) {
+                // prepare current document from old document
+                currentDocument = oldDocument;
 
-                    // reset collaboration
-                    revision = -1;
-                    waitingPetches = [];
-                    writtenPetches = [];
-                    clientPetches = [];
-                    acknowledgedPetches = [];
-                    oldDocument = "";
-                    currentDocument = "";
-                    newDocument = "";
+                // calculate written patches with changes function
+                writtenPetches = changes(newDocument, $(editor).val());
 
-                    // initialization
-                    oldDocument = server.currentDocument;
+                // concat waiting patches and written patches because operational transformation needs to be done on all of them
+                clientPetches = waitingPetches.concat(writtenPetches);
 
-                    // empty sidebar, will be filled up in next if
-                    $(sidebar).html("");
+                // prepare caret position for calculating
+                caretStart = $(editor)[0].selectionStart;
+                caretEnd = $(editor)[0].selectionEnd;
+                caretOffsetStart = 0;
+                caretOffsetEnd = 0;
 
-                    // enable and fill out the textarea with existing document
-                    $(editor).removeAttr("disabled").val(oldDocument).focus();
+                // upbuild temporary current document with acknowledged patches
+                for (var lp in acknowledgedPetches) {
 
-                    // correct caret position at the end of document
-                    $(editor)[0].selectionStart = oldDocument.length;
-                    $(editor)[0].selectionEnd = oldDocument.length;
+                    // single acknowledged patch
+                    patch = acknowledgedPetches[lp].patch;
 
-                } else if (server.revisionDiary) {
+                    // some characteres were added in previous revision
+                    if (patch.a === "+") {
 
-                    // remember acknowledged patches
-                    acknowledgedPetches = acknowledgedPetches.concat(server.revisionDiary);
+                        // update current document
+                        currentDocument = currentDocument.substr(0, patch.p - 1) + patch.s + currentDocument.substr(patch.p - 1);
+                    }
 
-                    // prepare current document from old document
-                    currentDocument = oldDocument;
+                    // some characteres were deleted in previous revision
+                    if (patch.a === "-") {
 
-                    // calculate written patches with changes function
-                    writtenPetches = changes(newDocument, $(editor).val());
+                        // update current document
+                        currentDocument = currentDocument.substr(0, patch.f - 1) + currentDocument.substr(patch.t);
+                    }
 
-                    // concat waiting patches and written patches because operational transformation needs to be done on all of them
-                    clientPetches = waitingPetches.concat(writtenPetches);
+                    // correct waiting patches position or from/to values - OPERATIONAL TRANSFORMATION
+                    if (acknowledgedPetches[lp].author !== window.sessionStorage.userID) {
 
-                    // prepare caret position for calculating
-                    caretStart = $(editor)[0].selectionStart;
-                    caretEnd = $(editor)[0].selectionEnd;
-                    caretOffsetStart = 0;
-                    caretOffsetEnd = 0;
+                        for (var cp in clientPetches) {
 
-                    // upbuild temporary current document with acknowledged patches
-                    for (var lp in acknowledgedPetches) {
-
-                        // single acknowledged patch
-                        patch = acknowledgedPetches[lp].patch;
-
-                        // some characteres were added in previous revision
-                        if (patch.a === "+") {
-
-                            // update current document
-                            currentDocument = currentDocument.substr(0, patch.p - 1) + patch.s + currentDocument.substr(patch.p - 1);
-                        }
-
-                        // some characteres were deleted in previous revision
-                        if (patch.a === "-") {
-
-                            // update current document
-                            currentDocument = currentDocument.substr(0, patch.f - 1) + currentDocument.substr(patch.t);
-                        }
-
-                        // correct waiting patches position or from/to values - OPERATIONAL TRANSFORMATION
-                        if (acknowledgedPetches[lp].author !== window.sessionStorage.userID) {
-
-                            for (var cp in clientPetches) {
-
-                                // some characteres were added in previous revision
-                                if (patch.a === "+") {
-                                    if (clientPetches[cp].a === "+" && clientPetches[cp].p >= patch.p) {
-                                        clientPetches[cp].p = clientPetches[cp].p + patch.s.length;
-                                    }
-                                    if (clientPetches[cp].a === "-" && clientPetches[cp].f >= patch.p) {
-                                        clientPetches[cp].t = clientPetches[cp].t + patch.s.length;
-                                        clientPetches[cp].f = clientPetches[cp].f + patch.s.length;
-                                    }
-                                }
-
-                                // some characteres were deleted in previous revision
-                                if (patch.a === "-") {
-                                    if (clientPetches[cp].a === "+" && clientPetches[cp].p >= patch.f) {
-                                        clientPetches[cp].p = clientPetches[cp].p - patch.s.length;
-                                    }
-                                    if (clientPetches[cp].a === "-" && clientPetches[cp].f >= patch.f) {
-                                        clientPetches[cp].t = clientPetches[cp].t - patch.s.length;
-                                        clientPetches[cp].f = clientPetches[cp].f - patch.s.length;
-                                    }
-                                }
-                            }
-
-                            // caret positioning when characteres were added in previous revision
+                            // some characteres were added in previous revision
                             if (patch.a === "+") {
-                                if (caretStart >= patch.p) {
-                                    caretOffsetStart = caretOffsetStart + patch.s.length;
+                                if (clientPetches[cp].a === "+" && clientPetches[cp].p >= patch.p) {
+                                    clientPetches[cp].p = clientPetches[cp].p + patch.s.length;
                                 }
-                                if (caretEnd >= patch.p) {
-                                    caretOffsetEnd = caretOffsetEnd + patch.s.length;
+                                if (clientPetches[cp].a === "-" && clientPetches[cp].f >= patch.p) {
+                                    clientPetches[cp].t = clientPetches[cp].t + patch.s.length;
+                                    clientPetches[cp].f = clientPetches[cp].f + patch.s.length;
                                 }
                             }
 
-                            // caret positioning when characteres were deleted in previous revision
+                            // some characteres were deleted in previous revision
                             if (patch.a === "-") {
-                                if (caretStart <= caretEnd) {
-                                    // ...----...[..........]..........
-                                    if (patch.f <= caretStart && patch.f <= caretEnd && patch.t <= caretStart && patch.t <= caretEnd) {
-                                        caretOffsetStart = caretOffsetStart - patch.s.length;
-                                        caretOffsetEnd = caretOffsetEnd - patch.s.length;
-                                    }
-                                    // ........--[--........]..........
-                                    if (patch.f <= caretStart && patch.f <= caretEnd && patch.t > caretStart && patch.t <= caretEnd) {
-                                        caretOffsetStart = caretOffsetStart - (caretStart - patch.f);
-                                        caretOffsetEnd = caretOffsetEnd - patch.s.length;
-                                    }
-                                    // ..........[...----...]..........
-                                    if (patch.f > caretStart && patch.f <= caretEnd && patch.t > caretStart && patch.t <= caretEnd) {
-                                        caretOffsetStart = caretOffsetStart;
-                                        caretOffsetEnd = caretOffsetEnd - patch.s.length;
-                                    }
-                                    // ..........[........--]--........
-                                    if (patch.f > caretStart && patch.f <= caretEnd && patch.t > caretStart && patch.t > caretEnd) {
-                                        caretOffsetStart = caretOffsetStart;
-                                        caretOffsetEnd = caretOffsetEnd - (caretEnd - patch.f) - 1;
-                                    }
-                                    // ..........[..........]...----...
-                                    if (patch.f > caretStart && patch.f > caretEnd && patch.t > caretStart && patch.t > caretEnd) {
-                                        caretOffsetStart = caretOffsetStart;
-                                        caretOffsetEnd = caretOffsetEnd;
-                                    }
-                                } else {
-                                    // ...----...]..........[..........
-                                    if (patch.f <= caretEnd && patch.f <= caretStart && patch.t <= caretEnd && patch.t <= caretStart) {
-                                        caretOffsetStart = caretOffsetStart - patch.s.length;
-                                        caretOffsetEnd = caretOffsetEnd - patch.s.length;
-                                    }
-                                    // ........--]--........[..........
-                                    if (patch.f <= caretEnd && patch.f <= caretStart && patch.t > caretEnd && patch.t <= caretStart) {
-                                        caretOffsetStart = caretOffsetStart - patch.s.length;
-                                        caretOffsetEnd = caretOffsetEnd - (caretEnd - patch.f);
-                                    }
-                                    // ..........]...----...[..........
-                                    if (patch.f > caretEnd && patch.f <= caretStart && patch.t > caretEnd && patch.t <= caretStart) {
-                                        caretOffsetStart = caretOffsetStart - patch.s.length;
-                                        caretOffsetEnd = caretOffsetEnd;
-                                    }
-                                    // ..........]........--[--........
-                                    if (patch.f > caretEnd && patch.f <= caretStart && patch.t > caretEnd && patch.t > caretStart) {
-                                        caretOffsetStart = caretOffsetStart - (caretEnd - patch.f);
-                                        caretOffsetEnd = caretOffsetEnd;
-                                    }
-                                    // ..........]..........[...----...
-                                    if (patch.f > caretEnd && patch.f > caretStart && patch.t > caretEnd && patch.t > caretStart) {
-                                        caretOffsetStart = caretOffsetStart;
-                                        caretOffsetEnd = caretOffsetEnd;
-                                    }
+                                if (clientPetches[cp].a === "+" && clientPetches[cp].p >= patch.f) {
+                                    clientPetches[cp].p = clientPetches[cp].p - patch.s.length;
+                                }
+                                if (clientPetches[cp].a === "-" && clientPetches[cp].f >= patch.f) {
+                                    clientPetches[cp].t = clientPetches[cp].t - patch.s.length;
+                                    clientPetches[cp].f = clientPetches[cp].f - patch.s.length;
+                                }
+                            }
+                        }
+
+                        // caret positioning when characteres were added in previous revision
+                        if (patch.a === "+") {
+                            if (caretStart >= patch.p) {
+                                caretOffsetStart = caretOffsetStart + patch.s.length;
+                            }
+                            if (caretEnd >= patch.p) {
+                                caretOffsetEnd = caretOffsetEnd + patch.s.length;
+                            }
+                        }
+
+                        // caret positioning when characteres were deleted in previous revision
+                        if (patch.a === "-") {
+                            if (caretStart <= caretEnd) {
+                                // ...----...[..........]..........
+                                if (patch.f <= caretStart && patch.f <= caretEnd && patch.t <= caretStart && patch.t <= caretEnd) {
+                                    caretOffsetStart = caretOffsetStart - patch.s.length;
+                                    caretOffsetEnd = caretOffsetEnd - patch.s.length;
+                                }
+                                // ........--[--........]..........
+                                if (patch.f <= caretStart && patch.f <= caretEnd && patch.t > caretStart && patch.t <= caretEnd) {
+                                    caretOffsetStart = caretOffsetStart - (caretStart - patch.f);
+                                    caretOffsetEnd = caretOffsetEnd - patch.s.length;
+                                }
+                                // ..........[...----...]..........
+                                if (patch.f > caretStart && patch.f <= caretEnd && patch.t > caretStart && patch.t <= caretEnd) {
+                                    caretOffsetStart = caretOffsetStart;
+                                    caretOffsetEnd = caretOffsetEnd - patch.s.length;
+                                }
+                                // ..........[........--]--........
+                                if (patch.f > caretStart && patch.f <= caretEnd && patch.t > caretStart && patch.t > caretEnd) {
+                                    caretOffsetStart = caretOffsetStart;
+                                    caretOffsetEnd = caretOffsetEnd - (caretEnd - patch.f) - 1;
+                                }
+                                // ..........[..........]...----...
+                                if (patch.f > caretStart && patch.f > caretEnd && patch.t > caretStart && patch.t > caretEnd) {
+                                    caretOffsetStart = caretOffsetStart;
+                                    caretOffsetEnd = caretOffsetEnd;
+                                }
+                            } else {
+                                // ...----...]..........[..........
+                                if (patch.f <= caretEnd && patch.f <= caretStart && patch.t <= caretEnd && patch.t <= caretStart) {
+                                    caretOffsetStart = caretOffsetStart - patch.s.length;
+                                    caretOffsetEnd = caretOffsetEnd - patch.s.length;
+                                }
+                                // ........--]--........[..........
+                                if (patch.f <= caretEnd && patch.f <= caretStart && patch.t > caretEnd && patch.t <= caretStart) {
+                                    caretOffsetStart = caretOffsetStart - patch.s.length;
+                                    caretOffsetEnd = caretOffsetEnd - (caretEnd - patch.f);
+                                }
+                                // ..........]...----...[..........
+                                if (patch.f > caretEnd && patch.f <= caretStart && patch.t > caretEnd && patch.t <= caretStart) {
+                                    caretOffsetStart = caretOffsetStart - patch.s.length;
+                                    caretOffsetEnd = caretOffsetEnd;
+                                }
+                                // ..........]........--[--........
+                                if (patch.f > caretEnd && patch.f <= caretStart && patch.t > caretEnd && patch.t > caretStart) {
+                                    caretOffsetStart = caretOffsetStart - (caretEnd - patch.f);
+                                    caretOffsetEnd = caretOffsetEnd;
+                                }
+                                // ..........]..........[...----...
+                                if (patch.f > caretEnd && patch.f > caretStart && patch.t > caretEnd && patch.t > caretStart) {
+                                    caretOffsetStart = caretOffsetStart;
+                                    caretOffsetEnd = caretOffsetEnd;
                                 }
                             }
                         }
                     }
-
-                    // if all waiting patches were proccessed save current document as old document
-                    if (!waitingPetches[0]) {
-                        oldDocument = currentDocument;
-                        acknowledgedPetches = [];
-                    }
-
-                    // upbuild temporary current document with waiting patches
-                    for (var cp in clientPetches) {
-
-                        // adding characters
-                        if (clientPetches[cp].a === "+") {
-
-                            // update current document
-                            currentDocument = currentDocument.substr(0, clientPetches[cp].p - 1) + clientPetches[cp].s + currentDocument.substr(clientPetches[cp].p - 1);
-                        }
-
-                        // deleting characters
-                        if (clientPetches[cp].a === "-") {
-
-                            // update patch string just in case
-                            clientPetches[cp].s = currentDocument.substring(clientPetches[cp].f - 1, clientPetches[cp].t);
-
-                            // update current document
-                            currentDocument = currentDocument.substr(0, clientPetches[cp].f - 1) + currentDocument.substr(clientPetches[cp].t);
-                        }
-                    }
-
-                    // put current document into the editor
-                    $(editor).val(currentDocument);
-
-                    // correct caret position with offset
-                    $(editor)[0].selectionStart = caretStart + caretOffsetStart;
-                    $(editor)[0].selectionEnd = caretEnd + caretOffsetEnd;
                 }
 
-                // revision
-                revision = server.revision;
+                // if all waiting patches were proccessed save current document as old document
+                if (!waitingPetches[0]) {
+                    oldDocument = currentDocument;
+                    acknowledgedPetches = [];
+                }
 
-                // show revision diary in sidebar
-                if (server.revisionDiary) {
+                // upbuild temporary current document with waiting patches
+                for (var cp in clientPetches) {
 
-                    html = "";
+                    // adding characters
+                    if (clientPetches[cp].a === "+") {
 
-                    // prepare html layout for revision diary on sidebar
-                    for (var rd in server.revisionDiary) {
-
-                        // single revision diary bundle
-                        bundle = server.revisionDiary[rd];
-
-                        // prepare html bundle wrapper with avatar
-                        html = html + '<div class="bundle"><i class="avatar" style="background-image:url(../avatars/' + bundle.author + '.jpg);"></i>';
-
-                        // some characteres were added in this particular revision
-                        if (bundle.patch.a === "+") {
-                            html = html + '<span class="added"><pre class="string">' + bundle.patch.s.replace(/</g, "&lt;").replace(/>/g, "&gt;") + '</pre><span class="location">' + bundle.patch.p + '</span></span>';
-                        }
-
-                        // some characteres were deleted in this particular revision
-                        if (bundle.patch.a === "-") {
-                            html = html + '<span class="deleted"><pre class="string">' + bundle.patch.s.replace(/</g, "&lt;").replace(/>/g, "&gt;") + '</pre><span class="location">' + bundle.patch.f + ' - ' + bundle.patch.t + '</span></span>';
-                        }
-
-                        // end html bundle wrapper
-                        html = html + '</div>';
+                        // update current document
+                        currentDocument = currentDocument.substr(0, clientPetches[cp].p - 1) + clientPetches[cp].s + currentDocument.substr(clientPetches[cp].p - 1);
                     }
 
-                    // check scrolling
-                    scroll = ($(sidebar)[0].scrollHeight - $(sidebar).scrollTop() - $(sidebar).outerHeight() < 200) ? true : false;
+                    // deleting characters
+                    if (clientPetches[cp].a === "-") {
 
-                    // append to sidebar
-                    $(sidebar).append(html);
+                        // update patch string just in case
+                        clientPetches[cp].s = currentDocument.substring(clientPetches[cp].f - 1, clientPetches[cp].t);
 
-                    // scroll
-                    if (scroll) {
+                        // update current document
+                        currentDocument = currentDocument.substr(0, clientPetches[cp].f - 1) + currentDocument.substr(clientPetches[cp].t);
+                    }
+                }
+
+                // put current document into the editor
+                $(editor).val(currentDocument);
+
+                // correct caret position with offset
+                $(editor)[0].selectionStart = caretStart + caretOffsetStart;
+                $(editor)[0].selectionEnd = caretEnd + caretOffsetEnd;
+            }
+
+            // revision
+            revision = server.revision;
+
+            // show revision diary in sidebar
+            if (server.revisionDiary) {
+
+                html = "";
+
+                // prepare html layout for revision diary on sidebar
+                for (var rd in server.revisionDiary) {
+
+                    // single revision diary bundle
+                    bundle = server.revisionDiary[rd];
+
+                    // prepare html bundle wrapper with avatar
+                    html = html + '<div class="bundle"><i class="avatar" style="background-image:url(../avatars/' + bundle.author + '.jpg);"></i>';
+
+                    // some characteres were added in this particular revision
+                    if (bundle.patch.a === "+") {
+                        html = html + '<span class="added"><pre class="string">' + bundle.patch.s.replace(/</g, "&lt;").replace(/>/g, "&gt;") + '</pre><span class="location">' + bundle.patch.p + '</span></span>';
+                    }
+
+                    // some characteres were deleted in this particular revision
+                    if (bundle.patch.a === "-") {
+                        html = html + '<span class="deleted"><pre class="string">' + bundle.patch.s.replace(/</g, "&lt;").replace(/>/g, "&gt;") + '</pre><span class="location">' + bundle.patch.f + ' - ' + bundle.patch.t + '</span></span>';
+                    }
+
+                    // end html bundle wrapper
+                    html = html + '</div>';
+                }
+
+                // check scrolling
+                showLast = ($(sidebar)[0].scrollHeight - $(sidebar).scrollTop() - $(sidebar).outerHeight() < 200) ? true : false;
+
+                // append to sidebar
+                $(sidebar).append(html);
+
+                // move sidebar content to show last patches and do the callback if necessary
+                if (waitingPetches[0]) {
+
+                    // immediate recursive collaboration !IMPORTANT
+                    collaboration();
+
+                    // push sidebar to the bottom
+                    if (showLast) {
+                        $(sidebar).scrollTop($(sidebar)[0].scrollHeight);
+                    }
+
+                } else {
+
+                    // scroll sidebar to the bottom
+                    if (showLast) {
                         $(sidebar).animate({
                             scrollTop: $(sidebar)[0].scrollHeight
                         }, 500);
                     }
                 }
             }
-        });
+        }
+    });
+}
+
+/* recursive interval
+-------------------------------------------------- */
+setInterval(function() {
+
+    // does editor exist on page
+    if ($(editor).length && !pause && !waitingPetches[0]) {
+
+        // fire collaboration
+        collaboration();
 
     } else {
 
@@ -350,11 +367,8 @@ function collaboration() {
         currentDocument = "";
         newDocument = "";
     }
-}
 
-/* init collaboration
--------------------------------------------------- */
-collaboration();
+}, loopInterval);
 
 /* changes
 -------------------------------------------------- */
