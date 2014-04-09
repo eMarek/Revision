@@ -80,7 +80,7 @@ function collaboration() {
         type: "post",
         data: JSON.stringify(data),
         headers: {
-            Session: window.sessionStorage.session
+            session: window.sessionStorage.session
         },
         dataType: "json",
         success: function(server) {
