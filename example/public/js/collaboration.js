@@ -3,7 +3,7 @@
 var editor = "textarea#editor";
 var sidebar = "div#sidebar";
 
-var loopInterval = 2500,
+var loopInterval = 100,
     pause = false,
     xhr = {},
     data = false,
@@ -337,7 +337,7 @@ function collaboration() {
                     if (showLast) {
                         $(sidebar).animate({
                             scrollTop: $(sidebar)[0].scrollHeight
-                        }, 500);
+                        }, 100);
                     }
                 }
             }
