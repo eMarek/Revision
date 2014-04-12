@@ -1,32 +1,17 @@
 Revision
 ========
 
-Realtime collaboration tool. Right now is still in alpha version.
-
-### How is applied
-You can calculate changes between two text. Very similar to `google-diff-match-patch`, just a little bit faster. You must read entire  instructions. We have sweet candies.
+Revision is fully functional node.js framework with a specialty, that is realtime collaboration tool based on operational transformation. We developed this as a thesis at the end of my study at the Faculty of Computer and Information Science, Ljubljana.
 
 ### How to install
 ```
 npm install -g revision
 ```
-Do not forget `-g` command, otherwise it will not work.  
+Do not forget `-g` command, otherwise it will not work completely.  
 Of course you will need node.js and a fluffy unicorn.
 
 ### How to use it
-To calculate changes enter original text as first argument and changed text as second argument when calling `revision` from you terminal.
-```
-revision "Despicable Me" "Despicable Minions"
-```
-You will get JSON with changes based on original text.
-```
-[ { a: '-', s: 'e', l: 1, p: 13, f: 13, t: 13 },
-  { a: '+', s: 'inions', l: 6, p: 14, f: 13, t: 18 } ]
-```
-If you do not understand what does this mean, is because it is intended to be so. Take a coffee break and you will figure it out.
-
-### How to proceed
-All this above is just a little piece of entire module. Yeah I am still developing it. But you can test it. Running `revision` module gets you fully operational webserver. Put this two lines in `/index.js` file.
+Running `revision` module gets you fully operational webserver. Choose a folder on your computer and put this two lines in `/index.js` file.
 
 ```js
 // index.js
@@ -36,11 +21,13 @@ app.run();
 Start it with node like this `node index.js` and then open you browser on `http://127.0.0.1:8888/`. Voilà!  
 You should get `404 Not Found` error and this is so freaking awsome, isn't it?!
 
+There are two things that our module could do really good. It could serve static files and it could provide data over API.
+
 ### Serving static files
 
-Our module can serve static files in `/public` folder with correct MIME type. Anything in this folder is immediately available in your browser. By default is loaded `/public/index.html` file. Create it and you will get rid of 404.
+Create yourself a `/public` folder. Anything in this folder is immediately available in your browser with correct MIME type. By default is loaded `/public/index.html` file. Create it and you will get rid of 404.
 
-### Getting data over API
+### Providing data over API
 
 There is a simple API which could:
 * gather request payload
@@ -79,7 +66,7 @@ api["gru.json"] = function(req, rsp, data) {
 module.exports = api;
 ```
 
-Don't worry. I will explain you. It serves `http://127.0.0.1:8888/api/gru.json` requests. It expects  `stole` request payload. Depending on this variable are `minions` declared. At the end `send` function responds with an obvious JSON.
+Don't worry. We will explain you. It serves `http://127.0.0.1:8888/api/gru.json` requests. It expects  `stole` request payload. Depending on this variable are `minions` declared. At the end `send` function responds with an obvious JSON.
 
 ### What about config
 
@@ -145,6 +132,18 @@ module.exports = function(req, rsp, data, handler) {
 
 Pay attention on `handler(req, rsp, data);` callback!
 
-### What is next
+### Operational transformation
 
-Take a look in the example folder and give us some feedback. Right now we are working on operational transformation which will be build and will be totaly crazy. Soon.
+This was main part of my thesis. Operational transformation itself works both on server and on client side. Server side part is performed in [collaboration.js](https://github.com/eMarek/Revision/blob/master/collaboration.js) file in our module. But the client side is performed in example [collaboration.js](https://github.com/eMarek/Revision/blob/master/example/public/js/collaboration.js) file. Please take a look in example folder. You can test this working example on this url http://diploma.marek.si/.
+
+### Changes
+Part of operational transformation is also calculating changes between two texts. Very similar to `google-diff-match-patch`, just a little bit faster. To calculate changes enter original text as first argument and changed text as second argument when calling `revision` from you terminal.
+```
+revision "Despicable Me" "Despicable Minions"
+```
+You will get JSON with changes based on original text.
+```
+[ { a: '-', s: 'e', l: 1, p: 13, f: 13, t: 13 },
+  { a: '+', s: 'inions', l: 6, p: 14, f: 13, t: 18 } ]
+```
+If you do not understand what does this mean, is because it is intended to be so. Take a coffee break and you will figure it out.
