@@ -51,7 +51,7 @@ module.exports = function(req, rsp, data, handler) {
     }
 
     // check session data
-    if (!sessionJSON.userId || !sessionJSON.username || !sessionJSON.ip || !sessionJSON.userAgent || !sessionJSON.key || !sessionJSON.timeStamp) {
+    if (!sessionJSON.userID || !sessionJSON.username || !sessionJSON.ip || !sessionJSON.userAgent || !sessionJSON.key || !sessionJSON.timeStamp) {
         rsp.send({
             "say": "out",
             "msg": "Seja ne vsebuje vseh predvidenih podatkov."
@@ -68,7 +68,7 @@ module.exports = function(req, rsp, data, handler) {
         return;
     }
 
-    r.db("revision").table("users").get(sessionJSON.userId).run(data.conn, function(err, result) {
+    r.db("revision").table("users").get(sessionJSON.userID).run(data.conn, function(err, result) {
         if (err) throw err;
 
         var user = result;

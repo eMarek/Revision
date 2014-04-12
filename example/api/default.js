@@ -79,7 +79,7 @@ api["login.json"] = function login(req, rsp, data) {
 
                 // session
                 var sessionJSON = {
-                    userId: user.id,
+                    userID: user.id,
                     username: user.username,
                     ip: req.headers.host,
                     userAgent: req.headers['user-agent'],
