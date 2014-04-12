@@ -84,7 +84,7 @@ api["login.json"] = function login(req, rsp, data) {
                     ip: req.headers.host,
                     userAgent: req.headers['user-agent'],
                     key: data.key,
-                    timeStamp: require('moment').utc().format()
+                    timeStamp: new Date().getTime()
                 };
                 var sessionString = JSON.stringify(sessionJSON);
                 var session = cipher.update(sessionString, "utf8", "hex") + cipher.final("hex");
