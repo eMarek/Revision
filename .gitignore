@@ -1,2 +1,6 @@
 
 *.jpg
+
+example/rethinkdb_data/log_file
+
+*.json
