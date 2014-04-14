@@ -22,8 +22,8 @@
 	frame=top, % črta zgoraj
 	frame=bottom, % črta spodaj
 	keywordstyle=\bfseries, % krepka pisava
-	morekeywords={function, var, this, self}, % poudarjene besede
-	numbers=left, % oznaka vrstice
+	morekeywords={function, var, this}, % poudarjene besede
+	numbers=none, % oznaka vrstice
 	numberstyle=\tiny, % majcena pisava za oznake vrstic
 	tabsize=2, % dva presledka zamika kode
 	escapeinside={@}{@}, % koda znotraj afne se ignorira
@@ -65,7 +65,7 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% originalni izvod izdane teme
 \thispagestyle{empty}
-\noindent Originalni izvod izdane teme diplomskega dela...
+\noindent 
 
 \clearemptydoublepage
 
@@ -91,19 +91,13 @@
 \end{itemize}
 
 \vspace{1cm}
-\noindent V Ljubljani, dne 10. maja 2014 \hfill Podpis avtorja:
+\noindent V Ljubljani, dne 12. aprila 2014 \hfill Podpis avtorja:
 
 \clearemptydoublepage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% zahvala
-\thispagestyle{empty}
-\noindent Zahvala...
-
-\clearemptydoublepage
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% posvetilo
-\thispagestyle{empty}
-\noindent Posvetilo...
+\thispagestyle{empty}\mbox{}\vfill\null\it%
+Za vso pomoč in nasvete pri izdelavi diplomske naloge se zahvaljujem mentorju doc. dr. Zoranu Bosniću. Zahvala gre tudi vsem sošolcem in prijateljem, ki so me tekom študija spodbujali. Še posebej pa bi se za podporo in bodrenje zahvalil družinskim članom in dragi Tini. \rm\normalfont
 
 \clearemptydoublepage
 
@@ -120,12 +114,11 @@
 	\item[WOOT] (WithOut Operational Transformation) \\Brez operativne transformacije, več v Poglavju \ref{sec:woot}.
 	\item[AJAX] (Asynchronous JS and XML) \\Asinhroni JS in XML.
 	\item[API] (Application Programming Interface) \\Vmesnik za programiranje aplikacij.
-	\item[JS] (JavaScript) \\Programski jezik, ki omogoča izdelavo in prikaz dinamičnih spletnih strani. S pojavom platforme \textbf{node.js} se ga vedno več uporablja tudi na strežniškem delu.
+	\item[JS] (JavaScript) \\Programski jezik, ki omogoča izdelavo in prikaz dinamičnih spletnih strani. S nastankom platforme \textbf{node.js} se ga vedno več uporablja tudi na strežniškem delu.
 	\item[XML] (Extensible Markup Language) \\Razširljiv označevalni jezik. Njegovo popularnost izpodriva JSON.
     \item[JSON] (JavaScript Object Notation) \\Oblika zapisa podatkov, ki se večinoma uporablja za pošiljanje podatkov med odjemalcem in strežnikom.
 	\item[SIGCE] (The Special Interest Group on Collaborative Computing) \\Skupina, ki promovira raziskovalce na področju CE.
     \item[CE] (Collaborative Editing) \\Sodelovalno urejanje ali skupinsko urejanje.
-    \item[node.js] (Platform built on Chrome's JavaScript runtime.) \\Platforma za enostavno izdelavo hitrih in razširljivih spletnih aplikacij. Uporablja dogodkovno-gnan, ne-blokirajoč model, ki je perfekten za podatkovno intenzivne aplikacije v realnem času.
 \end{description}
 
 \clearemptydoublepage
@@ -133,18 +126,21 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% povzetek
 \addcontentsline{toc}{chapter}{Povzetek}
 \chapter*{Povzetek}
-Aliquam erat volutpat. Mauris porttitor luctus vehicula. Suspendisse vulputate faucibus nulla, eu ultrices libero gravida ut. Nullam aliquet facilisis lacus, ac venenatis dolor pellentesque facilisis. Phasellus ut placerat tellus. Nunc in euismod felis. Pellentesque ullamcorper elementum justo et scelerisque.
 
-Vestibulum eget felis tincidunt, porta massa ut, pretium arcu. Integer ornare tincidunt pharetra. Ut egestas, tortor a viverra adipiscing, nibh lectus elementum sem, et lobortis est lectus ac est. Mauris condimentum nulla tempus bibendum pellentesque. Vivamus auctor massa non neque sodales, eget aliquam nibh pulvinar. Duis pharetra felis in velit elementum vehicula. Phasellus vulputate tellus quis odio tincidunt, in lobortis dolor auctor. Nunc vel blandit nibh.
+Le malokdo si je v začetku razvoja interneta predstavljal, da bomo ljudje na oddaljenih lokacijah komunicirali instantno. Danes na spletu obstaja mnogo različnih orodij, ki omogočajo sodelovanje uporabnikov in rešujejo nek specifičen problem. Primer je urejanje golega besedila v realnem času. V naši diplomski nalogi smo raziskali protokole in algoritme na katerih temeljijo omenjena orodja. Po primerjavi njihovih lastnosti se je operativna transformacija izkazala za najboljšo. V praktičnemu delu diplomske naloge smo tako implementirali enostaven spletni urejevalnik na osnovi operativne transformacije. Urejevalnik je močno odvisen od majhnih sprememb, ki jih naredijo uporabniki in se razpošljejo drugim uporabnikom. Iz tega razloga smo morali implementirati tudi algoritem za iskanje razlik v besedilu. Končni produkt je dosegljiv na \url{http://diploma.marek.si/}.\\
+
+\textbf{Ključne besede:} sodelovanje v realnem času, urejevalnik, sočasnost, iskanje razlik v besedilu, operativna transformacija
+
 
 \clearemptydoublepage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% abstract
 \addcontentsline{toc}{chapter}{Abstract}
 \chapter*{Abstract}
-Nam nec sagittis diam. Quisque dictum lorem vitae urna gravida tincidunt. Sed quam enim, vestibulum quis mattis sed, ultricies id purus. Morbi rhoncus mauris vitae ipsum vulputate, in facilisis lacus cursus. Sed euismod metus eget ligula cursus rhoncus a ut ipsum. Duis eget vulputate purus.
+Hardly anyone in the early development of the internet imagined that people on remote locations will communicate instantly. Today there are various online tools that provide users collaboration and solve a specific problem. An example is editing plain text in real time. In our thesis we researched the protocols and algorithms underlying these tools. After comparing the characteristics the operational transformation has proved to be the best. In the practical part of the thesis we implemented a simple web editor based on operational transformation. Editor heavily dependents on small changes made by a user and sent to other users. Because of this reason we have needed to implement the algorithm used to find differences in the text. The final product is available on \url{http://diploma.marek.si/}.\\
 
-Phasellus volutpat orci elementum quam ultricies, et pellentesque enim bibendum. Ut at nulla sollicitudin, blandit risus vel, aliquam risus. Etiam tristique metus vel libero mattis aliquet. Phasellus quis lorem est. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin iaculis risus vitae facilisis ultrices. Maecenas pellentesque rhoncus turpis a consequat. Proin rutrum a urna eu varius. Etiam nibh diam, congue at lectus at, adipiscing mollis mauris.
+\textbf{Keywords:} collaborationa in real time, editor, concurrency, finding differences in text, operational transformation
+
 
 \clearemptydoublepage
 
@@ -157,7 +153,7 @@ Phasellus volutpat orci elementum quam ultricies, et pellentesque enim bibendum.
 
 Še ne dolgo nazaj se nam je internet zdel počasen. Vse skupaj je delovalo zelo statično. Lahko bi rekel, da smo dve desetletji nazaj splet uporabljali le za brskanje. Nato so se počasi pojavile spletne strani, ki so omogočale nekaj malega interaktivnosti. To so bile funkcionalnosti kot so vpisovanje komentarjev, iskalniki, spletne galerije, forumi... Danes se nam zdijo te funkcionalnosti že skoraj integrirane v spletnih aplikacijah. Lahko se ozremo nazaj in rečemo, da so to bili prvi zametki, ki so uporabnikom omogočili, da ustvarjajo splet tak kot ga poznamo danes. Z nadgrajevanjem internetne infrastrukture so se povečale hitrosti prenosa podatkov. Z razvojem spletnih tehnologij se je izboljšala celotna uporabniška izkušnja. V zadnjih dvajsetih letih smo bili priča razvoju napredka tako na programski kot tudi na strojni opremi. Na tem mestu se je smiselno vprašati, kaj je bilo tisto bistveno, ki je celotno zadevo izboljšalo in kako se bo izboljševala v prihodnosti? Internet v osnovi še vedno deluje tako kot je dvajest let nazaj. Princip je isti. Imamo odjemalca (ang. client) na eni strani in imamo strežnik (ang. server) na drugi strani. Odjemalec vzpostavi komunikacijo s strežnikom. Od njega zahteva neko akcijo in le ta jo izvrši. Sliši se komično, a gledano poenostavljeno, splet še danes deluje tako. Če pa pogledamo podrobno, se razlike enormne. Komunikacija med odjemalcem in strežnikom, ter obratno, je omejena s svetlobno hitrostjo. Govorimo o prenosu podatkov v realnem času.
 
-V okviru diplomske naloge bi radi preučili algoritme in raziskali celoten sistem, ki na spletu omogoča urejanje golega besedila v realnem času. Tega se bomo lotili tako, da bomo pregledali raziskave, ki so bile objavljene v akademski sferi. Leta 1989 so se pojavili prvi zapisi \cite{ccigs} o zagotavljanju vmesnika za deljno okolje  (ang. shared environment). V naslednjih nekaj letih se bili na tej podlagi predlagane nekatere izboljšave \cite{hllbw}. Kasneje je pri raziskavah precej pripomogla tudi ustanovitev SIGCE \cite{sigce}, ki promovira raziskovalce na tem področju. Skratka preleteli bomo nekaj raziskav iz tega področja. Po pridobljenem teoretičnem znanju, bomo poiskali članke, ki so bili napisani s strani industrije. Radi bi izvedeli kaj od teorije se lahko uporabi v praksi. Nekateri algoritmi, ki so bili na akademskem področju uspešni, so se implementirali v končnih ali v pol produktih. Največ uporabnih informacij bomo dobili od protokola Google Wave \cite{wave-ot}. Ne smemo pa pozabiti, da obstaja mnogo drugih uporabnih orodij \cite{share}, od katerih se lahko naučimo praktičnega dela. Cilj diplomske naloge je, da zasnujemo enega izmed algoritmov na plaformi \textbf{node.js} \cite{node}.  Ker hočemo doseči, da je algoritem na strežniškem delu neodvisen od odjemalcev, mora delovati kot API. Kot smo omenili, je uporabnost take izvedbe ravno v tem, da je neodvisen od odjemalcev, ki se nanj povezujejo, naj si bo spletna aplikacija ali mobilna naprava. Poleg tega tak način izvedbe spodbuja nadaljni razvoj celotnega sistema na različnih odjemalcih.
+V okviru diplomske naloge bi radi preučili algoritme in raziskali celoten sistem, ki na spletu omogoča urejanje golega besedila v realnem času. Tega se bomo lotili tako, da bomo pregledali raziskave, ki so bile objavljene v akademski sferi. Leta 1989 so se pojavili prvi zapisi \cite{ccigs} o zagotavljanju vmesnika za deljno okolje  (ang. shared environment). V naslednjih nekaj letih se bili na tej podlagi predlagane nekatere izboljšave \cite{hllbw}. Kasneje je pri raziskavah precej pripomogla tudi ustanovitev SIGCE \cite{sigce}, ki promovira raziskovalce na tem področju. Skratka preleteli bomo nekaj raziskav iz tega področja. Po pridobljenem teoretičnem znanju, bomo poiskali članke, ki so bili napisani s strani industrije. Radi bi izvedeli kaj od teorije se lahko uporabi v praksi. Nekateri algoritmi, ki so bili na akademskem področju uspešni, so se implementirali v končnih ali v pol produktih. Največ uporabnih informacij bomo dobili od protokola Google Wave \cite{wave-ot}. Ne smemo pa pozabiti, da obstaja mnogo drugih uporabnih orodij \cite{share}, od katerih se lahko naučimo praktičnega dela. Cilj diplomske naloge je, da zasnujemo enega izmed algoritmov na plaformi \textbf{node.js} \cite{node}.  Ker hočemo doseči, da je algoritem na strežniškem delu kar se da neodvisen od odjemalcev, mora delovati kot API. Kot smo omenili, je uporabnost take izvedbe ravno v tem, da je neodvisen od odjemalcev, ki se nanj povezujejo, naj si bo spletna aplikacija ali mobilna naprava. Poleg tega tak način izvedbe spodbuja nadaljni razvoj celotnega sistema na različnih odjemalcih.
 
 Po uvodu bomo v drugem poglavju najprej predstavili problem in izzive sodelovanja v realnem času. V tretjem poglavju bomo preučili protokole in algoritme za sodelovanje v realnem času. V četrem poglavju jih bomo primerjali po njihovih lastnostih. V petem poglavju bomo poiskali algoritem za iskanje razlik v besedilu. V šestem poglavju bomo opisali našo implementacijo zasnove urejevalnike v realnem času. Na koncu, v sedmem poglavju, sledijo še sklepne ugotovitve.
 
@@ -166,7 +162,7 @@ Po uvodu bomo v drugem poglavju najprej predstavili problem in izzive sodelovanj
 
 Leta 2004 oziroma 2005 se je začela uveljavljati tehnologija AJAX. Njen glavni namen je, da odjemalcu omogoča pošiljanje asinhronih zahtev na strežnik. V praksi je bila razlika videna v osveževanju spletnih strani. V preteklosti je brskalnik osvežil celotno spletno stran za vsako zahtevo, ki jo je naredil na strežnik. Uporaba AJAX-a pa omogoča, da so zahteve na strežnik manjše, bolj dinamične in najpomembnejše, asinhrone. Namesto celotne strani lahko osvežimo le nek manjši del. Lahko od strežnika zahtevamo ali mu pošljemo le nekaj malega podatkov. Kako pogosto delamo asinhrone zahtevke ni pomemebno. Naj si bo za vsako uporabnikovo interakcijo ali ponavljajoče z metodo pozivanja (ang. polling) \cite{diffsync} ali dolgega pozivanja (ang. long polling).
 
-Naslednja pomembna stvar na spletu je protokol WebSocket. Trenutno je še v povojih. Danes naj bi ga podpirali že vsi najnovejši brskalniki, vendar ga uporabljajo le redke spletne aplikacije. Sprememba, ki jo prinaša WebSocket je način komunikacije med odjemalcem in strežnikom. Omogoča dvosmerno komunikacijo \cite{wave-cs}. Po novem lahko tudi strežnik pošilja zahtevo odjemalcu.
+Naslednja pomembna stvar na spletu so spletne vtičnice (ang. WebSockets). Trenutno je še v povojih. Danes naj bi ga podpirali že vsi najnovejši brskalniki, vendar ga uporabljajo le redke spletne aplikacije. Sprememba, ki jih prinašajo spletne vtičnice, je način komunikacije med odjemalcem in strežnikom. Omogoča dvosmerno komunikacijo \cite{wave-cs}. Po novem lahko tudi strežnik pošilja zahtevo odjemalcu.
 
 Ti dve tehnologiji omenjamo zato, ker sta in bosta največ prispevali pri izboljšanju uporabniške izkušnje na spletu. Interakcija med odjemalcem in strežnikom je postala bolj tekoča kot je bila v preteklosti. Z njo nam je bila dana možnost za razvoj orodij za sodelovanje v realnem času (ang. real-time collaboration tools). Obstaja že mnogo orodij, ki preko sodelovanja (ang. collaboration) rešujejo nek specifičen problem. Na podoben problem smo naleteli tudi sami in sicer urejanje besedila v realnem času. Z urejanjem besedila nimamo v mislih označevanje besedila s krepko, ležečo, podčrtano pisavo in tako naprej, ampak za urejanje golega besedila kot takega. Sliši se enostavno. Uporabnik lahko doda črko, pobriše črko, se pravi operira z manjšimi enotami (črke, besede), ki se združujejo v večje enote (stavki, povedi, sporočilo, besedilo, dokument). Sistem mora skrbeti za izmenjevanje nastalega besedila med udeleženci \cite{gdocs23}. Na tak način delujejo spletna klepetalnica. Udeleženci v pogovoru si med sabo izmenjujo sporočila. To naj si bodo večja ali manjše enote. Sistem mora le skrbeti, da se le te pravilno prenesejo med udeležence pogovora. Vendar zadeva ni niti približno tako enostavna. Bistvena razlika urejevalnika v realnem času v primerjavi s spletno klepetalnico je v obliki hranjenja in operiranja nastalih podatkov. Pri spletnih klepetalnicah se vsako posamezno sporočilo na strežniku hrani kot samostojno enoto, ki se jo v celoti razpošlje med udeležence. Pri urejevalnikih besedila v realnem času pa je besedilo, ki ga udeleženci urejajo, enotno za vse udeležence hkrati. Zaradi razumljivosti v nadaljevanju bomo besedilo, ki ga urejajo uporabniki, poimenovali dokument. Lahko bi rekel, da vsak udeleženec ureja svoj lokalni dokument, preko katerega nastaja skupni dokument. Posamezne manjše enote besedila, ki se izmenjujejo med udeleženci, so le koščki celotnega dokumenta. Pred tako nastalim dokumentom mora delovati algoritem, ki zna te manjša enote besedila združevati v dokument \cite{gdocs22}.
 
@@ -1009,32 +1005,347 @@ Do \textbf{scenarija najkrajšega urejanja} pridemo preko najdaljšega skupnega 
 \label{ses9}
 \end{figure}
 
-Spremembe na besedilu so torej {\tt \{ Pobriši @3-4 \}}, {\tt \{ Vstavi ‘ta’ @5 \}}, {\tt \{ Pobriši @7-7 \}}, {\tt \{ Vstavi ‘nos’ @8 \}}, {\tt \{ Pobriši @10-11 \}}, {\tt \{ Vstavi ‘ka’ @12 \}}. Lokacije vseh sprememb temeljijo na izvirnem besedilu "{\tt Ledolomilec}".
+Spremembe na besedilu so torej {\tt \{ Pobriši @3-4 \}}, {\tt \{ Vstavi ‘ta’ @5 \}}, {\tt \{ Pobriši @7-7 \}}, {\tt \{ Vstavi ‘nos’ @8 \}}, {\tt \{ Pobriši @10-11 \}}, {\tt \{ Vstavi ‘ka’ @12 \}}. Lokacije vseh sprememb temeljijo na izvirnem besedilu “{\tt Ledolomilec}”.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Implementacije urejevalnika}
 
-Sed nec luctus elit. Etiam feugiat, ipsum at fringilla iaculis, ligula massa auctor lorem, quis viverra ligula quam ut orci. Ut faucibus consectetur velit vel adipiscing. Aliquam nec metus sapien. Morbi nec lobortis ipsum. Etiam vehicula, libero dapibus pulvinar pretium, orci nunc aliquam leo, id bibendum lacus diam id quam. Etiam at lectus ac mi malesuada ultricies. Cras id venenatis nisl. Mauris ullamcorper felis eget arcu rhoncus ullamcorper. Nullam sollicitudin justo in orci iaculis, eget tristique tellus adipiscing. Sed at bibendum felis, viverra mollis est. Proin convallis felis eget augue condimentum, at placerat sem porttitor. Sed turpis nulla, fringilla sit amet ultrices id, condimentum ut massa. Pellentesque nec augue a mauris commodo suscipit et in ante. Praesent mollis et diam nec fermentum.
+Odločili smo se, da bomo urejevalnik v realnem času zasnovali kot enostavno spletno aplikacijo. Dostop do urejevalnika smo omejili le na dodeljene uporabniške račune. Ko se uporabnik prijavi v spletno aplikacijo, ga na osrednjem delu zaslona pričaka polje za vnos besedila, ki ga lahko ureja več uporabnikov. Na desni strani zaslona pa si lahko pogleda zgodovino vseh sprememb, ki so bile narejene na besedilu.
 
-\begin{lstlisting}[caption={Interdum pretium}, label={lst:codeJavaScript}, title={Exampelus \ref{lst:codeJavaScript}: Interdum pretium}]
-function cache_add () {
-	var self = this;
+Na strani strežnika smo uporabili platformo \textbf{node.js}. To je platforma za enostavno izdelavo hitrih in razširljivih spletnih aplikacij. Uporablja dogodkovno-gnan, ne-blokirajoč model, ki je perfekten za podatkovno intenzivne aplikacije v realnem času. Uporabniške račune hranimo v podatkovni bazi RethinkDB. Sama prijava je v brskalniku realizirana s knjižnico AngularJS. Sicer pa smo na strani odjemalca (v brskalniku) uporabili standardne tehnologije. To so HTML, CSS in JS. Za manipulacijo DOM drevesa in urejevalnika smo se posluževali še knjižnice jQuery.
 
-	@\label{lst:codeJavaScript_mark}@self.cache.add(self.user._id + '_testing', self.resource('sl', 'session_dafaq'));
+Sama implementacija urejevalnika je potekala v treh korakih. V prvem koraku smo aplikacijo zasnovali in naredili prijava. V drugem koraku smo se lotili iskanje razlik v besedilu. Na koncu smo realizirali še operativno transformacijo. V opisu teh treh korakov se bomo sklicevali na nekatere datoteke. Bralca naprošamo, da si le te podrobno ogleda na GitHub-u (\url{https://github.com/eMarek/Revision}), kjer je dosegljiva celotna koda aplikacije.
 
-	self.json({
-			status: 'okay',
-			text: self.resource('sl', 'cache_has_been_successfully_set')
-	}); return;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Zasnova in prijava}
+
+Aplikacijo smo želeli zasnovati kot enostavno modularno ogrodje (ang. framework). Uporabnost modularne zasnove je, da se jo lahko enostavno razširi za uporabo kolaboracije, ki jo bomo opisali v Poglavju \ref{sec:imp-ot}. Glavni funkcionalnosti, ki jih naš modul omogoča, sta serviranje statičnih datotek ter zagotavljanje podatkov preko API-ja.
+
+Kot lahko vidimo v datoteki “{\tt server.js}” v vrstici 91, se za vsak zahtevek na strežnik najprej pogleda ime poti. V primeru, da je prvih pet znakov enakih “{\tt /api/}”, zadnjih pet znakov enakih “{\tt .json}” in je metoda zahtevka “POST”, potem modul zagotovi gole podatke. V nasprotnem primeru poskuša odjemalcu vrniti statično datoteko iz javnega (ang. public) direktorija.
+
+Za potrebe prijave smo implementirali še kofiguracijsko datoteko (ang. config) in krmilnik (ang. controller). Razlika med njima je, da se konfiguracijska datoteka požene le enkrat ob zagonu aplikacije, krmilnik pa se izvede ob vsakem zahtevku na strežniku. Iz tega razloga je configuracijska datoteka primerna za ustvarjanje povezave na bazo, krmilnik pa lahko uporabimo za preverjanje avtentikacije.
+
+V konfiguracijski datoteki “{\tt example/config.js}” se v vrstici 17 naredi povezavo na bazo. Po uspešno ustvarjeni povezavi na bazo se pokliče funkcija “{\tt starter}”, ki požene spletni strežnik. V krmilniku v datoteki “{example/controller.js}” v vrstici 34 se sejo poskuša dekriptirati in nato pretvoriti v JSON obliko. V vrstici 71 se naredi klic na bazo in preveri ali uporabik z ID-jem iz seje obstaja. V primeru, da je vse v redu se na koncu pokliče še funkcija “{\tt handler}”, ki glede na ime poti vrne podatke.
+
+Da si lahko uporabnik sploh ustvari sejo, smo naredili API rokovalnik (ang. handler) v datoteki “{\tt example/api/default.js}” v vrstici 58. Uporabnik na strežnik pošlje svoje uporabniško ime in geslo. Geslo se pretvori v zgoščeno obliko. V podatkovni bazi se preveri ali obstaja uporabnik s prispelim uporabniškim imenom in zgoščeno obliko gesla. V primeru da obstaja, se uporabniku vrne zakriptirana seja v kateri je med drugim shranjen uporabnikov ID. Uporabnikov brskalnik si sejo in uporabnikov ID shrani v skladišče seje (ang. session storage). Glej datoteko “{\tt example/public/js/application.js}” v vrstici 85 in 86.
+
+Na tak način je zasnovana naša aplikacija in realizirana prijava v njo.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Iskanje razlik}
+
+Iskanje razlik v besedilu smo realizirali po algoritmu, ki smo ga opisali v Poglavju \ref{chp:diff} in se ne bi še enkrat spuščali v podobrnosti. Celotna koda se nahaja v datoteki “{\tt changes.js}”. Na tem mestu povejmo le na kakšen način se vrnejo razlike. Funkcija za iskanje razlik vrne seznam (ang. array) JSON objektov.
+
+Vsak objekt predstavlja eno razliko v besedilu in vsak objekt ima lastnost “{\tt a}”, ki pomeni akcija (ang. action). Akcija je lahko vrednosti “{\tt +}” (dodajanje besedila) ali “{\tt -}” (brisanje besedila). Vsak objekt ima še lastnosti “{\tt s}”, ki predstavlja niz (ang. string) znakov, in “{\tt l}”, ki predstavlja dolžino (ang. length) niza znakov. V primeru, da gre za brisanje besedila ima objekt še lastnoti “{\tt f}” in “{\tt t}”, ki pomenijo od (ang. from) katere in do (ang. to) katere lokacije je potrebno pobrisati znake. V primeru pa, da gre za dodajanje besedila ima objekt še lastnot “{\tt p}”, ki pomeni pozicijo (ang. position) na katero je potrebno dodati besedilo. Primer razlike med besedama “{\tt Ledolomilec}” in “{\tt Letalonosilka}” je prikazan v Primeru 6.1.\newline
+
+\begin{lstlisting}[title={Primer 6.1: Razlike med besedama “{\tt Ledolomilec}” in “{\tt Letalonosilka}”.}]
+[ { a: '-', s: 'do', l: 2, f: 3, t: 4 },
+  { a: '+', s: 'ta', l: 2, p: 5 },
+  { a: '-', s: 'm', l: 1, f: 7, t: 7 },
+  { a: '+', s: 'nos', l: 3, p: 8 },
+  { a: '-', s: 'ec', l: 2, f: 10, t: 11 },
+  { a: '+', s: 'ka', l: 2, p: 12 } ]
+\end{lstlisting}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Operativna transformacija}
+\label{sec:imp-ot}
+
+Kot smo omenili že v Poglavju \ref{subsec:ps} se Operativna tranformacija izvaja tako na strani strežnika kot na strani odjemalca. Koda za strežniški del Operativne transformacije se nahaja v datoteki “{\tt collaboration.js}”. Koda Operativne transformacije pri odjemalcu se nahaja v datoteku “{\tt example/public/js/collaboration.js}”. Algoritem je podoben, malenkost poenostavljen, kot smo ga opisali v Poglavju \ref{sec:ot}. Ker je strežniški del enostavnejši, bomo le tega opisali najprej.
+
+Na strani strežnika si beležimo revizijski dnevnik (ang. revision diary), trenutni dokument (ang. current document) in uporabnike (ang users). Strežnik od odjemalca pričakuje, da bo vedno dobil številko zadnje potrjene revizije ({\tt req.payload.revision}). V primeru, da odjemalec pošlje številko zadnje revizije enaka {\tt -2}, se celotni urejevalnik resetira. V primeru, odjemalec pošlje številko zadnje revizije enako {\tt -1} ali v primeru, da uporabnik še ne obstaja, takrat strežnik vrne odjemalcu podatke za inicializacijo urejevalnika. To so trenutni dokument, revizijski dnevnik in številko zadnje revizije.\newline
+
+\begin{lstlisting}[title={Koda 6.2: Strežnik odjemalcu vrne podatke za inicializacijo urejevalnika.}]
+var revisionDiary = [];
+var currentDocument = "";
+var users = {};
+
+/* collaboration
+-------------------------------------------------- */
+module.exports = function collaboration(req, rsp, data) {
+
+    // reset editor
+    if (req.payload.revision == -2) {
+        revisionDiary = [];
+        currentDocument = "";
+        users = {};
+    }
+
+    // forced initialization or new user
+    if (req.payload.revision == -1 || !users.hasOwnProperty(data.user.id)) {
+
+        // remember user
+        users[data.user.id] = true;
+
+        // respond with initialization data
+        rsp.send({
+            "currentDocument": currentDocument,
+            "revisionDiary": revisionDiary,
+            "revision": revisionDiary.length
+        });
+
+    } else {
+
+        // more code here...
+        // Koda 6.3
+    }
+};
+\end{lstlisting}
+
+Ko odjemalec strežniku pošlje nove spremembe, oziroma natančneje popravke sprememb ({\tt req.payload.patch}), se morajo le ti pravilno umestiti v trenutni dokument. Za vsak nov popravek moramo izračunati odmik, ki nastane s spremembami drugih uporabnikov. S popravkom s pravilnimi pozicijami nato posodobimo trenutni dokument in popravek shranimo v revizijski dnevnik. Ker tudi odjemalec od strežnika pričakuje, da bo vedno dobil številko zadnje revizije v revizijskem dnevniku, se mora le ta poslati odjemalcu. V primeru, da so v revizijskem dnevniku nove spremembe, o katerih uporabnik še ni obveščen, se morajo poslati tudi te.\newline
+
+\begin{lstlisting}[title={Koda 6.3: Izvajanje operativne transformazije na strani strežnika.}]
+// new incoming patches from current user
+if (req.payload.patch) {
+
+    // prepare bundle
+    bundle = {..., "patch": req.payload.patch, ...};
+
+    // calculate offset for incoming patch - OPERATIONAL TRANSFORMATION
+    offset = 0;
+    for (var rd in revisionDiary) {
+        if (rd >= req.payload.revision) {
+
+            // single revision diary patch
+            patch = revisionDiary[rd].patch;
+
+            // some characteres were added in previous revision
+            if (patch.a === "+") {
+                if (bundle.patch.a === "+" && bundle.patch.p >= patch.p) {
+                    offset = offset + patch.s.length;
+                }
+                if (bundle.patch.a === "-" && bundle.patch.f >= patch.p) {
+                    offset = offset + patch.s.length;
+                }
+            }
+
+            // some characteres were deleted in previous revision
+            if (patch.a === "-") {
+                if (bundle.patch.a === "+" && bundle.patch.p >= patch.f) {
+                    offset = offset - patch.s.length;
+                }
+                if (bundle.patch.a === "-" && bundle.patch.f >= patch.f) {
+                    offset = offset - patch.s.length;
+                }
+            }
+        }
+    }
+
+    // adding characters
+    if (bundle.patch.a === "+") {
+
+        // take offset into account
+        bundle.patch.p = bundle.patch.p + offset;
+
+        // update current document
+        currentDocument = currentDocument.substr(0, bundle.patch.p - 1) + bundle.patch.s + currentDocument.substr(bundle.patch.p - 1);
+    }
+
+    // deleting characters
+    if (bundle.patch.a === "-") {
+
+        // take offset into account
+        bundle.patch.f = bundle.patch.f + offset;
+        bundle.patch.t = bundle.patch.t + offset;
+
+        // update patch string just in case
+        bundle.patch.s = currentDocument.substring(bundle.patch.f - 1, bundle.patch.t);
+
+        // update current document
+        currentDocument = currentDocument.substr(0, bundle.patch.f - 1) + currentDocument.substr(bundle.patch.t);
+    }
+
+    // push bundle to revision diary
+    revisionDiary.push(bundle);
+}
+
+// do we have new patches in revision diary
+if (revisionDiary.length > req.payload.revision) {
+    rsp.send({
+        "revisionDiary": revisionDiary.slice(req.payload.revision),
+        "revision": revisionDiary.length
+    });
+} else {
+    rsp.send({
+        "revision": revisionDiary.length
+    });
 }
 \end{lstlisting}
 
-Pellentesque egestas orci quis dui tincidunt \ref{lst:codeJavaScript} io linus \ref{lst:codeJavaScript_mark} fringilla. Vivamus ac libero arcu. Mauris hendrerit massa eros. Morbi augue ligula, viverra sed volutpat at, pharetra ut erat. Integer consectetur tristique diam, vulputate placerat urna fermentum eu. Ut feugiat ligula a quam venenatis gravida. Ut elementum fermentum sapien, at posuere purus lacinia non. Mauris ante nunc, sodales eu pretium vitae, ultrices ac turpis.
+\pagebreak
+Na strani odjemalca se Operativna transformacija izvaja podobno kot na strani strežnika. Razlika je le v nekaj dodatnih opravilih, ki jih mora opraviti odjemalec. Prvo mora poskrbeti, da se kolaboracija izvaja periodično na vsako desetinko. Po odgovoru strežnika pa mora poskrbeti, da se uporabnikova utripalka (ang. caret) po Operativni transformaciji postavi na pravo mesto. Uporabnik ne sme imeti občutka, da utripalka skače levo in desno po besedilu. Zagotviti mu moramo tekoče tipkanje.
+
+Kolaboracija se dejansko izvedele le v primeru, da urejevalnik obstaja v DOM drevesu in ni čakajočih sprememb.\newline
+
+\begin{lstlisting}[title={Koda 6.4: Periodično izvajanja kolaboracije.}]
+setInterval(function() {
+
+    // does editor exist on page
+    if ($(editor).length) {
+
+        // in case of waiting patches collaboration will call itself
+        if (!waitingPatches[0]) {
+
+            // fire collaboration
+            collaboration();
+        }
+        
+    } else {
+
+        // reset collaboration
+        revision = -1;
+        // some more declarations here...
+    }
+}, 100);
+\end{lstlisting}
+
+Tekom kolaboracije se ponovno preveri ali obstajajo čakajoče spremembe. Če jih ni, se s funkcijo za iskanje razlik poskuša v besedilu poiskati nove spremembe. V nadaljevanju algoritma se iz čakajočih sprememb vzame prvo in le to pošlje na strežnik skupaj z revizijsko številko. Če ni čakajočih sprememb, se na strežnik pošlje le številko zadnje revizije, saj se tako preveri ali je kakšno spremembo naredil kdo drug od uporabnikov. Klic na strežnik se naredi z AJAX klicem.
+
+\pagebreak
+\begin{lstlisting}[title={Koda 6.5: Iskanje sprememb v besedilu in AJAX klic na strežnik.}]
+function collaboration() {
+
+    // calculate waiting patches with changes function if there is non
+    if (!waitingPatches[0]) {
+        newDocument = $(editor).val();
+        waitingPatches = changes(oldDocument, newDocument);
+    }
+
+    // sent patch to server if there is any
+    if (waitingPatches[0]) {
+
+        // take on patch from waiting patches and
+        // sent it with expected revision number
+        data = {
+            "patch": waitingPatches.shift(),
+            "revision": revision
+        };
+        
+    } else {
+        // sent just revision number to the server
+        data = {
+            "revision": revision
+        };
+    }
+
+    // collaboration ajax
+    xhr.collaboration = $.ajax({
+        url: "api/collaboration.json",
+        contentType: "application/json",
+        type: "post",
+        data: JSON.stringify(data),
+        headers: {
+            session: window.sessionStorage.session
+        },
+        dataType: "json",
+        success: function(server) {
+            // Koda 6.6
+        }
+    });
+}
+\end{lstlisting}
+
+Potem, ko odjemalec uspešno (ang. success) prejme strežnikov odgovor, mora sprocesirati revizijski dnevnik ({\tt server.revisionDiary}). V njem se nahajajo le nove spremembe od zadnje revizijske številke. Razlago same Operativno transformacijo na strani odjemalca bomo izpustili, saj je podobna kot smo jo opisali na strani strežnika. Nekaj več besed pa lahko namenimo pozicioniranju utripalke. Upoštevati je potrebno, da ima lahko uporabnik v urejevalniku del besedila kar označen (ang. highlighted). V tem primeru sta začetek in konec označbe (ang. selection start and end) različna, sicer pa enaka. Algoritem naredi zanko preko vseh potrjenih sprememb. Če avtor spremembe ni sam uporabnik, potem je potrebno izračunati odmik utripalke.
+
+Pri dodajanju besedila sta torej dve varinati, pri kateri je potrebno popravljati pozicijo označenega dela. Besedilo se dodaja pred označen del ali besedilo se dodaja med označen del. V prvem primeru je potrebno popravljati tako začetek kot konec označbe. V drugem primeru je potrebno popravljati le konec označbe.
+
+Pri brisanju besedila so štiri variante. Poleg omenjenih dveh, se lahko besedilo briše ravno na mestu kjer je začetek ali konec označbe. V primeru, da se besedilo briše na začetku označbe, se spremenita tako začetek kot konec označbe. V primeru, da se besedilo briše na koncu označbe, se spremeni le konec označbe.\newline
+
+\begin{lstlisting}[title={Koda 6.6: Popravljanje pozicije utripalke na strani odjemalca.}]
+// remember acknowledged patches prepare caret values
+acknowledgedPatches = acknowledgedPatches.concat(server.revisionDiary);
+caretStart = $(editor)[0].selectionStart;
+caretEnd = $(editor)[0].selectionEnd;
+caretOffsetStart = 0;
+caretOffsetEnd = 0;
+
+// loop
+for (var lp in acknowledgedPatches) {
+    patch = acknowledgedPatches[lp].patch;
+
+    // if not my patch
+    if (acknowledgedPatches[lp].author !== window.sessionStorage.userID) {
+        // do OPERATIONAL TRANSFORMATION and correct waiting
+        // patches position or from/to values here...
+
+        // characteres were added in previous revision
+        if (patch.a === "+") {
+            if (...++++...[..........]..........) {
+                caretOffsetStart = caretOffsetStart + patch.s.length;
+                caretOffsetEnd = caretOffsetEnd + patch.s.length;
+            }
+            if (..........[...++++...]..........) {
+                caretOffsetStart = caretOffsetStart;
+                caretOffsetEnd = caretOffsetEnd + patch.s.length;
+            }
+        }
+
+        // characteres were deleted in previous revision
+        if (patch.a === "-") {
+            if (...----...[..........]..........) {
+                caretOffsetStart = caretOffsetStart - patch.s.length;
+                caretOffsetEnd = caretOffsetEnd - patch.s.length;
+            }
+            if (........--[--........]..........) {
+                caretOffsetStart = caretOffsetStart - (caretStart - patch.f);
+                caretOffsetEnd = caretOffsetEnd - patch.s.length;
+            }
+            if (..........[...----...]..........) {
+                caretOffsetStart = caretOffsetStart;
+                caretOffsetEnd = caretOffsetEnd - patch.s.length;
+            }
+            if (..........[........--]--........) {
+                caretOffsetStart = caretOffsetStart;
+                caretOffsetEnd = caretOffsetEnd - (caretEnd - patch.f) - 1;
+            }
+        }
+    }
+}
+// update current document here...
+// put current document into the editor
+$(editor).val(currentDocument);
+
+// correct caret position with offset
+$(editor)[0].selectionStart = caretStart + caretOffsetStart;
+$(editor)[0].selectionEnd = caretEnd + caretOffsetEnd;
+
+// revision
+revision = server.revision;
+\end{lstlisting}
+
+Na koncu se trenutni dokument vpiše v urejevalnik in nastavi se pozicija utripalke oziroma označbe. Popravi se še številka zadnje revizije in kolaboracija se zaključi.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% sklpne ugotovitve
 \chapter{Sklepne ugotovitve}
 
-Nam semper augue at rhoncus laoreet. Nunc non aliquet risus. Curabitur dictum, nisl nec interdum pretium, dui quam vehicula urna, vel porta nunc est rutrum tellus. Aliquam condimentum pharetra sem, sed sodales massa viverra id. Nam aliquam faucibus egestas. Cras viverra non augue sed sagittis. Nam et elit a tortor aliquet laoreet. Pellentesque congue, risus ultricies rhoncus tincidunt, quam libero tempor tellus, sit amet bibendum velit augue eleifend lectus. Integer lorem nulla, placerat varius faucibus eu, cursus tempor purus. Cras at suscipit elit. Nam varius in ipsum eget tristique. Nulla ac nulla rutrum, vulputate lacus ac, dignissim ligula.
+Cilj diplomske naloge je bil implementirati enega izmed algoritmov za urejenje besedila v realnem času in tako zasnovati urejevalnik. To nam je tudi uspelo. Aplikacija je enostavna za uporabo in prikazuje kako napredna tehnologija omogoča in spodbuja sodelovanje oddaljenih uporabnikov. Večino testiranje smo naredili v brskalniku Google Chrome verzije 34.0, vendar aplikacija zelo dobro dela tudi na pametnih mobilnih telefonih in na tabličnih računalnikih.
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=14cm]{revision-login.png}
+\end{center}
+\caption{Prijava v aplikacijo, ki smo jo poimenovali “Revision”.}
+\label{rev-lgn}
+\end{figure}
+
+\pagebreak
+
+\vspace*{1cm}
+
+\begin{figure}[placement h]
+\begin{center}
+\includegraphics[width=14cm]{revision-editor.png}
+\end{center}
+\caption{Urejevalnik in prikaz urejanja dveh uporabnikov.}
+\label{rev-edt}
+\end{figure}
+
+V primerjavi z ostali podobnimi orodji (share.js) je naš urejevalnik bolj prilagodljiv. Le z malo spremembami lahko zamenjamo podatkovno bazo. To pomeni, da je naše orodje enostavno priključiti na že obstoječe projekte. Prednost našega orodja je tudi v vgrajeni avtentikacijo. Vsak uporabnik se mora za uporabo urejevalnika prijaviti. Razvijalcem, ki bi želeli naše orodje uporabiti in nadgraditi v konček produkt, ne bi bilo potrebno skrbeti še za avtentikacijo uporabnikov, saj je to že narejeno. Kot lahko vidimo na Sliki \ref{rev-edt} smo v aplikacijo vgradili tudi že prikaz sprememb, ki jih naredijo uporabniki v besedilu.
+
+Tako kot vsako tehnologijo je tudi naše tehnologijo mogoče še izboljšati. Skoraj nujna potreba po izboljšavi je uporaba spletne vtičnice (ang. WebSocket). Namesto periodičnih AJAX klicev, bi se to dalo rešiti s spletnimi vtičnicami. Privarčevali bi kar nekaj procesorske moči tako na strani odjemalca kot na strani strežnika. Danes spletne vtičnice podpirajo že vsi novejši brskalniki, vednar smo zaradi želje po kompatibilnosti s starejšimi brskalniki uporabili AJAX klice.
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% literatura
 \addcontentsline{toc}{chapter}{Literatura}
